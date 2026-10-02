@@ -1,0 +1,6 @@
+AFewBuds GitHub Pages upload folder
+
+Use GitHub Desktop because index.wasm is larger than the 25 MB browser upload limit.
+Copy ALL files in this folder into the root of your cloned afewbuds-beta repository.
+Commit and Push origin. Then Settings > Pages > Deploy from branch > main > /(root).
+Do not upload this ZIP itself to Pages; upload/push the extracted files.
