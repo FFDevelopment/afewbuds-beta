@@ -3,29 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex"><meta name="color-scheme" content="dark">
-<title>AFewBuds — Repair beta.4 browser update</title>
+<title>AFewBuds — Repair beta.5 browser update</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#101914;color:#f1f5f2;font:17px/1.5 system-ui,-apple-system,sans-serif;padding:24px 18px;min-height:100vh}main{max-width:680px;margin:auto;padding:clamp(18px,4vw,32px);background:#19271e;border:1px solid #3d5343;border-radius:18px}h1{font-size:clamp(25px,6vw,34px);line-height:1.2;margin:12px 0 18px}.eyebrow{color:#b2d0bc;letter-spacing:.07em;font-size:13px;font-weight:700}.note{padding:14px;border-left:3px solid #b2d0bc;background:#203629}button,a.button{display:block;width:100%;font:inherit;font-weight:700;text-align:center;border:0;border-radius:11px;padding:16px;background:#b8e4c2;color:#102017;text-decoration:none;cursor:pointer;margin-top:18px;touch-action:manipulation}button:disabled{opacity:.6;cursor:wait}a{color:#c7ead0}label{display:flex;align-items:flex-start;gap:12px;margin:20px 0}input{min-width:24px;min-height:24px;margin:2px 0 0}#status{white-space:pre-wrap;overflow-wrap:anywhere}progress{width:100%;height:20px;margin-top:16px}small{color:#c0cdc4}#log{max-height:160px;overflow:auto;font:13px/1.5 ui-monospace,monospace;white-space:pre-wrap;color:#c5d4c9}body.busy a:not(.button){pointer-events:none}[hidden]{display:none!important}
 </style>
 </head>
 <body><main>
-<div class="eyebrow">AFEWBUDS · BROWSER UPDATE REPAIR</div>
-<h1>Load the beta.4 update</h1>
-<p>This downloads and verifies the website game files for <strong>0.7.8-beta.4</strong>, then refreshes this browser's game cache. It does not reset your career.</p>
+<img src="index.180x180.png?v=0.7.8-beta.5" alt="AFewBuds" width="80" height="80" style="border-radius:18px"><div class="eyebrow">AFEWBUDS · BROWSER UPDATE REPAIR</div>
+<h1>Load the beta.5 update</h1>
+<p>This downloads and verifies the website game files for <strong>0.7.8-beta.5</strong>, then refreshes this browser's game cache. It does not reset your career.</p>
 <p class="note"><strong>Before starting:</strong> save or pause your game, then close every other AFewBuds tab or home-screen game window. Open this page in the <strong>same browser</strong> where you normally play.</p>
 <p><strong>Do not clear website data.</strong> This repair never reads, changes, or deletes your save database, local storage, cookies, or Xogot project.</p>
 <label><input id="confirmed" type="checkbox"><span>I have saved/paused and closed the other game windows.</span></label>
-<button id="repair" type="button">Download and verify beta.4</button>
+<button id="repair" type="button">Download and verify beta.5</button>
 <progress id="progress" value="0" max="100" hidden></progress>
-<p id="status" role="status" aria-live="polite">Use a reliable connection. The game files total approximately 56 MB. Keep this page open during the repair.</p>
+<p id="status" role="status" aria-live="polite">Use a reliable connection. The game files total approximately 57 MB. Keep this page open during the repair.</p>
 <a id="play" class="button" hidden>Open AFewBuds</a>
 <pre id="log" aria-label="Verified download details"></pre>
-<small>This is a one-time beta.4 repair, not a newer gameplay release. A different or incomplete server build is rejected instead of silently mixing versions.</small>
+<small>This is a one-time beta.5 repair, not a newer gameplay release. A different or incomplete server build is rejected instead of silently mixing versions.</small>
 </main><script>
 'use strict';
-// The exact unmodified beta.4 export. Digests are generated from the supplied ZIP.
-const MANIFEST = [{"name":"index.service.worker.js","bytes":5845,"sha256":"892e4f30485e275ab279c0c4154b00f873d13ef60bcb96686853030c4621d24e"},{"name":"index.html","bytes":5722,"sha256":"d6f37a309573be7264d82528a46eef6bae6914bf622ffde608c182f3e8557aca"},{"name":"index.js","bytes":315645,"sha256":"ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"},{"name":"index.wasm","bytes":37902138,"sha256":"11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"},{"name":"index.pck","bytes":18093504,"sha256":"a1a72ea466b3ebcaad1b0b2248780afba3e9b03ecd4560eb8a5f4c76cf5568e1"},{"name":"index.offline.html","bytes":749,"sha256":"e64365e8baae3839d993eaf1fdd72e9cfdb1f745d7977a3525c08a32340b440f"},{"name":"index.icon.png","bytes":5700,"sha256":"ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"},{"name":"index.apple-touch-icon.png","bytes":11944,"sha256":"01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"},{"name":"index.audio.worklet.js","bytes":7298,"sha256":"5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"},{"name":"index.audio.position.worklet.js","bytes":2973,"sha256":"be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"},{"name":"index.manifest.json","bytes":352,"sha256":"aee0eb4bf284942c45a2d21769fe7ce9b099a2462e6cafbfe0c37b6eaf4a391e"},{"name":"index.png","bytes":21443,"sha256":"3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"},{"name":"index.144x144.png","bytes":2084,"sha256":"ba54ffab00c5f9b29c8a3ecec8a05a83566140c70684f6b7a8981cb8fc93f9d2"},{"name":"index.180x180.png","bytes":2523,"sha256":"51ef6653319e6631ffde999b67494304c2a6676651562281b648f491fe9c9a5e"},{"name":"index.512x512.png","bytes":7740,"sha256":"e52770c6ea034cafed79c01ef7ca12f2810a9261e9cd019efe3642d2a0ff96bf"}];
-const TARGET_CACHE = 'AFewBuds Beta v0-sw-cache-afewbuds-0.7.8-beta.4-a1a72ea466b3';
+// The exact unmodified beta.5 export. Digests are generated from the supplied ZIP.
+const MANIFEST = [{"name":"index.144x144.png","bytes":42461,"sha256":"02f8bf5cfde6f6ec589872eeebca9af4e16ecadf9010b3e81338db024d6bc237"},{"name":"index.180x180.png","bytes":63167,"sha256":"c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"},{"name":"index.192x192.png","bytes":70908,"sha256":"2f08affc9ba792bbb049f0d70f1f3d478a19522b9fa2850311729220b3ec7df9"},{"name":"index.512x512.png","bytes":417417,"sha256":"e62a8a7f9b04379c6c3dee56e6d9e30c85945b3745c37166ca3e506c57253373"},{"name":"index.apple-touch-icon.png","bytes":63167,"sha256":"c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"},{"name":"index.audio.position.worklet.js","bytes":2973,"sha256":"be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"},{"name":"index.audio.worklet.js","bytes":7298,"sha256":"5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"},{"name":"index.html","bytes":5895,"sha256":"9dbe8c8f821217eba8f42a39631cb9bad57e7cfb56844e31c8ca3b3fffe1e347"},{"name":"index.icon.png","bytes":11333,"sha256":"9f401ca6e5b379d5b497b2d897174506ab5977af632882eca3361972ff60f12a"},{"name":"index.js","bytes":315645,"sha256":"ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"},{"name":"index.manifest.json","bytes":742,"sha256":"761e084cf78b52a2fa166fbd17c23b3635ade68736d551b5f62c7d57eb635309"},{"name":"index.offline.html","bytes":866,"sha256":"f0679208669dd8876a147021eaefdddb73d556827b18cd72209e21db03e3acb9"},{"name":"index.pck","bytes":21135556,"sha256":"9824577af2dee6415a51734e11b2ce315eb5d43768177a3bc14d9165eddd8789"},{"name":"index.png","bytes":203379,"sha256":"6fab8d8120280ba62714110d7baaf030419f649ed95d5840259b2aaf7ecf078f"},{"name":"index.service.worker.js","bytes":6244,"sha256":"143652d7bf9240971c5699fedfb32fd451d812d5062d731ea6e1b9c5e31594a2"},{"name":"index.wasm","bytes":37902138,"sha256":"11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"}];
+const TARGET_CACHE = 'AFewBuds Beta v0-sw-cache-afewbuds-0.7.8-beta.5-logo-9824577af2de';
 const EXPECTED_FOLDER = '/afewbuds-beta/';
 const BASE = new URL('./', location.href);
 const button = document.getElementById('repair');
@@ -52,7 +52,7 @@ async function freshFile(file, token) {
     if (!response.ok) throw new Error(file.name + ': HTTP ' + response.status + '. Check the Pages deployment.');
     const bytes = await response.arrayBuffer();
     if (bytes.byteLength !== file.bytes || await digest(bytes) !== file.sha256) {
-      throw new Error(file.name + ' does not match the complete beta.4 export. The server may still have an older, incomplete, or newer build. No save data was changed.');
+      throw new Error(file.name + ' does not match the complete beta.5 export. The server may still have an older, incomplete, or newer build. No save data was changed.');
     }
     const headers = new Headers(response.headers);
     // Bytes are already decoded; do not attach stale compressed-transfer metadata.
@@ -109,7 +109,7 @@ button.addEventListener('click', async () => {
       downloaded += file.bytes;progress.value = downloaded / totalBytes * 90;
       log.textContent += '\u2713 ' + file.name + '\n';log.scrollTop = log.scrollHeight;
     }
-    // Only proceed after EVERY file passes its exact beta.4 integrity check.
+    // Only proceed after EVERY file passes its exact beta.5 integrity check.
     say('All game files verified. Installing the browser loader…');
     const swURL = new URL('index.service.worker.js', BASE);
     swURL.searchParams.set('afb_repair', token);
@@ -134,12 +134,12 @@ button.addEventListener('click', async () => {
       throw new Error('The browser is still serving a different game-data file. Keep game windows closed and retry.');
     }
     progress.value = 100;
-    say('Ready: beta.4 game files and the active browser loader are verified.\nOpen the game, then check Phone → Help for 0.7.8-beta.4. Your save storage was not changed.');
+    say('Ready: beta.5 game files and the active browser loader are verified.\nOpen the game, then check Phone → Help for 0.7.8-beta.5. Your save storage was not changed.');
     play.href = BASE.href;play.hidden = false;button.textContent = 'Verify again';
   } catch (error) {
     const message = error && error.name === 'AbortError' ? 'The download timed out. Retry with a stable connection.' : String(error && error.message || error);
     say('Repair did not finish.\n' + message + '\nDo not clear website data.');
-    button.textContent = 'Retry beta.4 repair';
+    button.textContent = 'Retry beta.5 repair';
   } finally {
     // Remove ONLY this attempt's temporary download cache, never user storage.
     try { await caches.delete(stageName); } catch (_) {}

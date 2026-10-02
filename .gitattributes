@@ -1,6 +1,6 @@
-# Keep text files using LF line endings.
 * text=auto eol=lf
-
-# Never apply text conversions to the exported game binaries.
-*.wasm binary
 *.pck binary
+*.wasm binary
+*.png binary
+*.ico binary
+*.zip binary

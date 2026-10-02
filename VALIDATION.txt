@@ -1,0 +1,22 @@
+# Current validation — 0.7.8-beta.5 (branding only)
+
+23/23 focused Godot 4.7.2 web-engine resource/layout assertions passed in Chromium.
+Local engine/WASM/pack bytes were passed directly into an in-memory browser page;
+no browser network policies were modified and no website was deployed. The harness
+used a temporary instrumented pack. No test hooks are in the delivered pack/source.
+
+Checks include PNG import/loading, alpha, icon/splash project settings, three compact
+non-interactive UI logos, portrait 720x1280 layout, six phone section headers, and
+unchanged save identity. An initial load of the uninstrumented delivery pack also
+completed without script errors. Audio worklets were stubbed in this local test;
+audio and rendered game visuals are not validated by it.
+
+Static checks validate every PCK entry checksum, source/pack parity, unchanged
+web engine binaries, unchanged save/load functions and PWA identity, unchanged
+plant-growth/touch-scroll modules, web icon dimensions/opacity/cache references,
+and the current repair page's exact file hashes. See the JSON reports.
+
+Not tested: physical iPhone, Xogot import, Safari, native export installation,
+persistent real-browser saves, real service-worker update/activation, or the Home
+Screen's refresh behavior for an already-installed icon. No full gameplay regression
+suite was rerun for this branding-only patch. Older beta.4 reports are historical.

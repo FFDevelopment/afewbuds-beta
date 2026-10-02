@@ -1,4 +1,4 @@
-AFewBuds GitHub Pages update — 0.7.8-beta.4
+AFewBuds GitHub Pages update — 0.7.8-beta.5
 
 1. Extract this ZIP on your computer.
 2. Open the SAME local afewbuds-beta repository you already publish.
@@ -8,7 +8,7 @@ AFewBuds GitHub Pages update — 0.7.8-beta.4
    worker. Keep .nojekyll (a hidden file); it is included here.
 4. GitHub Desktop: review the files, Commit to main, then Push origin.
 5. Wait for the GitHub Pages deployment in Actions. The play link stays the same.
-6. Close/reopen or refresh the game. Check Phone > Help for build 0.7.8-beta.4.
+6. Close/reopen or refresh the game. Check Phone > Help for build 0.7.8-beta.5.
    If an older service worker is still serving the game, close all tabs/app windows
    for the game before reopening. DO NOT clear website data to update.
 
@@ -16,3 +16,6 @@ This package does not change your live repository until you upload/push it.
 Existing careers use the same save path and identity. Do not delete browser data
 or reset careers. Saves remain local to the usual browser/device.
 Use the separate Godot source ZIP for Xogot; this ZIP is only the web export.
+
+The optional afewbuds-update.html repair is now included for beta.5. Replace its
+older copy as part of this complete upload; old beta.4 checksums must not be reused.
