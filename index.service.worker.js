@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1790900331|47010410';
+const CACHE_VERSION = 'afewbuds-0.7.8-beta.4-a1a72ea466b3';
 /** @type {string} */
 const CACHE_PREFIX = 'AFewBuds Beta v0-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;

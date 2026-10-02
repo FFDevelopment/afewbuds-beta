@@ -1,6 +1,18 @@
-AFewBuds GitHub Pages upload folder
+AFewBuds GitHub Pages update — 0.7.8-beta.4
 
-Use GitHub Desktop because index.wasm is larger than the 25 MB browser upload limit.
-Copy ALL files in this folder into the root of your cloned afewbuds-beta repository.
-Commit and Push origin. Then Settings > Pages > Deploy from branch > main > /(root).
-Do not upload this ZIP itself to Pages; upload/push the extracted files.
+1. Extract this ZIP on your computer.
+2. Open the SAME local afewbuds-beta repository you already publish.
+3. Replace its exported game files with this ZIP's CONTENTS, not the ZIP file or
+   an extra enclosing folder. index.html must remain at the repository root.
+   Replace all supplied index.* files, including the .pck, .js, .wasm and service
+   worker. Keep .nojekyll (a hidden file); it is included here.
+4. GitHub Desktop: review the files, Commit to main, then Push origin.
+5. Wait for the GitHub Pages deployment in Actions. The play link stays the same.
+6. Close/reopen or refresh the game. Check Phone > Help for build 0.7.8-beta.4.
+   If an older service worker is still serving the game, close all tabs/app windows
+   for the game before reopening. DO NOT clear website data to update.
+
+This package does not change your live repository until you upload/push it.
+Existing careers use the same save path and identity. Do not delete browser data
+or reset careers. Saves remain local to the usual browser/device.
+Use the separate Godot source ZIP for Xogot; this ZIP is only the web export.

@@ -1,0 +1,22 @@
+AFewBuds 0.7.8-beta.4 — actual room-switch touch fix
+
+Tap the actual wall switches and lamp while playing on a phone.
+- Side navigation arrows are now lower on the screen, clear of the switches.
+- Visible switch/lamp meshes define touch targets with small forgiving margins.
+- Small finger movements do not turn taps into swipes or move the camera.
+- One completed tap toggles only the switch where it began. Swipes do not toggle.
+- Canceled browser/native touches and resized views do not complete old taps.
+- Visible physical switches also work from station close-ups without an open panel.
+- Removed the extra room LIGHTS shortcut and the standalone lights panel.
+- Phone > Lights remains the only optional lights menu.
+- Ventilation must still be installed before its switch can turn the system on.
+
+No reset required. Save identity, save/load code, plant catch-up, balance settings,
+phone scrolling, and bagging logic are retained from beta.3. The supplied engine,
+artwork, and PWA identity are unchanged. Only game input/UI code is patched.
+
+68/68 focused headless runtime/DOM-input checks passed at three display sizes,
+including one-tap behavior, finger jitter, canceled/multitouch input, desktop clicks,
+phone scrolling, bagging, guards, resize cancellation, and a save round-trip.
+Physical iPhone/Xogot/Safari rendering and touch feel have NOT been verified.
+The live website has not been changed by generating this ZIP.
