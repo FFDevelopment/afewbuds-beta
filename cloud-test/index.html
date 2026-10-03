@@ -247,8 +247,8 @@ body {
 
 		<script src="shared/config.js"></script>
 		<script src="shared/afb-api.js"></script>
-		<script src="shared/afb-cloud.js?v=cloudsync3-system"></script>
-		<script src="index.js?v=cloudsync3-system"></script>
+		<script src="shared/afb-cloud.js?v=canonical-account1"></script>
+		<script src="index.js?v=canonical-account1"></script>
 		<script>
 const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index-system.pck":25359408,"index.wasm":37902138},"focusCanvas":true,"mainPack":"index-system.pck","gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":""};
 const GODOT_THREADS_ENABLED = false;
@@ -319,25 +319,21 @@ function afbShowCloudTestResult(ok, text) {
 	el.hidden = false;
 	setTimeout(() => { if (el) el.hidden = true; }, 8000);
 }
-async function afbCloudUploadOnlyTest() {
-	if (!window.AFB_API || !AFB_API.enabled || !window.AFB_CLOUD) return {ok:false, reason:'cloud_unavailable'};
+async function afbCloudReconcileAccount() {
+	if (!window.AFB_API || !AFB_API.enabled || !window.AFB_CLOUD) return {action:'cloud_unavailable'};
 	const player = AFB_API.getPlayerSession();
-	if (!player || !player.session_token) return {ok:false, reason:'not_signed_in'};
-	const save = await AFB_CLOUD.readLocalSave();
-	if (!save) throw new Error('No local AFewBuds career was found in this browser.');
-	await AFB_API.rpc('afb_set_save', {p_session_token:player.session_token, p_save_json:save});
-	window.AFB_CLOUD_TEST_RESULT = {ok:true, saved_unix:Number(save.saved_unix||0), at:Date.now()};
-	return window.AFB_CLOUD_TEST_RESULT;
+	if (!player || !player.session_token) return {action:'guest'};
+	if (!AFB_CLOUD.reconcileLatestSilently) return {action:'unsupported'};
+	return await AFB_CLOUD.reconcileLatestSilently();
 }
 async function afbLaunchGame() {
 	if (AFB_GAME_STARTED) return;
 	AFB_GAME_STARTED = true;
 	try {
-		const result = await afbCloudUploadOnlyTest();
-		console.log('AFewBuds cloud upload-only test:', result);
+		const result = await afbCloudReconcileAccount();
+		console.log('AFewBuds account career reconcile:', result);
 	} catch (error) {
-		console.error('AFewBuds cloud upload-only test failed:', error);
-		window.AFB_CLOUD_TEST_RESULT = {ok:false, error:String(error && error.message || error), at:Date.now()};
+		console.error('AFewBuds account career reconcile failed:', error);
 	}
 	document.getElementById('afb-account-gate').hidden = true;
 	afbLoadTracker();
