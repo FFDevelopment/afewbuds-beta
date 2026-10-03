@@ -1,12 +1,8 @@
-AFewBuds Web Release 0.7.9-beta.16-autoupdater1
+AFewBuds Web Release 0.7.9-beta.19
 
-- Keeps the known-good AFewBuds 0.7.9-beta.16 Godot runtime unchanged.
-- Adds a pre-launch automatic update check.
-- New releases are staged in a separate CacheStorage cache and verified by SHA-256 and byte size before activation.
-- Keeps the previous release cache for rollback.
-- New releases are not confirmed until the Godot engine starts successfully.
-- Failed downloads keep the existing release active.
-- Failed startup rolls back to the previous release.
-- Offline/update-server failure starts the installed release.
-- Adds a safe repair page for legacy-cache migration/recovery without clearing local saves.
-- Preserves the browser-native account gate, Supabase player accounts, admin portal, and telemetry from Account Fix 1.
+- Removes the separate grow-room ROOM / GROW / VENT wall switch board.
+- Moves ROOM LIGHT, GROW LIGHTS, and VENTILATION controls into the approached Grow Room System panel.
+- Adds a live status card above the system controls.
+- Uses large phone-friendly buttons inside a scrollable panel so controls remain on-screen.
+- Keeps Phone → Lights as an alternate control path.
+- Preserves the transactional pre-launch updater, rollback safeguards, account/admin pages, and player save storage.

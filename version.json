@@ -1,13 +1,13 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.16-autoupdater1",
-  "game_build": "0.7.9-beta.16",
-  "generated_at_utc": "2026-10-03T11:33:08.061844+00:00",
+  "release_id": "0.7.9-beta.19",
+  "game_build": "0.7.9-beta.19",
+  "generated_at_utc": "2026-10-03T11:56:16.739168+00:00",
   "files": [
     {
       "path": "index.html",
-      "size": 19157,
-      "sha256": "d5d1466ab8df1a7be30f7a14bd71655bbb68a418c04c0e7ac8d574d2acae9b57"
+      "size": 19145,
+      "sha256": "8856b1ebe4f9e375915c371ca6f3f8583d61bfbb956a333802a15434e79c8c43"
     },
     {
       "path": "index.js",
@@ -16,8 +16,8 @@
     },
     {
       "path": "index.pck",
-      "size": 25354652,
-      "sha256": "d1abe3e56f3317c3d95ec350580930a0613bad1ae8817c522d754bd5e4f2916d"
+      "size": 25356016,
+      "sha256": "ba0607d40a7a0308fce5911b71050d2ca8b0dedf42886e80a7e60bbd4e9bcdc6"
     },
     {
       "path": "index.wasm",
@@ -57,7 +57,7 @@
     {
       "path": "index.manifest.json",
       "size": 746,
-      "sha256": "6a7e26454632f2442e99d286f8235f2fb63a1b605cc0aff685041729fd50a74f"
+      "sha256": "f7e558f884191cd81d3ebcb2e5eeb3b17ba514dce734722c37e50d49c0c75fce"
     },
     {
       "path": "index.144x144.png",
@@ -81,8 +81,8 @@
     },
     {
       "path": "shared/config.js",
-      "size": 230,
-      "sha256": "2a70a78436ddf97913a397b6601908500cd057e8d40d169b9e92a18fe5965afc"
+      "size": 217,
+      "sha256": "b58eab527e512731d3728880a20d02a4341011d94ee5f2452ed55d656866ebd0"
     },
     {
       "path": "shared/afb-api.js",
@@ -101,8 +101,8 @@
     },
     {
       "path": "shared/afb-updater.js",
-      "size": 11629,
-      "sha256": "5b2867df349893ad70c673ccfcd894716dcf72b49f5f6f9b2f23244e1c2b3176"
+      "size": 11616,
+      "sha256": "c75fd0d83881b672c3d9335914dc4b4db13f3a0c6d982abec412757cab6e18f5"
     },
     {
       "path": "account/index.html",

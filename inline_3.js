@@ -50,7 +50,7 @@ function afbLoadTracker() {
 	if (document.getElementById('afb-tracker-script')) return;
 	const s = document.createElement('script');
 	s.id = 'afb-tracker-script';
-	s.src = 'shared/afb-tracker.js?v=0.7.9-beta.16-accountfix1';
+	s.src = 'shared/afb-tracker.js?v=0.7.9-beta.19';
 	document.body.appendChild(s);
 }
 function afbLaunchGame() {
