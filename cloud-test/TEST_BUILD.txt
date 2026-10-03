@@ -1,6 +1,9 @@
 AFewBuds isolated cloud test
 Build: beta.19 cloud + System phone test
+Restore revision: canonical-account2 / index-system-restore2.pck
 Features:
+- one canonical career per AFewBuds account
+- direct cloud restore into Godot before _load_game()
 - automatic local saves and background Supabase sync remain enabled
 - routine cloud sync notifications are silent
 - Phone -> System -> Save Game
