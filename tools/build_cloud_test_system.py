@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-malikgen2.pck")
+OUT_PCK = Path("cloud-test/index-system-geneticsclean1.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -895,176 +895,7 @@ func _pay_reeves_due(early: bool = false) -> void:
         raise RuntimeError("Reeves old-save migration marker not found")
     text = text.replace(migration_marker, migration_new, 1)
 
-    # Malik production-worker 3D v1 + genetics recipe progression.
-    worker_var_old = "var production_worker_face_shell: MeshInstance3D\n"
-    if worker_var_old not in text:
-        raise RuntimeError("Production worker variable marker not found")
-    text = text.replace(
-        worker_var_old,
-        worker_var_old + "var production_worker_malik_details: Node3D\n",
-        1,
-    )
-
-    worker_build_old = '''\tproduction_worker_node.add_child(production_worker_task_label)
-
-\t_refresh_production_worker_friend_face()
-'''
-    worker_build_new = '''\tproduction_worker_node.add_child(production_worker_task_label)
-
-\t_build_malik_production_model_details()
-\t_refresh_production_worker_friend_face()
-'''
-    if worker_build_old not in text:
-        raise RuntimeError("Production worker build marker not found")
-    text = text.replace(worker_build_old, worker_build_new, 1)
-
-    worker_face_marker = "func _worker_face_texture_path(friend_name: String) -> String:\n"
-    malik_model_block = '''func _malik_detail_box(parent: Node3D, detail_name: String, size: Vector3, position_value: Vector3, color_value: Color, rotation_value: Vector3 = Vector3.ZERO) -> MeshInstance3D:
-\tvar part: MeshInstance3D = MeshInstance3D.new()
-\tpart.name = detail_name
-\tvar mesh: BoxMesh = BoxMesh.new()
-\tmesh.size = size
-\tmesh.material = _make_flat_material(color_value, 0.84)
-\tpart.mesh = mesh
-\tpart.position = position_value
-\tpart.rotation = rotation_value
-\tparent.add_child(part)
-\treturn part
-
-func _malik_detail_cylinder(parent: Node3D, detail_name: String, radius_value: float, height_value: float, position_value: Vector3, color_value: Color, rotation_value: Vector3 = Vector3.ZERO) -> MeshInstance3D:
-\tvar part: MeshInstance3D = MeshInstance3D.new()
-\tpart.name = detail_name
-\tvar mesh: CylinderMesh = CylinderMesh.new()
-\tmesh.top_radius = radius_value
-\tmesh.bottom_radius = radius_value
-\tmesh.height = height_value
-\tmesh.radial_segments = 10
-\tmesh.material = _make_flat_material(color_value, 0.82)
-\tpart.mesh = mesh
-\tpart.position = position_value
-\tpart.rotation = rotation_value
-\tparent.add_child(part)
-\treturn part
-
-func _build_malik_production_model_details() -> void:
-\tif production_worker_node == null:
-\t\treturn
-\tproduction_worker_malik_details = Node3D.new()
-\tproduction_worker_malik_details.name = "MalikModelV1"
-\tproduction_worker_malik_details.visible = false
-\tproduction_worker_node.add_child(production_worker_malik_details)
-
-\tvar cloth: Color = Color("111315")
-\tvar cloth_detail: Color = Color("1b1e21")
-\tvar skin: Color = Color("b57955")
-\tvar ink: Color = Color("352a28")
-\tvar hair: Color = Color("171513")
-\tvar sole: Color = Color("e4e5e3")
-\tvar shoe: Color = Color("15181c")
-\tvar accent: Color = Color("b84d4d")
-
-\t# Polo collar / placket.
-\t_malik_detail_box(production_worker_malik_details, "PoloCollarL", Vector3(0.12, 0.035, 0.16), Vector3(-0.065, 1.49, -0.185), cloth_detail, Vector3(0, 0, deg_to_rad(-18.0)))
-\t_malik_detail_box(production_worker_malik_details, "PoloCollarR", Vector3(0.12, 0.035, 0.16), Vector3(0.065, 1.49, -0.185), cloth_detail, Vector3(0, 0, deg_to_rad(18.0)))
-\t_malik_detail_box(production_worker_malik_details, "PoloPlacket", Vector3(0.045, 0.16, 0.025), Vector3(0, 1.405, -0.224), Color("181a1d"))
-
-\t# Cargo-pocket silhouette on both thighs.
-\t_malik_detail_box(production_worker_malik_details, "CargoPocketL", Vector3(0.15, 0.20, 0.055), Vector3(-0.19, 0.68, -0.035), cloth_detail)
-\t_malik_detail_box(production_worker_malik_details, "CargoPocketR", Vector3(0.15, 0.20, 0.055), Vector3(0.19, 0.68, -0.035), cloth_detail)
-
-\t# Sneaker soles, side panels and small red tongue accents.
-\tfor side_index in range(2):
-\t\tvar side: float = -1.0 if side_index == 0 else 1.0
-\t\t_malik_detail_box(production_worker_malik_details, "Sole%d" % side_index, Vector3(0.20, 0.045, 0.35), Vector3(0.11 * side, 0.075, -0.07), sole)
-\t\t_malik_detail_box(production_worker_malik_details, "ShoePanel%d" % side_index, Vector3(0.11, 0.045, 0.19), Vector3(0.11 * side, 0.135, -0.145), Color("d5d7d6"))
-\t\t_malik_detail_box(production_worker_malik_details, "ShoeAccent%d" % side_index, Vector3(0.035, 0.055, 0.025), Vector3(0.11 * side, 0.19, -0.10), accent)
-
-\t# Braids run over the scalp and trail slightly behind the head.
-\tfor braid_index in range(7):
-\t\tvar x_offset: float = (float(braid_index) - 3.0) * 0.037
-\t\t_malik_detail_cylinder(production_worker_malik_details, "Braid%d" % braid_index, 0.0105, 0.30, Vector3(x_offset, 1.84, 0.045), hair, Vector3(deg_to_rad(72.0), 0, 0))
-\tfor tail_index in range(4):
-\t\tvar tail_x: float = (float(tail_index) - 1.5) * 0.045
-\t\t_malik_detail_cylinder(production_worker_malik_details, "BraidTail%d" % tail_index, 0.011, 0.19, Vector3(tail_x, 1.70, 0.17), hair, Vector3(deg_to_rad(18.0), 0, 0))
-
-\t# Beard / jaw silhouette. Face texture still supplies the detailed likeness.
-\t_malik_detail_box(production_worker_malik_details, "BeardChin", Vector3(0.17, 0.07, 0.035), Vector3(0, 1.575, -0.188), hair)
-\t_malik_detail_box(production_worker_malik_details, "BeardL", Vector3(0.065, 0.16, 0.025), Vector3(-0.13, 1.635, -0.16), hair, Vector3(0, 0, deg_to_rad(-18.0)))
-\t_malik_detail_box(production_worker_malik_details, "BeardR", Vector3(0.065, 0.16, 0.025), Vector3(0.13, 1.635, -0.16), hair, Vector3(0, 0, deg_to_rad(18.0)))
-
-\t# Tattoo bands/marks on both forearms, visible at normal gameplay distance.
-\tfor side_index in range(2):
-\t\tvar side: float = -1.0 if side_index == 0 else 1.0
-\t\tfor band_index in range(3):
-\t\t\t_malik_detail_cylinder(production_worker_malik_details, "Tattoo%d_%d" % [side_index, band_index], 0.071, 0.025, Vector3(0.28 * side, 1.02 - float(band_index) * 0.085, -0.003), ink)
-
-func _apply_production_worker_character_style(friend_name: String) -> void:
-\tif production_worker_node == null:
-\t\treturn
-\tvar malik_active: bool = friend_name == "Malik"
-\tif production_worker_malik_details != null:
-\t\tproduction_worker_malik_details.visible = malik_active
-\tvar torso: MeshInstance3D = production_worker_node.get_node_or_null("Torso") as MeshInstance3D
-\tvar arm_l: MeshInstance3D = production_worker_node.get_node_or_null("ArmL") as MeshInstance3D
-\tvar arm_r: MeshInstance3D = production_worker_node.get_node_or_null("ArmR") as MeshInstance3D
-\tvar leg_l: MeshInstance3D = production_worker_node.get_node_or_null("LegL") as MeshInstance3D
-\tvar leg_r: MeshInstance3D = production_worker_node.get_node_or_null("LegR") as MeshInstance3D
-\tvar shoe_l: MeshInstance3D = production_worker_node.get_node_or_null("ShoeL") as MeshInstance3D
-\tvar shoe_r: MeshInstance3D = production_worker_node.get_node_or_null("ShoeR") as MeshInstance3D
-\tif malik_active:
-\t\tvar black_shirt: StandardMaterial3D = _make_flat_material(Color("111315"), 0.86)
-\t\tvar black_pants: StandardMaterial3D = _make_flat_material(Color("171a1e"), 0.88)
-\t\tvar black_shoes: StandardMaterial3D = _make_flat_material(Color("101317"), 0.88)
-\t\tif torso != null:
-\t\t\ttorso.material_override = black_shirt
-\t\t\ttorso.scale = Vector3(1.18, 1.03, 1.10)
-\t\tfor arm in [arm_l, arm_r]:
-\t\t\tif arm != null:
-\t\t\t\tarm.material_override = black_shirt
-\t\t\t\tarm.scale = Vector3(1.12, 1.03, 1.12)
-\t\tfor leg in [leg_l, leg_r]:
-\t\t\tif leg != null:
-\t\t\t\tleg.material_override = black_pants
-\t\t\t\tleg.scale = Vector3(1.08, 1.02, 1.08)
-\t\tfor shoe_node in [shoe_l, shoe_r]:
-\t\t\tif shoe_node != null:
-\t\t\t\tshoe_node.material_override = black_shoes
-\telse:
-\t\tif torso != null:
-\t\t\ttorso.material_override = null
-\t\t\ttorso.scale = Vector3.ONE
-\t\tfor arm in [arm_l, arm_r]:
-\t\t\tif arm != null:
-\t\t\t\tarm.material_override = null
-\t\t\t\tarm.scale = Vector3.ONE
-\t\tfor leg in [leg_l, leg_r]:
-\t\t\tif leg != null:
-\t\t\t\tleg.material_override = null
-\t\t\t\tleg.scale = Vector3.ONE
-\t\tfor shoe_node in [shoe_l, shoe_r]:
-\t\t\tif shoe_node != null:
-\t\t\t\tshoe_node.material_override = null
-
-'''
-    if worker_face_marker not in text:
-        raise RuntimeError("Worker face function marker not found")
-    text = text.replace(worker_face_marker, malik_model_block + worker_face_marker, 1)
-
-    refresh_style_old = '''\tvar assigned_name: String = production_worker_friend_name
-\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
-\tif previous_name == assigned_name:
-\t\treturn
-'''
-    refresh_style_new = '''\tvar assigned_name: String = production_worker_friend_name
-\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
-\t_apply_production_worker_character_style(assigned_name)
-\tif previous_name == assigned_name:
-\t\treturn
-'''
-    if refresh_style_old not in text:
-        raise RuntimeError("Worker face refresh marker not found")
-    text = text.replace(refresh_style_old, refresh_style_new, 1)
-
+    # Genetics recipe progression.
     # New fictional crossbreed strains are recipe-only and hidden from the normal seed shop.
     seed_order_old = 'const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost"]'
     seed_order_new = 'const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost", "Citrus Velvet", "Cherry Frost", "Ember Berry", "Crown Cake"]'
@@ -1255,102 +1086,10 @@ func _create_genetics_cross(recipe_id: String) -> void:
     if count != 1:
         raise RuntimeError("Genetics app replacement failed")
 
-    # Cloud-test-only Malik preview. Runtime-only: never written into the save.
-    preview_var_marker = "var production_worker_malik_details: Node3D\n"
-    if preview_var_marker not in text:
-        raise RuntimeError("Malik preview variable marker not found")
-    text = text.replace(
-        preview_var_marker,
-        preview_var_marker + "var cloud_malik_preview_active: bool = false\n",
-        1,
-    )
-
-    preview_tick_old = '''\telif production_worker_node != null:
-\t\tproduction_worker_node.visible = false
-'''
-    preview_tick_new = '''\telif production_worker_node != null and not cloud_malik_preview_active:
-\t\tproduction_worker_node.visible = false
-'''
-    if preview_tick_old not in text:
-        raise RuntimeError("Malik preview automation marker not found")
-    text = text.replace(preview_tick_old, preview_tick_new, 1)
-
-    preview_duty_old = '''\tvar on_duty: bool = packing_employee_hired and packing_employee_active
-'''
-    preview_duty_new = '''\tvar on_duty: bool = (packing_employee_hired and packing_employee_active) or cloud_malik_preview_active
-'''
-    if preview_duty_old not in text:
-        raise RuntimeError("Malik preview on-duty marker not found")
-    text = text.replace(preview_duty_old, preview_duty_new, 1)
-
-    preview_assigned_old = '''\tvar assigned_name: String = production_worker_friend_name
-\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
-\t_apply_production_worker_character_style(assigned_name)
-'''
-    preview_assigned_new = '''\tvar assigned_name: String = "Malik" if cloud_malik_preview_active else production_worker_friend_name
-\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
-\t_apply_production_worker_character_style(assigned_name)
-'''
-    if preview_assigned_old not in text:
-        raise RuntimeError("Malik preview face marker not found")
-    text = text.replace(preview_assigned_old, preview_assigned_new, 1)
-
-    preview_label_old = '''\t\tvar worker_name: String = production_worker_friend_name if not production_worker_friend_name.is_empty() else "PRODUCTION WORKER"
-'''
-    preview_label_new = '''\t\tvar worker_name: String = "Malik" if cloud_malik_preview_active else (production_worker_friend_name if not production_worker_friend_name.is_empty() else "PRODUCTION WORKER")
-'''
-    if preview_label_old not in text:
-        raise RuntimeError("Malik preview label marker not found")
-    text = text.replace(preview_label_old, preview_label_new, 1)
-
-    preview_system_marker = '''\tquit_box.add_child(quit_button)
-
-func _phone_manual_save() -> void:
-'''
-    preview_system_block = '''\tquit_box.add_child(quit_button)
-
-\tvar preview_card: PanelContainer = PanelContainer.new()
-\tpreview_card.add_theme_stylebox_override("panel", _style_box(Color("161b20"), Color("526b78"), 16, 1))
-\tphone_list.add_child(preview_card)
-\tvar preview_box: VBoxContainer = VBoxContainer.new()
-\tpreview_box.add_theme_constant_override("separation", 9)
-\tpreview_card.add_child(preview_box)
-\tvar preview_title: Label = Label.new()
-\tpreview_title.text = "CLOUD TEST - MALIK MODEL"
-\tpreview_title.add_theme_font_size_override("font_size", 19)
-\tpreview_box.add_child(preview_title)
-\tvar preview_note: Label = Label.new()
-\tpreview_note.text = "Temporary visual preview only. It does not meet, befriend, hire, or save Malik to your career."
-\tpreview_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-\tpreview_note.modulate = Color("b9c7cf")
-\tpreview_box.add_child(preview_note)
-\tvar preview_button: Button = Button.new()
-\tpreview_button.text = "END MALIK PREVIEW" if cloud_malik_preview_active else "PREVIEW MALIK WORKER"
-\tpreview_button.custom_minimum_size.y = 56
-\tpreview_button.add_theme_font_size_override("font_size", 18)
-\tpreview_button.pressed.connect(_toggle_cloud_malik_preview)
-\tpreview_box.add_child(preview_button)
-
-func _toggle_cloud_malik_preview() -> void:
-\tcloud_malik_preview_active = not cloud_malik_preview_active
-\tif production_worker_node != null:
-\t\tproduction_worker_node.visible = cloud_malik_preview_active or (packing_employee_hired and packing_employee_active)
-\t\tif cloud_malik_preview_active:
-\t\t\tproduction_worker_node.position = _production_worker_station_position("workbench")
-\t\t\tproduction_worker_target_position = production_worker_node.position
-\t\t\tproduction_worker_pending_action = ""
-\t\t\tproduction_worker_task = "Model preview"
-\t\t\tproduction_worker_last_action = production_worker_task
-\t\t\t_reset_production_worker_navigation()
-\t\t_refresh_production_worker_friend_face()
-\tstatus_label.text = "Malik preview enabled." if cloud_malik_preview_active else "Malik preview ended."
-\t_refresh_phone()
-
-func _phone_manual_save() -> void:
-'''
-    if preview_system_marker not in text:
-        raise RuntimeError("Malik preview System app marker not found")
-    text = text.replace(preview_system_marker, preview_system_block, 1)
+    debug_reeves_pattern = r'\tif OS\.is_debug_build\(\) and not reeves_met:\n.*?(?=\nfunc )'
+    text, debug_count = re.subn(debug_reeves_pattern, '', text, count=1, flags=re.S)
+    if debug_count != 1:
+        raise RuntimeError("Force Reeves debug block not found for removal")
 
     # Portable UI glyph pass. Keep the phone back arrow (‹), which is known-good,
     # and replace symbols that fall back to incorrect glyphs on iOS/PWA/web fonts.
@@ -1385,11 +1124,6 @@ func _phone_manual_save() -> void:
         'func _claim_all_advancements() -> void:',
         'phone_button.add_theme_stylebox_override("normal"',
         'func _show_save_notification(',
-        'func _build_malik_production_model_details() -> void:',
-        'production_worker_malik_details.visible = malik_active',
-        'var cloud_malik_preview_active: bool = false',
-        'func _toggle_cloud_malik_preview() -> void:',
-        'PREVIEW MALIK WORKER',
         '"reward_recipe": "Citrus Velvet"',
         'func _genetics_recipe_catalog() -> Array[Dictionary]:',
         'LOCKED - CLAIM %s',
@@ -1399,6 +1133,10 @@ func _phone_manual_save() -> void:
             raise RuntimeError("Generated game source missing required fragment: " + fragment)
     if 'status_label.text = "Game saved. Cloud backup will update automatically while signed in."' in text:
         raise RuntimeError("Old manual-save text notification is still present")
+    if "OS.is_debug_build() and not reeves_met" in text:
+        raise RuntimeError("Force Reeves debug UI is still present")
+    if "PREVIEW MALIK WORKER" in text or "MalikModelV1" in text:
+        raise RuntimeError("Malik 3D preview experiment is still present")
     return text
 
 def rebuild():
@@ -1462,14 +1200,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-malikgen2.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-geneticsclean1.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-malikgen2.pck"',
+            '"mainPack":"index-system-geneticsclean1.pck"',
             config,
             count=1,
         )
@@ -1502,10 +1240,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=malikgen2', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=geneticsclean1', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=malikgen2',
+        'shared/afb-cloud.js?v=geneticsclean1',
         html,
         count=1,
     )
