@@ -1,4 +1,1 @@
-AFewBuds game build: 0.7.9-beta.19
-Web release: 0.7.9-beta.19-cloudsave1
-Updater protocol: 1
-Cloud career transfer: enabled
+AFewBuds 0.7.9-beta.20 — direct Godot cloud-save bridge + transactional updater

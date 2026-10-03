@@ -1,114 +1,58 @@
 {
-  "index.html": {
-    "size": 19676,
-    "sha256": "fc3176f5a22879302b6630abb5cf2b81a44fd3d499b8973335beada43ab3e337"
-  },
-  "index.js": {
-    "size": 315645,
-    "sha256": "ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"
-  },
-  "index.pck": {
-    "size": 25356016,
-    "sha256": "ba0607d40a7a0308fce5911b71050d2ca8b0dedf42886e80a7e60bbd4e9bcdc6"
-  },
-  "index.wasm": {
-    "size": 37902138,
-    "sha256": "11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"
-  },
-  "index.audio.worklet.js": {
-    "size": 7298,
-    "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
-  },
-  "index.audio.position.worklet.js": {
-    "size": 2973,
-    "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
-  },
-  "index.offline.html": {
-    "size": 866,
-    "sha256": "6fb56f215819a021df7f1e9c4f41687ce776e70b6662a58f6fe4ad82ada7d286"
-  },
-  "index.icon.png": {
-    "size": 11333,
-    "sha256": "9f401ca6e5b379d5b497b2d897174506ab5977af632882eca3361972ff60f12a"
-  },
-  "index.apple-touch-icon.png": {
-    "size": 63167,
-    "sha256": "c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"
-  },
-  "index.png": {
-    "size": 203379,
-    "sha256": "6fab8d8120280ba62714110d7baaf030419f649ed95d5840259b2aaf7ecf078f"
-  },
-  "index.manifest.json": {
-    "size": 746,
-    "sha256": "f7e558f884191cd81d3ebcb2e5eeb3b17ba514dce734722c37e50d49c0c75fce"
-  },
-  "index.144x144.png": {
-    "size": 42461,
-    "sha256": "02f8bf5cfde6f6ec589872eeebca9af4e16ecadf9010b3e81338db024d6bc237"
-  },
-  "index.180x180.png": {
-    "size": 63167,
-    "sha256": "c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"
-  },
-  "index.192x192.png": {
-    "size": 70908,
-    "sha256": "2f08affc9ba792bbb049f0d70f1f3d478a19522b9fa2850311729220b3ec7df9"
-  },
-  "index.512x512.png": {
-    "size": 417417,
-    "sha256": "e62a8a7f9b04379c6c3dee56e6d9e30c85945b3745c37166ca3e506c57253373"
-  },
-  "shared/config.js": {
-    "size": 217,
-    "sha256": "b58eab527e512731d3728880a20d02a4341011d94ee5f2452ed55d656866ebd0"
-  },
-  "shared/afb-api.js": {
-    "size": 2640,
-    "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
-  },
-  "shared/afb-tracker.js": {
-    "size": 1275,
-    "sha256": "f0d2e47e5bace76d76ed3cbc31ab55734cf04933de79460e222746901615d99f"
-  },
-  "shared/style.css": {
-    "size": 4226,
-    "sha256": "0ece615194c5076a49ed3e48a3b7c49d0a676e27d79a8bb390e0cd888be91a90"
-  },
-  "shared/afb-updater.js": {
-    "size": 11627,
-    "sha256": "a6c87e0be68e89d02fd0b8f929d3f8bb943700e12a9579f3dfa5f001cc6bfc25"
-  },
-  "shared/afb-cloud.js": {
-    "size": 15818,
-    "sha256": "fd3e97c2aacfba9d763a89ec24be71d31b0f2ec8f19109aacc6c14bac7e4a6a9"
-  },
-  "account/index.html": {
-    "size": 4633,
-    "sha256": "088e98613d33861f96bc3d4679523232d121b577759cea90d55037ecf97e89bf"
-  },
-  "admin/index.html": {
-    "size": 4413,
-    "sha256": "48c0bfc2e7868a0871eda99d8524db5811dcc64f20712861ffd32d24f9718980"
-  },
-  "afewbuds-update.html": {
-    "size": 4392,
-    "sha256": "277a4cc0d990b2129a3c0b5638a4eaa9874a289168d889f3faaf42f9335c8711"
-  },
-  "version.json": {
-    "size": 3870,
-    "sha256": "8e55a71700cf7bd9e91c3fcfb920ef0266f0f2c46c200d5cad922e2dcd4db55d"
-  },
-  "index.service.worker.js": {
-    "size": 9676,
-    "sha256": "ba156b601926cb070f8862857c2015c65273beda223d7f676a8a561cb4c13cdd"
-  },
-  "supabase/PATCH_CLOUD_SAVE.sql": {
-    "size": 4779,
-    "sha256": "b4cc9bf0ce7c7ad0d35a4abf0788b989c9d43b6f2cadc0504b0ee9a04daa8c21"
-  },
-  "CLOUD_SAVE_SETUP.txt": {
-    "size": 1019,
-    "sha256": "c0ee06dbf0ad9eefcca3052600fa2a0fa7c0aa9a289f7ca68ebb2ad9bcd6d638"
+  "build": "0.7.9-beta.20",
+  "release_id": "0.7.9-beta.20-cloudpush1",
+  "files": {
+    "index.html": {
+      "size": 19680,
+      "sha256": "917325969d5166e2a5dea790390873d77310a833539bc3c4851b560fe13b772f"
+    },
+    "index.js": {
+      "size": 315645,
+      "sha256": "ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"
+    },
+    "index.pck": {
+      "size": 25357020,
+      "sha256": "4b233417daa59c5b21301412972099ba6cdd85bc01e6d9d70a61b028ff015a7b"
+    },
+    "index.wasm": {
+      "size": 37902138,
+      "sha256": "11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"
+    },
+    "index.service.worker.js": {
+      "size": 9676,
+      "sha256": "ba156b601926cb070f8862857c2015c65273beda223d7f676a8a561cb4c13cdd"
+    },
+    "version.json": {
+      "size": 3901,
+      "sha256": "ff666958435c56411e6ad17d214eaaa2fbf6a38850ef43cad809f3802011e3a1"
+    },
+    "shared/config.js": {
+      "size": 217,
+      "sha256": "36864570a74a5892d82f39e4cf2f5acf26d4488b9b6745f45fbf214e33b7f62b"
+    },
+    "shared/afb-api.js": {
+      "size": 2640,
+      "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
+    },
+    "shared/afb-cloud.js": {
+      "size": 17733,
+      "sha256": "e2daa360eb0e3ebf6567a272069ba066939003e189ded9a6cfb6edacc7406fea"
+    },
+    "shared/afb-updater.js": {
+      "size": 11627,
+      "sha256": "b1cf8c13dad78cf5b2d8917893a428160e3dc6922cd72bc55396bab04d477aec"
+    },
+    "shared/afb-tracker.js": {
+      "size": 1275,
+      "sha256": "f0d2e47e5bace76d76ed3cbc31ab55734cf04933de79460e222746901615d99f"
+    },
+    "index.manifest.json": {
+      "size": 746,
+      "sha256": "86d1abdd73c29414f3aa9386912c34d69839d65254c5e8b13b6ba01d0ca7c444"
+    },
+    "afewbuds-update.html": {
+      "size": 4392,
+      "sha256": "277a4cc0d990b2129a3c0b5638a4eaa9874a289168d889f3faaf42f9335c8711"
+    }
   }
 }

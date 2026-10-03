@@ -1,18 +1,11 @@
 {
-  "updater_protocol": 1,
   "release_id": "0.7.9-beta.20-cloudpush1",
   "game_build": "0.7.9-beta.20",
-  "web_features": [
-    "cloud-career-transfer",
-    "transactional-updater",
-    "player-accounts",
-    "direct-godot-cloud-push"
-  ],
   "files": [
     {
       "path": "index.html",
-      "size": 19680,
-      "sha256": "917325969d5166e2a5dea790390873d77310a833539bc3c4851b560fe13b772f"
+      "size": 19676,
+      "sha256": "94f688c2317876b19f129a0e505c90eddbf2768b491e6e4ca437305613889404"
     },
     {
       "path": "index.js",

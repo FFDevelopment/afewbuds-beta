@@ -18,3 +18,8 @@ SAFETY
 - Cloud sync never clears IndexedDB or browser data.
 - If both device and cloud contain different careers, the player gets a chooser before anything is overwritten.
 - If Supabase/cloud is unavailable, AFewBuds launches the local career instead.
+
+BETA.20 RELIABILITY UPDATE
+- Normal uploads no longer depend on finding the Godot save in IndexedDB.
+- Godot sends its exact save JSON to shared/afb-cloud.js after load and every successful save.
+- IndexedDB remains the restore path for copying a cloud career into a fresh Home Screen install.

@@ -15,6 +15,7 @@
   let syncTimer = null;
   let syncing = false;
   let lastUploadedUnix = 0;
+  let gamePushQueue = Promise.resolve();
 
   function api(){ return window.AFB_API || null; }
   function session(){ const a=api(); return a && a.getPlayerSession ? a.getPlayerSession() : null; }
@@ -298,6 +299,40 @@
     finally{ syncing=false; }
   }
 
+  function normalizeGameSave(payload){
+    let save=payload;
+    if(typeof save==='string'){
+      try{save=JSON.parse(save);}catch(_){throw new Error('game_save_json_invalid');}
+    }
+    if(!save || typeof save!=='object' || Array.isArray(save)) throw new Error('game_save_invalid');
+    return save;
+  }
+
+  function pushFromGame(payload){
+    const player=session();
+    if(!player || !player.session_token) return Promise.resolve({ok:false,reason:'not_signed_in'});
+    let save;
+    try{save=normalizeGameSave(payload);}catch(error){return Promise.reject(error);}
+    // Serialize uploads so rapid local saves cannot arrive out of order. Each queued
+    // upload uses the exact JSON Godot just wrote to user://.
+    gamePushQueue=gamePushQueue.catch(()=>{}).then(async()=>{
+      await putCloud(player,save);
+      try{
+        window.AFB_CLOUD_STATUS={state:'synced',saved_unix:unixOf(save),at:Date.now()};
+        window.dispatchEvent(new CustomEvent('afb-cloud-status',{detail:window.AFB_CLOUD_STATUS}));
+      }catch(_){}
+      return {ok:true,saved_unix:unixOf(save)};
+    }).catch((error)=>{
+      try{
+        window.AFB_CLOUD_STATUS={state:'local_only',error:String(error&&error.message||error),at:Date.now()};
+        window.dispatchEvent(new CustomEvent('afb-cloud-status',{detail:window.AFB_CLOUD_STATUS}));
+      }catch(_){}
+      console.warn('AFB exact-save upload:',error&&error.message||error);
+      return {ok:false,error:String(error&&error.message||error)};
+    });
+    return gamePushQueue;
+  }
+
   function startAutoSync(){
     if(syncTimer) return;
     const player=session();
@@ -308,5 +343,11 @@
     window.addEventListener('pagehide',()=>{ syncLatest(); });
   }
 
-  window.AFB_CLOUD={prepareBeforeLaunch,startAutoSync,syncLatest,readLocalSave,writeLocalSave,summary};
+  window.AFB_CLOUD={prepareBeforeLaunch,startAutoSync,syncLatest,pushFromGame,readLocalSave,writeLocalSave,summary};
+  // Called directly by Godot after _load_game() and every successful _save_game().
+  // Keep this global tiny: Godot passes a JSON string and networking stays here.
+  window.afbCloudPushSave=function(payload){
+    pushFromGame(payload).catch((error)=>console.warn('AFB cloud bridge:',error&&error.message||error));
+    return true;
+  };
 })();
