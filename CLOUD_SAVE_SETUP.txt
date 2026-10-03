@@ -1,0 +1,20 @@
+AFewBuds Cloud Career Transfer
+
+ONE-TIME BACKEND STEP
+1. Open Supabase -> SQL Editor.
+2. Run supabase/PATCH_CLOUD_SAVE.sql once.
+3. Upload every file from this GitHub Pages package to the existing afewbuds-beta repository.
+4. Commit to main and push. Wait for GitHub Pages to finish.
+
+TRANSFER AN EXISTING BROWSER CAREER
+1. On the browser/device that already has the career, open AFewBuds and sign in to the player's account.
+2. Before the game launches, AFewBuds backs the local career up to the account cloud save.
+3. Add/open AFewBuds from the Home Screen.
+4. Sign into the same account in the Home Screen app if asked.
+5. If that Home Screen install has no career, AFewBuds restores the account cloud save before Godot starts.
+
+SAFETY
+- Guest careers remain local-only.
+- Cloud sync never clears IndexedDB or browser data.
+- If both device and cloud contain different careers, the player gets a chooser before anything is overwritten.
+- If Supabase/cloud is unavailable, AFewBuds launches the local career instead.

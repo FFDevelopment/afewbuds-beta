@@ -5,7 +5,7 @@
   const STATE_TIMEOUT_MS = 5000;
   const GAME_BOOT_TIMEOUT_MS = 30000;
   const VERSION_URL = 'version.json';
-  const RELEASE_ID_FALLBACK = '0.7.9-beta.19';
+  const RELEASE_ID_FALLBACK = '0.7.9-beta.19-cloudsave1';
 
   const state = {
     registration: null,
