@@ -1,11 +1,18 @@
 AFewBuds isolated cloud test
-Build: beta.19 cloud + System phone test
-Restore revision: canonical-account2 / index-system-restore2.pck
-Features:
-- one canonical career per AFewBuds account
-- direct cloud restore into Godot before _load_game()
-- automatic local saves and background Supabase sync remain enabled
-- routine cloud sync notifications are silent
-- Phone -> System -> Save Game
-- Phone -> System -> Save & Sleep / Quit
-- live tester root build remains beta.19 unchanged
+Build: beta.19 Malik 3D worker v1 + genetics rewards
+PCK: index-system-malikgen1.pck
+
+Cloud-test-only additions:
+- Malik-specific articulated production-worker model pass: stockier build, black polo/cargo styling, braids, beard silhouette, tattoos and sneaker details
+- Malik still uses the existing production-worker movement and task system
+- Story/Rewards adds four genetics recipe reward tasks
+- Citrus Velvet recipe: Citrus Rush + Velvet Haze
+- Cherry Frost recipe: Cherry Glow + Blue Frost
+- Ember Berry recipe: Golden Ember + Neon Berry
+- Crown Cake recipe: Midnight Crown + Moon Cake
+- Recipe-only genetics are hidden from the normal Seed Shop
+- A recipe becomes usable only after its milestone reward is claimed
+- Claim All can unlock multiple completed recipe rewards
+- All accountsync7 cloud/save/Heat/Reeves/UI behavior is retained in this test
+
+Regular tester root remains 0.7.9-beta.19-accountsync7.
