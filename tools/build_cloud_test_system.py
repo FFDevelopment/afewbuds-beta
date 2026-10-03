@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-malikgen1.pck")
+OUT_PCK = Path("cloud-test/index-system-malikgen2.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -1255,6 +1255,103 @@ func _create_genetics_cross(recipe_id: String) -> void:
     if count != 1:
         raise RuntimeError("Genetics app replacement failed")
 
+    # Cloud-test-only Malik preview. Runtime-only: never written into the save.
+    preview_var_marker = "var production_worker_malik_details: Node3D\n"
+    if preview_var_marker not in text:
+        raise RuntimeError("Malik preview variable marker not found")
+    text = text.replace(
+        preview_var_marker,
+        preview_var_marker + "var cloud_malik_preview_active: bool = false\n",
+        1,
+    )
+
+    preview_tick_old = '''\telif production_worker_node != null:
+\t\tproduction_worker_node.visible = false
+'''
+    preview_tick_new = '''\telif production_worker_node != null and not cloud_malik_preview_active:
+\t\tproduction_worker_node.visible = false
+'''
+    if preview_tick_old not in text:
+        raise RuntimeError("Malik preview automation marker not found")
+    text = text.replace(preview_tick_old, preview_tick_new, 1)
+
+    preview_duty_old = '''\tvar on_duty: bool = packing_employee_hired and packing_employee_active
+'''
+    preview_duty_new = '''\tvar on_duty: bool = (packing_employee_hired and packing_employee_active) or cloud_malik_preview_active
+'''
+    if preview_duty_old not in text:
+        raise RuntimeError("Malik preview on-duty marker not found")
+    text = text.replace(preview_duty_old, preview_duty_new, 1)
+
+    preview_assigned_old = '''\tvar assigned_name: String = production_worker_friend_name
+\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
+\t_apply_production_worker_character_style(assigned_name)
+'''
+    preview_assigned_new = '''\tvar assigned_name: String = "Malik" if cloud_malik_preview_active else production_worker_friend_name
+\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
+\t_apply_production_worker_character_style(assigned_name)
+'''
+    if preview_assigned_old not in text:
+        raise RuntimeError("Malik preview face marker not found")
+    text = text.replace(preview_assigned_old, preview_assigned_new, 1)
+
+    preview_label_old = '''\t\tvar worker_name: String = production_worker_friend_name if not production_worker_friend_name.is_empty() else "PRODUCTION WORKER"
+'''
+    preview_label_new = '''\t\tvar worker_name: String = "Malik" if cloud_malik_preview_active else (production_worker_friend_name if not production_worker_friend_name.is_empty() else "PRODUCTION WORKER")
+'''
+    if preview_label_old not in text:
+        raise RuntimeError("Malik preview label marker not found")
+    text = text.replace(preview_label_old, preview_label_new, 1)
+
+    preview_system_marker = '''\tquit_box.add_child(quit_button)
+
+func _phone_manual_save() -> void:
+'''
+    preview_system_block = '''\tquit_box.add_child(quit_button)
+
+\tvar preview_card: PanelContainer = PanelContainer.new()
+\tpreview_card.add_theme_stylebox_override("panel", _style_box(Color("161b20"), Color("526b78"), 16, 1))
+\tphone_list.add_child(preview_card)
+\tvar preview_box: VBoxContainer = VBoxContainer.new()
+\tpreview_box.add_theme_constant_override("separation", 9)
+\tpreview_card.add_child(preview_box)
+\tvar preview_title: Label = Label.new()
+\tpreview_title.text = "CLOUD TEST - MALIK MODEL"
+\tpreview_title.add_theme_font_size_override("font_size", 19)
+\tpreview_box.add_child(preview_title)
+\tvar preview_note: Label = Label.new()
+\tpreview_note.text = "Temporary visual preview only. It does not meet, befriend, hire, or save Malik to your career."
+\tpreview_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\tpreview_note.modulate = Color("b9c7cf")
+\tpreview_box.add_child(preview_note)
+\tvar preview_button: Button = Button.new()
+\tpreview_button.text = "END MALIK PREVIEW" if cloud_malik_preview_active else "PREVIEW MALIK WORKER"
+\tpreview_button.custom_minimum_size.y = 56
+\tpreview_button.add_theme_font_size_override("font_size", 18)
+\tpreview_button.pressed.connect(_toggle_cloud_malik_preview)
+\tpreview_box.add_child(preview_button)
+
+func _toggle_cloud_malik_preview() -> void:
+\tcloud_malik_preview_active = not cloud_malik_preview_active
+\tif production_worker_node != null:
+\t\tproduction_worker_node.visible = cloud_malik_preview_active or (packing_employee_hired and packing_employee_active)
+\t\tif cloud_malik_preview_active:
+\t\t\tproduction_worker_node.position = _production_worker_station_position("workbench")
+\t\t\tproduction_worker_target_position = production_worker_node.position
+\t\t\tproduction_worker_pending_action = ""
+\t\t\tproduction_worker_task = "Model preview"
+\t\t\tproduction_worker_last_action = production_worker_task
+\t\t\t_reset_production_worker_navigation()
+\t\t_refresh_production_worker_friend_face()
+\tstatus_label.text = "Malik preview enabled." if cloud_malik_preview_active else "Malik preview ended."
+\t_refresh_phone()
+
+func _phone_manual_save() -> void:
+'''
+    if preview_system_marker not in text:
+        raise RuntimeError("Malik preview System app marker not found")
+    text = text.replace(preview_system_marker, preview_system_block, 1)
+
     # Portable UI glyph pass. Keep the phone back arrow (‹), which is known-good,
     # and replace symbols that fall back to incorrect glyphs on iOS/PWA/web fonts.
     portable_glyphs = {
@@ -1290,6 +1387,9 @@ func _create_genetics_cross(recipe_id: String) -> void:
         'func _show_save_notification(',
         'func _build_malik_production_model_details() -> void:',
         'production_worker_malik_details.visible = malik_active',
+        'var cloud_malik_preview_active: bool = false',
+        'func _toggle_cloud_malik_preview() -> void:',
+        'PREVIEW MALIK WORKER',
         '"reward_recipe": "Citrus Velvet"',
         'func _genetics_recipe_catalog() -> Array[Dictionary]:',
         'LOCKED - CLAIM %s',
@@ -1362,14 +1462,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-malikgen1.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-malikgen2.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-malikgen1.pck"',
+            '"mainPack":"index-system-malikgen2.pck"',
             config,
             count=1,
         )
@@ -1402,10 +1502,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=malikgen1', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=malikgen2', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=malikgen1',
+        'shared/afb-cloud.js?v=malikgen2',
         html,
         count=1,
     )
