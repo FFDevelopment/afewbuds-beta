@@ -552,7 +552,7 @@ var last_enforcement_report: String = ""
         raise RuntimeError("Heat events UI marker not found")
     text = text.replace(heat_events_marker, heat_report_block + heat_events_marker, 1)
 
-    heat_func_marker = "func _build_stats_app() -> void:\\n"
+    heat_func_marker = "func _build_stats_app() -> void:\n"
     heat_ack_func = '''func _acknowledge_enforcement_report() -> void:
 \tenforcement_report_pending = false
 \t_save_game()
