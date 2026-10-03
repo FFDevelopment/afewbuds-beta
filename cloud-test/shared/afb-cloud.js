@@ -298,7 +298,7 @@
         return {action:'uploaded',save:localSave};
       }
       if(!localSave && cloudSave){
-        await writeLocalSave(cloudSave);
+        window.AFB_CLOUD_BOOT_SAVE=JSON.stringify(cloudSave);
         setMarker(cloudSave,player);
         return {action:'restored',save:cloudSave};
       }
@@ -307,7 +307,7 @@
       const cloudUnix=unixOf(cloudSave);
 
       if(cloudUnix > localUnix){
-        await writeLocalSave(cloudSave);
+        window.AFB_CLOUD_BOOT_SAVE=JSON.stringify(cloudSave);
         setMarker(cloudSave,player);
         return {action:'restored',save:cloudSave};
       }
@@ -322,7 +322,7 @@
 
       // If timestamps are unavailable, an existing account cloud save is canonical.
       // This prevents a device-specific local career from silently creating a fork.
-      await writeLocalSave(cloudSave);
+      window.AFB_CLOUD_BOOT_SAVE=JSON.stringify(cloudSave);
       setMarker(cloudSave,player);
       return {action:'restored',save:cloudSave};
     } catch(e){
