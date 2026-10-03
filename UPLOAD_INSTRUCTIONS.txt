@@ -1,21 +1,18 @@
-AFewBuds GitHub Pages update — 0.7.8-beta.5
+AFewBuds beta.17 GitHub Pages upload
 
-1. Extract this ZIP on your computer.
-2. Open the SAME local afewbuds-beta repository you already publish.
-3. Replace its exported game files with this ZIP's CONTENTS, not the ZIP file or
-   an extra enclosing folder. index.html must remain at the repository root.
-   Replace all supplied index.* files, including the .pck, .js, .wasm and service
-   worker. Keep .nojekyll (a hidden file); it is included here.
-4. GitHub Desktop: review the files, Commit to main, then Push origin.
-5. Wait for the GitHub Pages deployment in Actions. The play link stays the same.
-6. Close/reopen or refresh the game. Check Phone > Help for build 0.7.8-beta.5.
-   If an older service worker is still serving the game, close all tabs/app windows
-   for the game before reopening. DO NOT clear website data to update.
+1. Extract this ZIP.
+2. Copy ALL contents into the existing local afewbuds-beta repository root.
+3. Replace matching old game files when prompted.
+4. Keep .git and your repository settings.
+5. Commit to main, then Push origin.
+6. Wait for GitHub Actions -> Pages build and deployment to turn green.
 
-This package does not change your live repository until you upload/push it.
-Existing careers use the same save path and identity. Do not delete browser data
-or reset careers. Saves remain local to the usual browser/device.
-Use the separate Godot source ZIP for Xogot; this ZIP is only the web export.
+Important:
+- Upload the CONTENTS of this folder, not the ZIP itself.
+- index.html, index.pck, index.wasm and afewbuds-update.html stay at repo root.
+- admin/ and shared/ stay as folders at repo root.
+- SUPABASE_SETUP/ is documentation/schema only; it is harmless on Pages but you may keep it locally instead if preferred.
 
-The optional afewbuds-update.html repair is now included for beta.5. Replace its
-older copy as part of this complete upload; old beta.4 checksums must not be reused.
+Live game: https://ffdevelopment.github.io/afewbuds-beta/
+Admin:     https://ffdevelopment.github.io/afewbuds-beta/admin/
+Repair:    https://ffdevelopment.github.io/afewbuds-beta/afewbuds-update.html

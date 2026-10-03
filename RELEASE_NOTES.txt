@@ -1,4 +1,17 @@
-AFewBuds 0.7.8-beta.5 — Logo-only update
+# AFewBuds 0.7.9-beta.17
 
-New neon AFB logo across application, web and in-game brand surfaces.
-Existing gameplay and save identity preserved. See LOGO_UPDATE_README.txt.
+## Account and save linking
+
+- Requires a player account before the game loads the career.
+- Supports username/password registration and sign-in; update email is optional and opt-in only.
+- First sign-in links the existing local save to the account. If the account already has another save, the player chooses which career to continue. The local file is backed up before a cloud save replaces it.
+- Saves sync to Supabase after the local save is written. Existing application identity and save path remain unchanged for beta.16 players.
+- Opens and play time are reported to the AFewBuds admin dashboard.
+
+## Setup
+
+Run `supabase/schema.sql` from the matching admin portal in the project’s Supabase SQL Editor, create an administrator under Authentication → Users, then add that user UUID to `afb_admin_users`. See the admin portal README for website setup.
+
+## Verification
+
+The project files and Supabase SQL were inspected and the packaged archives were integrity-checked. Godot/Xogot is not installed in this workspace, so import, engine parsing, and live Supabase sign-in/save round-trips still need to be run in the game editor against the configured project.

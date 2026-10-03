@@ -1,6 +1,4 @@
 * text=auto eol=lf
-*.pck binary
 *.wasm binary
+*.pck binary
 *.png binary
-*.ico binary
-*.zip binary
