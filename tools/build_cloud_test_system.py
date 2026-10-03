@@ -915,6 +915,25 @@ func _pay_reeves_due(early: bool = false) -> void:
     }
     for old, new in portable_glyphs.items():
         text = text.replace(old, new)
+
+    required_fragments = [
+        "const REEVES_TOTAL_OBLIGATION: int = 8000",
+        "func _reeves_pay_half(early: bool = false) -> void:",
+        "func _reeves_pay_full(early: bool = false) -> void:",
+        'PAY HALF $%d',
+        'PAY FULL $%d',
+        'Use Phone > Heat > LAY LOW',
+        'LAY LOW active. Storefront closed, customer/dealer traffic stopped, and lights are down.',
+        'reeves_arrangement_ended = true',
+        'func _claim_all_advancements() -> void:',
+        'phone_button.add_theme_stylebox_override("normal"',
+        'func _show_save_notification(',
+    ]
+    for fragment in required_fragments:
+        if fragment not in text:
+            raise RuntimeError("Generated game source missing required fragment: " + fragment)
+    if 'status_label.text = "Game saved. Cloud backup will update automatically while signed in."' in text:
+        raise RuntimeError("Old manual-save text notification is still present")
     return text
 
 def rebuild():
