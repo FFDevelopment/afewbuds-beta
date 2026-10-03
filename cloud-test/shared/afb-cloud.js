@@ -285,6 +285,54 @@
     } finally { syncing=false; }
   }
 
+  async function reconcileLatestSilently(){
+    const player=session();
+    if(!player || !player.session_token) return {action:'guest'};
+    if(syncing) return {action:'busy'};
+    syncing=true;
+    try{
+      const [localSave,cloudSave]=await Promise.all([readLocalSave(),getCloud(player)]);
+      if(!localSave && !cloudSave) return {action:'none'};
+      if(localSave && !cloudSave){
+        await putCloud(player,localSave);
+        return {action:'uploaded',save:localSave};
+      }
+      if(!localSave && cloudSave){
+        await writeLocalSave(cloudSave);
+        setMarker(cloudSave,player);
+        return {action:'restored',save:cloudSave};
+      }
+
+      const localUnix=unixOf(localSave);
+      const cloudUnix=unixOf(cloudSave);
+
+      if(cloudUnix > localUnix){
+        await writeLocalSave(cloudSave);
+        setMarker(cloudSave,player);
+        return {action:'restored',save:cloudSave};
+      }
+      if(localUnix > cloudUnix){
+        await putCloud(player,localSave);
+        return {action:'uploaded',save:localSave};
+      }
+      if(localUnix > 0 && localUnix === cloudUnix){
+        setMarker(localSave,player);
+        return {action:'same',save:localSave};
+      }
+
+      // If timestamps are unavailable, an existing account cloud save is canonical.
+      // This prevents a device-specific local career from silently creating a fork.
+      await writeLocalSave(cloudSave);
+      setMarker(cloudSave,player);
+      return {action:'restored',save:cloudSave};
+    } catch(e){
+      console.warn('AFB silent career reconcile skipped:',e&&e.message||e);
+      return {action:'local_fallback',error:e};
+    } finally {
+      syncing=false;
+    }
+  }
+
   async function syncLatest(){
     const player=session();
     if(!player || !player.session_token || syncing || document.hidden) return;
@@ -294,6 +342,12 @@
       if(!local) return;
       const u=unixOf(local);
       if(u && u===lastUploadedUnix) return;
+      const cloud=await getCloud(player);
+      const cloudUnix=unixOf(cloud);
+      if(cloud && cloudUnix > u){
+        window.AFB_CLOUD_STATUS={state:'cloud_newer',saved_unix:cloudUnix,at:Date.now()};
+        return;
+      }
       await putCloud(player,local);
     } catch(e){ console.warn('AFB cloud autosync:',e && e.message || e); }
     finally{ syncing=false; }
@@ -316,12 +370,19 @@
     // Serialize uploads so rapid local saves cannot arrive out of order. Each queued
     // upload uses the exact JSON Godot just wrote to user://.
     gamePushQueue=gamePushQueue.catch(()=>{}).then(async()=>{
+      const incomingUnix=unixOf(save);
+      const cloud=await getCloud(player);
+      const cloudUnix=unixOf(cloud);
+      if(cloud && cloudUnix > incomingUnix){
+        window.AFB_CLOUD_STATUS={state:'cloud_newer',saved_unix:cloudUnix,at:Date.now()};
+        return {ok:false,reason:'cloud_newer',saved_unix:cloudUnix};
+      }
       await putCloud(player,save);
       try{
-        window.AFB_CLOUD_STATUS={state:'synced',saved_unix:unixOf(save),at:Date.now()};
+        window.AFB_CLOUD_STATUS={state:'synced',saved_unix:incomingUnix,at:Date.now()};
         window.dispatchEvent(new CustomEvent('afb-cloud-status',{detail:window.AFB_CLOUD_STATUS}));
       }catch(_){}
-      return {ok:true,saved_unix:unixOf(save)};
+      return {ok:true,saved_unix:incomingUnix};
     }).catch((error)=>{
       try{
         window.AFB_CLOUD_STATUS={state:'local_only',error:String(error&&error.message||error),at:Date.now()};
@@ -343,7 +404,7 @@
     window.addEventListener('pagehide',()=>{ syncLatest(); });
   }
 
-  window.AFB_CLOUD={prepareBeforeLaunch,startAutoSync,syncLatest,pushFromGame,readLocalSave,writeLocalSave,summary};
+  window.AFB_CLOUD={prepareBeforeLaunch,reconcileLatestSilently,startAutoSync,syncLatest,pushFromGame,readLocalSave,writeLocalSave,summary};
   // Called directly by Godot after _load_game() and every successful _save_game().
   // Keep this global tiny: Godot passes a JSON string and networking stays here.
   window.afbCloudPushSave=function(payload){
