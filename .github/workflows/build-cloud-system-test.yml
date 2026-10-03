@@ -20,6 +20,7 @@ jobs:
         with:
           fetch-depth: 0
 
+      # validates generated game-source fragments before packing
       - name: Build isolated beta.19 test
         run: python tools/build_cloud_test_system.py
 
