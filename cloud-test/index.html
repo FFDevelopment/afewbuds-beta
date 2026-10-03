@@ -304,6 +304,21 @@ function afbLoadTracker() {
 	s.src = 'shared/afb-tracker.js?v=0.7.9-beta.19';
 	document.body.appendChild(s);
 }
+function afbShowCloudTestResult(ok, text) {
+	let el = document.getElementById('afb-cloud-test-result');
+	if (!el) {
+		el = document.createElement('div');
+		el.id = 'afb-cloud-test-result';
+		el.style.cssText = 'position:fixed;top:12px;right:12px;z-index:20000;max-width:min(420px,calc(100vw - 24px));padding:12px 14px;border-radius:12px;font:700 13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35);';
+		document.body.appendChild(el);
+	}
+	el.textContent = (ok ? 'Cloud Test ✓ ' : 'Cloud Test ⚠ ') + text;
+	el.style.background = ok ? '#173c28' : '#4a241f';
+	el.style.color = '#f4fff7';
+	el.style.border = ok ? '1px solid #4d9b6a' : '1px solid #b45e50';
+	el.hidden = false;
+	setTimeout(() => { if (el) el.hidden = true; }, 8000);
+}
 async function afbCloudUploadOnlyTest() {
 	if (!window.AFB_API || !AFB_API.enabled || !window.AFB_CLOUD) return {ok:false, reason:'cloud_unavailable'};
 	const player = AFB_API.getPlayerSession();
@@ -320,9 +335,11 @@ async function afbLaunchGame() {
 	try {
 		const result = await afbCloudUploadOnlyTest();
 		console.log('AFewBuds cloud upload-only test:', result);
+		afbShowCloudTestResult(true, 'career uploaded to Supabase');
 	} catch (error) {
 		console.error('AFewBuds cloud upload-only test failed:', error);
 		window.AFB_CLOUD_TEST_RESULT = {ok:false, error:String(error && error.message || error), at:Date.now()};
+		afbShowCloudTestResult(false, String(error && error.message || error));
 	}
 	document.getElementById('afb-account-gate').hidden = true;
 	afbLoadTracker();
