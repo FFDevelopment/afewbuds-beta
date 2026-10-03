@@ -33,4 +33,5 @@ jobs:
             exit 0
           fi
           git commit -m "Promote beta.19 account sync 4 tester build"
+          git pull --rebase origin main
           git push
