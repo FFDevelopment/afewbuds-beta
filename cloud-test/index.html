@@ -247,8 +247,8 @@ body {
 
 		<script src="shared/config.js"></script>
 		<script src="shared/afb-api.js"></script>
-		<script src="shared/afb-cloud.js"></script>
-		<script src="index.js"></script>
+		<script src="shared/afb-cloud.js?v=cloudsync2"></script>
+		<script src="index.js?v=cloudsync2"></script>
 		<script>
 const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":25354652,"index.wasm":37902138},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":""};
 const GODOT_THREADS_ENABLED = false;
@@ -319,6 +319,11 @@ function afbShowCloudTestResult(ok, text) {
 	el.hidden = false;
 	setTimeout(() => { if (el) el.hidden = true; }, 8000);
 }
+window.addEventListener('afb-cloud-status', (event) => {
+	const d = event && event.detail || {};
+	if (d.state === 'synced') afbShowCloudTestResult(true, 'latest game save synced to Supabase');
+	else if (d.state === 'local_only') afbShowCloudTestResult(false, d.error || 'cloud sync failed');
+});
 async function afbCloudUploadOnlyTest() {
 	if (!window.AFB_API || !AFB_API.enabled || !window.AFB_CLOUD) return {ok:false, reason:'cloud_unavailable'};
 	const player = AFB_API.getPlayerSession();
