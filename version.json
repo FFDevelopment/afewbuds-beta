@@ -1,18 +1,13 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.20-cloudpush1",
-  "game_build": "0.7.9-beta.20",
-  "web_features": [
-    "cloud-career-transfer",
-    "transactional-updater",
-    "player-accounts",
-    "direct-godot-cloud-push"
-  ],
+  "release_id": "0.7.9-beta.19",
+  "game_build": "0.7.9-beta.19",
+  "generated_at_utc": "2026-10-03T11:56:16.739168+00:00",
   "files": [
     {
       "path": "index.html",
-      "size": 19680,
-      "sha256": "917325969d5166e2a5dea790390873d77310a833539bc3c4851b560fe13b772f"
+      "size": 19145,
+      "sha256": "8856b1ebe4f9e375915c371ca6f3f8583d61bfbb956a333802a15434e79c8c43"
     },
     {
       "path": "index.js",
@@ -21,8 +16,8 @@
     },
     {
       "path": "index.pck",
-      "size": 25357020,
-      "sha256": "4b233417daa59c5b21301412972099ba6cdd85bc01e6d9d70a61b028ff015a7b"
+      "size": 25356016,
+      "sha256": "ba0607d40a7a0308fce5911b71050d2ca8b0dedf42886e80a7e60bbd4e9bcdc6"
     },
     {
       "path": "index.wasm",
@@ -62,7 +57,7 @@
     {
       "path": "index.manifest.json",
       "size": 746,
-      "sha256": "86d1abdd73c29414f3aa9386912c34d69839d65254c5e8b13b6ba01d0ca7c444"
+      "sha256": "f7e558f884191cd81d3ebcb2e5eeb3b17ba514dce734722c37e50d49c0c75fce"
     },
     {
       "path": "index.144x144.png",
@@ -87,7 +82,7 @@
     {
       "path": "shared/config.js",
       "size": 217,
-      "sha256": "36864570a74a5892d82f39e4cf2f5acf26d4488b9b6745f45fbf214e33b7f62b"
+      "sha256": "b58eab527e512731d3728880a20d02a4341011d94ee5f2452ed55d656866ebd0"
     },
     {
       "path": "shared/afb-api.js",
@@ -106,18 +101,13 @@
     },
     {
       "path": "shared/afb-updater.js",
-      "size": 11627,
-      "sha256": "b1cf8c13dad78cf5b2d8917893a428160e3dc6922cd72bc55396bab04d477aec"
-    },
-    {
-      "path": "shared/afb-cloud.js",
-      "size": 17733,
-      "sha256": "e2daa360eb0e3ebf6567a272069ba066939003e189ded9a6cfb6edacc7406fea"
+      "size": 11616,
+      "sha256": "c75fd0d83881b672c3d9335914dc4b4db13f3a0c6d982abec412757cab6e18f5"
     },
     {
       "path": "account/index.html",
-      "size": 4633,
-      "sha256": "088e98613d33861f96bc3d4679523232d121b577759cea90d55037ecf97e89bf"
+      "size": 4510,
+      "sha256": "a95ce45f0bbec88c9d3d46771e9e96d619bfaff16ee5221291e782ad64cf18a9"
     },
     {
       "path": "admin/index.html",

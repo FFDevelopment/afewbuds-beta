@@ -1,6 +1,6 @@
 AFewBuds Automatic Updater
 
-Release: 0.7.9-beta.20-cloudpush1
-Game runtime: AFewBuds 0.7.9-beta.20
+Release: 0.7.9-beta.19
+Game runtime: AFewBuds 0.7.9-beta.19
 
-The launcher checks version.json before Godot starts. New releases are downloaded into a separate cache, verified with SHA-256, and only activated after every staged file passes. The previous working release is retained for rollback. LocalStorage and IndexedDB save data are never cleared by the updater.
+The launcher checks version.json before Godot starts. New releases are staged in a separate CacheStorage cache and verified before activation. The previous release remains available for rollback. Save data in IndexedDB/localStorage is never cleared by the updater.

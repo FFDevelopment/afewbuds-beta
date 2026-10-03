@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>AFewBuds 0.7.9-beta.20</title>
+		<title>AFewBuds 0.7.9-beta.19</title>
 		<style>
 html, body, #canvas {
 	margin: 0;
@@ -181,9 +181,9 @@ body {
 	.afb-auth-title { font-size:24px; }
 }
 		</style>
-		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png?v=0.7.9-beta.20" />
-<link rel="apple-touch-icon" href="index.apple-touch-icon.png?v=0.7.9-beta.20"/>
-<link rel="manifest" href="index.manifest.json?v=0.7.9-beta.20">
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png?v=0.7.9-beta.19" />
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png?v=0.7.9-beta.19"/>
+<link rel="manifest" href="index.manifest.json?v=0.7.9-beta.19">
 <meta name="apple-mobile-web-app-title" content="AFewBuds"><meta name="theme-color" content="#0e1812"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	</head>
 	<body>
@@ -200,7 +200,7 @@ body {
 			<div class="afb-auth-card">
 				<div class="afb-auth-brand"><div class="afb-auth-mark">AFB</div><div><h1>AFewBuds</h1><p>Player account</p></div></div>
 				<h2 class="afb-auth-title">Pick up where you left off.</h2>
-				<p class="afb-auth-sub">Sign in or create an account to keep your AFewBuds identity and safely sync your career between the browser, Home Screen app, and other devices. Email is optional and only used for updates when you opt in.</p>
+				<p class="afb-auth-sub">Sign in or create an account to track your play time and keep your AFewBuds identity. Email is optional and only used for updates when you opt in.</p>
 				<div class="afb-tabs">
 					<button class="afb-tab active" id="afb-login-tab" type="button">Sign in</button>
 					<button class="afb-tab" id="afb-register-tab" type="button">Create account</button>
@@ -240,7 +240,7 @@ body {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--false use-filter--true" src="index.png?v=0.7.9-beta.20" alt="">
+			<img id="status-splash" class="show-image--true fullsize--false use-filter--true" src="index.png?v=0.7.9-beta.19" alt="">
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
@@ -248,13 +248,11 @@ body {
 		<script src="shared/afb-updater.js"></script>
 		<script src="shared/config.js"></script>
 		<script src="shared/afb-api.js"></script>
-		<script src="shared/afb-cloud.js"></script>
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":25357020,"index.wasm":37902138},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":25354652,"index.wasm":37902138},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 let AFB_GAME_STARTED = false;
-let AFB_GAME_STARTING = false;
 
 function afbSetPane(which) {
 	const login = which === 'login';
@@ -303,25 +301,15 @@ function afbLoadTracker() {
 	if (document.getElementById('afb-tracker-script')) return;
 	const s = document.createElement('script');
 	s.id = 'afb-tracker-script';
-	s.src = 'shared/afb-tracker.js?v=0.7.9-beta.20-cloudpush1';
+	s.src = 'shared/afb-tracker.js?v=0.7.9-beta.19';
 	document.body.appendChild(s);
 }
-async function afbLaunchGame() {
-	if (AFB_GAME_STARTED || AFB_GAME_STARTING) return;
-	AFB_GAME_STARTING = true;
-	try {
-		if (window.AFB_CLOUD && window.AFB_API && AFB_API.getPlayerSession && AFB_API.getPlayerSession()) {
-			await AFB_CLOUD.prepareBeforeLaunch();
-		}
-	} catch (error) {
-		console.warn('AFewBuds cloud transfer skipped; using local career.', error);
-	}
+function afbLaunchGame() {
+	if (AFB_GAME_STARTED) return;
 	AFB_GAME_STARTED = true;
-	AFB_GAME_STARTING = false;
 	document.getElementById('afb-account-gate').hidden = true;
 	if (window.AFB_UPDATER) AFB_UPDATER.notifyGameStarting();
 	afbLoadTracker();
-	if (window.AFB_CLOUD) AFB_CLOUD.startAutoSync();
 	launchGodotEngine();
 }
 function launchGodotEngine() {
