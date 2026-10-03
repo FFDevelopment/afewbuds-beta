@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-heatreeves2.pck")
+OUT_PCK = Path("cloud-test/index-system-malikgen1.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -895,6 +895,355 @@ func _pay_reeves_due(early: bool = false) -> void:
         raise RuntimeError("Reeves old-save migration marker not found")
     text = text.replace(migration_marker, migration_new, 1)
 
+    # Malik production-worker 3D v1 + genetics recipe progression.
+    worker_var_old = "var production_worker_face_shell: MeshInstance3D\\n"
+    if worker_var_old not in text:
+        raise RuntimeError("Production worker variable marker not found")
+    text = text.replace(
+        worker_var_old,
+        worker_var_old + "var production_worker_malik_details: Node3D\\n",
+        1,
+    )
+
+    worker_build_old = '''\tproduction_worker_node.add_child(production_worker_task_label)
+
+\t_refresh_production_worker_friend_face()
+'''
+    worker_build_new = '''\tproduction_worker_node.add_child(production_worker_task_label)
+
+\t_build_malik_production_model_details()
+\t_refresh_production_worker_friend_face()
+'''
+    if worker_build_old not in text:
+        raise RuntimeError("Production worker build marker not found")
+    text = text.replace(worker_build_old, worker_build_new, 1)
+
+    worker_face_marker = "func _worker_face_texture_path(friend_name: String) -> String:\\n"
+    malik_model_block = '''func _malik_detail_box(parent: Node3D, detail_name: String, size: Vector3, position_value: Vector3, color_value: Color, rotation_value: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+\tvar part: MeshInstance3D = MeshInstance3D.new()
+\tpart.name = detail_name
+\tvar mesh: BoxMesh = BoxMesh.new()
+\tmesh.size = size
+\tmesh.material = _make_flat_material(color_value, 0.84)
+\tpart.mesh = mesh
+\tpart.position = position_value
+\tpart.rotation = rotation_value
+\tparent.add_child(part)
+\treturn part
+
+func _malik_detail_cylinder(parent: Node3D, detail_name: String, radius_value: float, height_value: float, position_value: Vector3, color_value: Color, rotation_value: Vector3 = Vector3.ZERO) -> MeshInstance3D:
+\tvar part: MeshInstance3D = MeshInstance3D.new()
+\tpart.name = detail_name
+\tvar mesh: CylinderMesh = CylinderMesh.new()
+\tmesh.top_radius = radius_value
+\tmesh.bottom_radius = radius_value
+\tmesh.height = height_value
+\tmesh.radial_segments = 10
+\tmesh.material = _make_flat_material(color_value, 0.82)
+\tpart.mesh = mesh
+\tpart.position = position_value
+\tpart.rotation = rotation_value
+\tparent.add_child(part)
+\treturn part
+
+func _build_malik_production_model_details() -> void:
+\tif production_worker_node == null:
+\t\treturn
+\tproduction_worker_malik_details = Node3D.new()
+\tproduction_worker_malik_details.name = "MalikModelV1"
+\tproduction_worker_malik_details.visible = false
+\tproduction_worker_node.add_child(production_worker_malik_details)
+
+\tvar cloth: Color = Color("111315")
+\tvar cloth_detail: Color = Color("1b1e21")
+\tvar skin: Color = Color("b57955")
+\tvar ink: Color = Color("352a28")
+\tvar hair: Color = Color("171513")
+\tvar sole: Color = Color("e4e5e3")
+\tvar shoe: Color = Color("15181c")
+\tvar accent: Color = Color("b84d4d")
+
+\t# Polo collar / placket.
+\t_malik_detail_box(production_worker_malik_details, "PoloCollarL", Vector3(0.12, 0.035, 0.16), Vector3(-0.065, 1.49, -0.185), cloth_detail, Vector3(0, 0, deg_to_rad(-18.0)))
+\t_malik_detail_box(production_worker_malik_details, "PoloCollarR", Vector3(0.12, 0.035, 0.16), Vector3(0.065, 1.49, -0.185), cloth_detail, Vector3(0, 0, deg_to_rad(18.0)))
+\t_malik_detail_box(production_worker_malik_details, "PoloPlacket", Vector3(0.045, 0.16, 0.025), Vector3(0, 1.405, -0.224), Color("181a1d"))
+
+\t# Cargo-pocket silhouette on both thighs.
+\t_malik_detail_box(production_worker_malik_details, "CargoPocketL", Vector3(0.15, 0.20, 0.055), Vector3(-0.19, 0.68, -0.035), cloth_detail)
+\t_malik_detail_box(production_worker_malik_details, "CargoPocketR", Vector3(0.15, 0.20, 0.055), Vector3(0.19, 0.68, -0.035), cloth_detail)
+
+\t# Sneaker soles, side panels and small red tongue accents.
+\tfor side_index in range(2):
+\t\tvar side: float = -1.0 if side_index == 0 else 1.0
+\t\t_malik_detail_box(production_worker_malik_details, "Sole%d" % side_index, Vector3(0.20, 0.045, 0.35), Vector3(0.11 * side, 0.075, -0.07), sole)
+\t\t_malik_detail_box(production_worker_malik_details, "ShoePanel%d" % side_index, Vector3(0.11, 0.045, 0.19), Vector3(0.11 * side, 0.135, -0.145), Color("d5d7d6"))
+\t\t_malik_detail_box(production_worker_malik_details, "ShoeAccent%d" % side_index, Vector3(0.035, 0.055, 0.025), Vector3(0.11 * side, 0.19, -0.10), accent)
+
+\t# Braids run over the scalp and trail slightly behind the head.
+\tfor braid_index in range(7):
+\t\tvar x_offset: float = (float(braid_index) - 3.0) * 0.037
+\t\t_malik_detail_cylinder(production_worker_malik_details, "Braid%d" % braid_index, 0.0105, 0.30, Vector3(x_offset, 1.84, 0.045), hair, Vector3(deg_to_rad(72.0), 0, 0))
+\tfor tail_index in range(4):
+\t\tvar tail_x: float = (float(tail_index) - 1.5) * 0.045
+\t\t_malik_detail_cylinder(production_worker_malik_details, "BraidTail%d" % tail_index, 0.011, 0.19, Vector3(tail_x, 1.70, 0.17), hair, Vector3(deg_to_rad(18.0), 0, 0))
+
+\t# Beard / jaw silhouette. Face texture still supplies the detailed likeness.
+\t_malik_detail_box(production_worker_malik_details, "BeardChin", Vector3(0.17, 0.07, 0.035), Vector3(0, 1.575, -0.188), hair)
+\t_malik_detail_box(production_worker_malik_details, "BeardL", Vector3(0.065, 0.16, 0.025), Vector3(-0.13, 1.635, -0.16), hair, Vector3(0, 0, deg_to_rad(-18.0)))
+\t_malik_detail_box(production_worker_malik_details, "BeardR", Vector3(0.065, 0.16, 0.025), Vector3(0.13, 1.635, -0.16), hair, Vector3(0, 0, deg_to_rad(18.0)))
+
+\t# Tattoo bands/marks on both forearms, visible at normal gameplay distance.
+\tfor side_index in range(2):
+\t\tvar side: float = -1.0 if side_index == 0 else 1.0
+\t\tfor band_index in range(3):
+\t\t\t_malik_detail_cylinder(production_worker_malik_details, "Tattoo%d_%d" % [side_index, band_index], 0.071, 0.025, Vector3(0.28 * side, 1.02 - float(band_index) * 0.085, -0.003), ink)
+
+func _apply_production_worker_character_style(friend_name: String) -> void:
+\tif production_worker_node == null:
+\t\treturn
+\tvar malik_active: bool = friend_name == "Malik"
+\tif production_worker_malik_details != null:
+\t\tproduction_worker_malik_details.visible = malik_active
+\tvar torso: MeshInstance3D = production_worker_node.get_node_or_null("Torso") as MeshInstance3D
+\tvar arm_l: MeshInstance3D = production_worker_node.get_node_or_null("ArmL") as MeshInstance3D
+\tvar arm_r: MeshInstance3D = production_worker_node.get_node_or_null("ArmR") as MeshInstance3D
+\tvar leg_l: MeshInstance3D = production_worker_node.get_node_or_null("LegL") as MeshInstance3D
+\tvar leg_r: MeshInstance3D = production_worker_node.get_node_or_null("LegR") as MeshInstance3D
+\tvar shoe_l: MeshInstance3D = production_worker_node.get_node_or_null("ShoeL") as MeshInstance3D
+\tvar shoe_r: MeshInstance3D = production_worker_node.get_node_or_null("ShoeR") as MeshInstance3D
+\tif malik_active:
+\t\tvar black_shirt: StandardMaterial3D = _make_flat_material(Color("111315"), 0.86)
+\t\tvar black_pants: StandardMaterial3D = _make_flat_material(Color("171a1e"), 0.88)
+\t\tvar black_shoes: StandardMaterial3D = _make_flat_material(Color("101317"), 0.88)
+\t\tif torso != null:
+\t\t\ttorso.material_override = black_shirt
+\t\t\ttorso.scale = Vector3(1.18, 1.03, 1.10)
+\t\tfor arm in [arm_l, arm_r]:
+\t\t\tif arm != null:
+\t\t\t\tarm.material_override = black_shirt
+\t\t\t\tarm.scale = Vector3(1.12, 1.03, 1.12)
+\t\tfor leg in [leg_l, leg_r]:
+\t\t\tif leg != null:
+\t\t\t\tleg.material_override = black_pants
+\t\t\t\tleg.scale = Vector3(1.08, 1.02, 1.08)
+\t\tfor shoe_node in [shoe_l, shoe_r]:
+\t\t\tif shoe_node != null:
+\t\t\t\tshoe_node.material_override = black_shoes
+\telse:
+\t\tif torso != null:
+\t\t\ttorso.material_override = null
+\t\t\ttorso.scale = Vector3.ONE
+\t\tfor arm in [arm_l, arm_r]:
+\t\t\tif arm != null:
+\t\t\t\tarm.material_override = null
+\t\t\t\tarm.scale = Vector3.ONE
+\t\tfor leg in [leg_l, leg_r]:
+\t\t\tif leg != null:
+\t\t\t\tleg.material_override = null
+\t\t\t\tleg.scale = Vector3.ONE
+\t\tfor shoe_node in [shoe_l, shoe_r]:
+\t\t\tif shoe_node != null:
+\t\t\t\tshoe_node.material_override = null
+
+'''
+    if worker_face_marker not in text:
+        raise RuntimeError("Worker face function marker not found")
+    text = text.replace(worker_face_marker, malik_model_block + worker_face_marker, 1)
+
+    refresh_style_old = '''\tvar assigned_name: String = production_worker_friend_name
+\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
+\tif previous_name == assigned_name:
+\t\treturn
+'''
+    refresh_style_new = '''\tvar assigned_name: String = production_worker_friend_name
+\tvar previous_name: String = str(production_worker_face_shell.get_meta("friend_name", "__uninitialized__"))
+\t_apply_production_worker_character_style(assigned_name)
+\tif previous_name == assigned_name:
+\t\treturn
+'''
+    if refresh_style_old not in text:
+        raise RuntimeError("Worker face refresh marker not found")
+    text = text.replace(refresh_style_old, refresh_style_new, 1)
+
+    # New fictional crossbreed strains are recipe-only and hidden from the normal seed shop.
+    seed_order_old = 'const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost"]'
+    seed_order_new = 'const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost", "Citrus Velvet", "Cherry Frost", "Ember Berry", "Crown Cake"]'
+    if seed_order_old not in text:
+        raise RuntimeError("Seed order marker not found")
+    text = text.replace(seed_order_old, seed_order_new, 1)
+
+    seed_inventory_marker = '''\t"Aurora Reserve": 0
+}
+'''
+    seed_inventory_new = '''\t"Aurora Reserve": 0,
+\t"Citrus Velvet": 0,
+\t"Cherry Frost": 0,
+\t"Ember Berry": 0,
+\t"Crown Cake": 0
+}
+'''
+    if seed_inventory_marker not in text:
+        raise RuntimeError("Seed inventory marker not found")
+    text = text.replace(seed_inventory_marker, seed_inventory_new, 1)
+
+    seed_catalog_marker = '''\t"Solar Frost": {"unlock": 14, "cost": 210, "price": 70, "grade": "S+", "profile": "solar", "harvest": 5, "description": "Late-career prestige genetics intended for reserve-level customers."}
+}
+'''
+    seed_catalog_new = '''\t"Solar Frost": {"unlock": 14, "cost": 210, "price": 70, "grade": "S+", "profile": "solar", "harvest": 5, "description": "Late-career prestige genetics intended for reserve-level customers."},
+\t"Citrus Velvet": {"unlock": 99, "cost": 0, "price": 34, "grade": "S", "profile": "citrus", "harvest": 8, "recipe_only": true, "description": "A fictional crossbreed unlocked through Story rewards."},
+\t"Cherry Frost": {"unlock": 99, "cost": 0, "price": 46, "grade": "S+", "profile": "cherry", "harvest": 6, "recipe_only": true, "description": "A fictional cold-fruit crossbreed unlocked through progression."},
+\t"Ember Berry": {"unlock": 99, "cost": 0, "price": 54, "grade": "S+", "profile": "berry", "harvest": 6, "recipe_only": true, "description": "A fictional gold-and-berry crossbreed unlocked through progression."},
+\t"Crown Cake": {"unlock": 99, "cost": 0, "price": 63, "grade": "S+", "profile": "luxury", "harvest": 5, "recipe_only": true, "description": "A fictional prestige crossbreed reserved for late-career genetics work."}
+}
+'''
+    if seed_catalog_marker not in text:
+        raise RuntimeError("Seed catalog marker not found")
+    text = text.replace(seed_catalog_marker, seed_catalog_new, 1)
+
+    advancement_genetics_marker = '''\t{"id": "three_hybrids", "category": "Genetics", "tier": 4, "title": "Breeding Program", "description": "Create 3 hybrid seed batches.", "metric": "hybrids_created", "target": 3, "reward_cash": 100, "reward_xp": 250, "reward_rep": 15},
+'''
+    advancement_genetics_new = advancement_genetics_marker + '''\t{"id": "recipe_citrus_velvet", "category": "Genetics", "tier": 2, "title": "Flavor Notes", "description": "Complete a hybrid batch and build a five-variety seed shelf.", "metric": "hybrids_created", "target": 1, "reward_cash": 0, "reward_xp": 90, "reward_rep": 5, "reward_recipe": "Citrus Velvet", "requires": [{"state": "seed_varieties", "target": 5, "label": "Seed varieties"}]},
+\t{"id": "recipe_cherry_frost", "category": "Genetics", "tier": 3, "title": "Cold & Sweet", "description": "Create 3 hybrid batches and reach Grower Level 7.", "metric": "hybrids_created", "target": 3, "reward_cash": 0, "reward_xp": 150, "reward_rep": 8, "reward_recipe": "Cherry Frost", "requires": [{"state": "grower_level", "target": 7, "label": "Grower Level"}]},
+\t{"id": "recipe_ember_berry", "category": "Genetics", "tier": 3, "title": "Color Theory", "description": "Create 5 hybrid batches and reach Grower Level 9.", "metric": "hybrids_created", "target": 5, "reward_cash": 0, "reward_xp": 200, "reward_rep": 10, "reward_recipe": "Ember Berry", "requires": [{"state": "grower_level", "target": 9, "label": "Grower Level"}]},
+\t{"id": "recipe_crown_cake", "category": "Genetics", "tier": 4, "title": "Crown Lab", "description": "Create 8 hybrid batches, reach Grower Level 11, and complete 50 harvests.", "metric": "hybrids_created", "target": 8, "reward_cash": 0, "reward_xp": 300, "reward_rep": 15, "reward_recipe": "Crown Cake", "requires": [{"state": "grower_level", "target": 11, "label": "Grower Level"}, {"metric": "harvests", "target": 50, "label": "Harvests"}]},
+'''
+    if advancement_genetics_marker not in text:
+        raise RuntimeError("Genetics advancement marker not found")
+    text = text.replace(advancement_genetics_marker, advancement_genetics_new, 1)
+
+    reward_text_old = '''\tvar reward_seed: String = str(entry.get("reward_seed", ""))
+\tvar reward_seed_count: int = int(entry.get("reward_seed_count", 0))
+'''
+    reward_text_new = '''\tvar reward_seed: String = str(entry.get("reward_seed", ""))
+\tvar reward_seed_count: int = int(entry.get("reward_seed_count", 0))
+\tvar reward_recipe: String = str(entry.get("reward_recipe", ""))
+'''
+    if reward_text_old not in text:
+        raise RuntimeError("Advancement reward text variable marker not found")
+    text = text.replace(reward_text_old, reward_text_new, 1)
+    reward_return_old = '''\tif not reward_seed.is_empty() and reward_seed_count > 0:
+\t\tparts.append("%dx %s seed" % [reward_seed_count, reward_seed])
+\treturn "  |  ".join(parts)
+'''
+    # The portable-glyph pass runs later, so base source still uses the bullet separator here.
+    if reward_return_old not in text:
+        reward_return_old = '''\tif not reward_seed.is_empty() and reward_seed_count > 0:
+\t\tparts.append("%dx %s seed" % [reward_seed_count, reward_seed])
+\treturn "  •  ".join(parts)
+'''
+    reward_return_new = '''\tif not reward_seed.is_empty() and reward_seed_count > 0:
+\t\tparts.append("%dx %s seed" % [reward_seed_count, reward_seed])
+\tif not reward_recipe.is_empty():
+\t\tparts.append("GENETICS RECIPE: %s" % reward_recipe)
+\treturn "  •  ".join(parts)
+'''
+    if reward_return_old not in text:
+        raise RuntimeError("Advancement reward text return marker not found")
+    text = text.replace(reward_return_old, reward_return_new, 1)
+
+    seed_shop_loop_old = '''\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tvar unlock_level: int = int(info.get("unlock", 1))
+'''
+    seed_shop_loop_new = '''\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif bool(info.get("recipe_only", false)):
+\t\t\tcontinue
+\t\tvar unlock_level: int = int(info.get("unlock", 1))
+'''
+    # Replace both normal seed-shop and next-locked scans.
+    if text.count(seed_shop_loop_old) < 2:
+        raise RuntimeError("Seed shop loop markers not found")
+    text = text.replace(seed_shop_loop_old, seed_shop_loop_new, 2)
+
+    genetics_pattern = r'func _build_genetics_app\(\) -> void:\n.*?(?=func _max_friend_loyalty\(\) -> int:\n)'
+    genetics_new = '''func _genetics_recipe_catalog() -> Array[Dictionary]:
+\treturn [
+\t\t{"id": "frozen_purple", "title": "FROZEN PURPLE", "parent_a": "Purple Dream", "parent_b": "Blue Frost", "output": "Frozen Purple", "count": 2, "min_level": 5, "unlock_task": "", "unlock_label": "Grower Level 5"},
+\t\t{"id": "citrus_velvet", "title": "CITRUS VELVET", "parent_a": "Citrus Rush", "parent_b": "Velvet Haze", "output": "Citrus Velvet", "count": 2, "min_level": 5, "unlock_task": "recipe_citrus_velvet", "unlock_label": "Flavor Notes reward"},
+\t\t{"id": "cherry_frost", "title": "CHERRY FROST", "parent_a": "Cherry Glow", "parent_b": "Blue Frost", "output": "Cherry Frost", "count": 2, "min_level": 7, "unlock_task": "recipe_cherry_frost", "unlock_label": "Cold & Sweet reward"},
+\t\t{"id": "ember_berry", "title": "EMBER BERRY", "parent_a": "Golden Ember", "parent_b": "Neon Berry", "output": "Ember Berry", "count": 2, "min_level": 9, "unlock_task": "recipe_ember_berry", "unlock_label": "Color Theory reward"},
+\t\t{"id": "crown_cake", "title": "CROWN CAKE", "parent_a": "Midnight Crown", "parent_b": "Moon Cake", "output": "Crown Cake", "count": 2, "min_level": 11, "unlock_task": "recipe_crown_cake", "unlock_label": "Crown Lab reward"}
+\t]
+
+func _genetics_recipe_unlocked(recipe: Dictionary) -> bool:
+\tvar unlock_task: String = str(recipe.get("unlock_task", ""))
+\treturn unlock_task.is_empty() or bool(advancement_claimed.get(unlock_task, false))
+
+func _build_genetics_app() -> void:
+\tvar intro: Label = Label.new()
+\tintro.text = "Experimental game genetics. Cross fictional parent seeds to collect hybrid lines. Some recipes are earned by claiming Story / Rewards milestones."
+\tintro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\tphone_list.add_child(intro)
+\tfor recipe: Dictionary in _genetics_recipe_catalog():
+\t\tvar parent_a: String = str(recipe.get("parent_a", ""))
+\t\tvar parent_b: String = str(recipe.get("parent_b", ""))
+\t\tvar output_name: String = str(recipe.get("output", ""))
+\t\tvar min_level: int = int(recipe.get("min_level", 1))
+\t\tvar unlocked: bool = _genetics_recipe_unlocked(recipe)
+\t\tvar a_owned: int = int(seed_inventory.get(parent_a, 0))
+\t\tvar b_owned: int = int(seed_inventory.get(parent_b, 0))
+\t\tvar card: PanelContainer = PanelContainer.new()
+\t\tcard.add_theme_stylebox_override("panel", _style_box(Color("171d1a"), Color("496b55") if unlocked else Color("3e4541"), 14, 1))
+\t\tphone_list.add_child(card)
+\t\tvar box: VBoxContainer = VBoxContainer.new()
+\t\tbox.add_theme_constant_override("separation", 7)
+\t\tcard.add_child(box)
+\t\tvar title: Label = Label.new()
+\t\ttitle.text = str(recipe.get("title", output_name))
+\t\ttitle.add_theme_font_size_override("font_size", 20)
+\t\tbox.add_child(title)
+\t\tvar detail: Label = Label.new()
+\t\tdetail.text = "%s + %s\\nOwned: %s %d | %s %d\\nProduces: %dx %s seed" % [parent_a, parent_b, parent_a, a_owned, parent_b, b_owned, int(recipe.get("count", 2)), output_name]
+\t\tdetail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\t\tbox.add_child(detail)
+\t\tvar action: Button = Button.new()
+\t\taction.custom_minimum_size.y = 50
+\t\tif not unlocked:
+\t\t\taction.text = "LOCKED - CLAIM %s" % str(recipe.get("unlock_label", "STORY REWARD")).to_upper()
+\t\t\taction.disabled = true
+\t\telif grower_level < min_level:
+\t\t\taction.text = "REQUIRES GROWER LEVEL %d" % min_level
+\t\t\taction.disabled = true
+\t\telif a_owned < 1 or b_owned < 1:
+\t\t\taction.text = "NEED BOTH PARENT SEEDS"
+\t\t\taction.disabled = true
+\t\telse:
+\t\t\taction.text = "CREATE %s" % output_name.to_upper()
+\t\t\taction.pressed.connect(_create_genetics_cross.bind(str(recipe.get("id", ""))))
+\t\tbox.add_child(action)
+
+func _create_genetics_cross(recipe_id: String) -> void:
+\tvar selected: Dictionary = {}
+\tfor recipe: Dictionary in _genetics_recipe_catalog():
+\t\tif str(recipe.get("id", "")) == recipe_id:
+\t\t\tselected = recipe
+\t\t\tbreak
+\tif selected.is_empty() or not _genetics_recipe_unlocked(selected):
+\t\treturn
+\tvar min_level: int = int(selected.get("min_level", 1))
+\tif grower_level < min_level:
+\t\treturn
+\tvar parent_a: String = str(selected.get("parent_a", ""))
+\tvar parent_b: String = str(selected.get("parent_b", ""))
+\tvar a_owned: int = int(seed_inventory.get(parent_a, 0))
+\tvar b_owned: int = int(seed_inventory.get(parent_b, 0))
+\tif a_owned < 1 or b_owned < 1:
+\t\treturn
+\tvar output_name: String = str(selected.get("output", ""))
+\tvar output_count: int = maxi(1, int(selected.get("count", 2)))
+\tseed_inventory[parent_a] = a_owned - 1
+\tseed_inventory[parent_b] = b_owned - 1
+\tseed_inventory[output_name] = int(seed_inventory.get(output_name, 0)) + output_count
+\t_increment_advancement_stat("hybrids_created")
+\t_add_progress(30, 5)
+\tstatus_label.text = "Genetics discovery: %s. %d hybrid seeds were added to your grow shelf." % [output_name, output_count]
+\t_save_game()
+\t_refresh_phone()
+
+'''
+    text, count = re.subn(genetics_pattern, genetics_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Genetics app replacement failed")
+
     # Portable UI glyph pass. Keep the phone back arrow (‹), which is known-good,
     # and replace symbols that fall back to incorrect glyphs on iOS/PWA/web fonts.
     portable_glyphs = {
@@ -928,6 +1277,11 @@ func _pay_reeves_due(early: bool = false) -> void:
         'func _claim_all_advancements() -> void:',
         'phone_button.add_theme_stylebox_override("normal"',
         'func _show_save_notification(',
+        'func _build_malik_production_model_details() -> void:',
+        'production_worker_malik_details.visible = malik_active',
+        '"reward_recipe": "Citrus Velvet"',
+        'func _genetics_recipe_catalog() -> Array[Dictionary]:',
+        'LOCKED - CLAIM %s',
     ]
     for fragment in required_fragments:
         if fragment not in text:
@@ -997,14 +1351,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-heatreeves2.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-malikgen1.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-heatreeves2.pck"',
+            '"mainPack":"index-system-malikgen1.pck"',
             config,
             count=1,
         )
@@ -1037,10 +1391,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=heatreeves2', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=malikgen1', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=heatreeves2',
+        'shared/afb-cloud.js?v=malikgen1',
         html,
         count=1,
     )
