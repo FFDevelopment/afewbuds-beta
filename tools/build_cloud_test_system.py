@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system.pck")
+OUT_PCK = Path("cloud-test/index-system-restore2.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -220,14 +220,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-restore2.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system.pck"',
+            '"mainPack":"index-system-restore2.pck"',
             config,
             count=1,
         )
@@ -260,10 +260,12 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = html.replace("index.js?v=cloudsync2", "index.js?v=cloudsync3-system")
-    html = html.replace(
-        "shared/afb-cloud.js?v=cloudsync2",
-        "shared/afb-cloud.js?v=cloudsync3-system",
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account2', html, count=1)
+    html = re.sub(
+        r'shared/afb-cloud\.js\?v=[^"]+',
+        'shared/afb-cloud.js?v=canonical-account2',
+        html,
+        count=1,
     )
     INDEX_HTML.write_text(html)
 
