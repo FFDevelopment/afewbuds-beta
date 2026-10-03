@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>AFewBuds 0.7.9-beta.16 Account Fix</title>
+		<title>AFewBuds 0.7.9-beta.16</title>
 		<style>
 html, body, #canvas {
 	margin: 0;
@@ -94,6 +94,23 @@ body {
 }
 
 
+/* AFewBuds pre-launch updater. It runs before the account gate/Godot engine. */
+#afb-prelaunch {
+	position: fixed; inset: 0; z-index: 12000; display:flex; align-items:center; justify-content:center;
+	padding:20px; box-sizing:border-box; background:linear-gradient(160deg,#061109,#101a13 55%,#07100a);
+	font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#eff7ed; touch-action:auto;
+}
+#afb-prelaunch[hidden] { display:none !important; }
+.afb-launch-card { width:min(520px,100%); text-align:center; padding:30px 24px; box-sizing:border-box; }
+.afb-launch-logo { width:112px; height:112px; border-radius:26px; object-fit:contain; margin:0 auto 18px; display:block; }
+.afb-launch-card h1 { margin:0 0 8px; font-size:28px; }
+.afb-launch-card p { margin:0; color:#aebbad; font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+#afb-prelaunch-progress { width:100%; height:10px; margin:22px 0 14px; accent-color:#8fc47b; }
+#afb-prelaunch-progress[data-indeterminate="true"] { animation:afb-pulse 1s ease-in-out infinite alternate; }
+.afb-launch-recover { margin-top:18px; min-height:44px; padding:10px 16px; border-radius:12px; border:1px solid #3d5542; background:#18261c; color:#e8f2e6; font:inherit; font-weight:700; }
+@keyframes afb-pulse { from { opacity:.45 } to { opacity:1 } }
+@media (prefers-reduced-motion: reduce) { #afb-prelaunch-progress[data-indeterminate="true"] { animation:none; } }
+
 /* Browser-native AFewBuds account gate. Kept outside the Godot canvas so
    desktop mouse/keyboard and mobile software keyboards work normally. */
 #afb-account-gate {
@@ -170,7 +187,16 @@ body {
 <meta name="apple-mobile-web-app-title" content="AFewBuds"><meta name="theme-color" content="#0e1812"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	</head>
 	<body>
-		<div id="afb-account-gate" aria-label="AFewBuds account">
+		<div id="afb-prelaunch" aria-live="polite">
+			<div class="afb-launch-card">
+				<img class="afb-launch-logo" src="index.png" alt="AFewBuds">
+				<h1 id="afb-prelaunch-title">Checking AFewBuds…</h1>
+				<p id="afb-prelaunch-detail">Looking for an update before launch.</p>
+				<progress id="afb-prelaunch-progress" max="1" data-indeterminate="true"></progress>
+				<button id="afb-prelaunch-recover" class="afb-launch-recover" type="button" hidden>Open repair tool</button>
+			</div>
+		</div>
+		<div id="afb-account-gate" aria-label="AFewBuds account" hidden>
 			<div class="afb-auth-card">
 				<div class="afb-auth-brand"><div class="afb-auth-mark">AFB</div><div><h1>AFewBuds</h1><p>Player account</p></div></div>
 				<h2 class="afb-auth-title">Pick up where you left off.</h2>
@@ -219,6 +245,7 @@ body {
 			<div id="status-notice"></div>
 		</div>
 
+		<script src="shared/afb-updater.js"></script>
 		<script src="shared/config.js"></script>
 		<script src="shared/afb-api.js"></script>
 		<script src="index.js"></script>
@@ -281,6 +308,7 @@ function afbLaunchGame() {
 	if (AFB_GAME_STARTED) return;
 	AFB_GAME_STARTED = true;
 	document.getElementById('afb-account-gate').hidden = true;
+	if (window.AFB_UPDATER) AFB_UPDATER.notifyGameStarting();
 	afbLoadTracker();
 	launchGodotEngine();
 }
@@ -317,7 +345,7 @@ function launchGodotEngine() {
 	engine.startGame({onProgress:function(current,total){
 		if (current > 0 && total > 0) { statusProgress.value=current; statusProgress.max=total; }
 		else { statusProgress.removeAttribute('value'); statusProgress.removeAttribute('max'); }
-	}}).then(() => setStatusMode('hidden'), displayFailureNotice);
+	}}).then(() => { setStatusMode('hidden'); if (window.AFB_UPDATER) AFB_UPDATER.markGameReady(); }, (error) => { if (window.AFB_UPDATER) AFB_UPDATER.markGameFailure(error); displayFailureNotice(error); });
 }
 
 document.getElementById('afb-login-tab').addEventListener('click', () => afbSetPane('login'));
@@ -362,7 +390,7 @@ document.getElementById('afb-register-form').addEventListener('submit', async (e
 	finally { button.disabled = false; }
 });
 
-(async function bootAccountGate(){
+async function afbBootAccountGate(){
 	const saved = await afbValidateStoredSession();
 	if (saved) { afbLaunchGame(); return; }
 	const gate = document.getElementById('afb-account-gate');
@@ -370,6 +398,17 @@ document.getElementById('afb-register-form').addEventListener('submit', async (e
 	if (!window.AFB_API || !AFB_API.enabled) {
 		afbMessage('afb-login-msg', 'Account service is not configured yet. You can continue without an account.', true);
 	}
+}
+
+(async function afbPrelaunch(){
+	try {
+		if (window.AFB_UPDATER) await AFB_UPDATER.boot();
+	} catch (error) {
+		console.warn('AFewBuds updater unavailable; starting installed build.', error);
+		const overlay = document.getElementById('afb-prelaunch');
+		if (overlay) overlay.hidden = true;
+	}
+	await afbBootAccountGate();
 })();
 		</script>
 	</body>

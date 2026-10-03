@@ -1,0 +1,123 @@
+{
+  "updater_protocol": 1,
+  "release_id": "0.7.9-beta.16-autoupdater1",
+  "game_build": "0.7.9-beta.16",
+  "generated_at_utc": "2026-10-03T11:33:08.061844+00:00",
+  "files": [
+    {
+      "path": "index.html",
+      "size": 19157,
+      "sha256": "d5d1466ab8df1a7be30f7a14bd71655bbb68a418c04c0e7ac8d574d2acae9b57"
+    },
+    {
+      "path": "index.js",
+      "size": 315645,
+      "sha256": "ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"
+    },
+    {
+      "path": "index.pck",
+      "size": 25354652,
+      "sha256": "d1abe3e56f3317c3d95ec350580930a0613bad1ae8817c522d754bd5e4f2916d"
+    },
+    {
+      "path": "index.wasm",
+      "size": 37902138,
+      "sha256": "11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"
+    },
+    {
+      "path": "index.audio.worklet.js",
+      "size": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    {
+      "path": "index.audio.position.worklet.js",
+      "size": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    },
+    {
+      "path": "index.offline.html",
+      "size": 866,
+      "sha256": "6fb56f215819a021df7f1e9c4f41687ce776e70b6662a58f6fe4ad82ada7d286"
+    },
+    {
+      "path": "index.icon.png",
+      "size": 11333,
+      "sha256": "9f401ca6e5b379d5b497b2d897174506ab5977af632882eca3361972ff60f12a"
+    },
+    {
+      "path": "index.apple-touch-icon.png",
+      "size": 63167,
+      "sha256": "c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"
+    },
+    {
+      "path": "index.png",
+      "size": 203379,
+      "sha256": "6fab8d8120280ba62714110d7baaf030419f649ed95d5840259b2aaf7ecf078f"
+    },
+    {
+      "path": "index.manifest.json",
+      "size": 746,
+      "sha256": "6a7e26454632f2442e99d286f8235f2fb63a1b605cc0aff685041729fd50a74f"
+    },
+    {
+      "path": "index.144x144.png",
+      "size": 42461,
+      "sha256": "02f8bf5cfde6f6ec589872eeebca9af4e16ecadf9010b3e81338db024d6bc237"
+    },
+    {
+      "path": "index.180x180.png",
+      "size": 63167,
+      "sha256": "c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"
+    },
+    {
+      "path": "index.192x192.png",
+      "size": 70908,
+      "sha256": "2f08affc9ba792bbb049f0d70f1f3d478a19522b9fa2850311729220b3ec7df9"
+    },
+    {
+      "path": "index.512x512.png",
+      "size": 417417,
+      "sha256": "e62a8a7f9b04379c6c3dee56e6d9e30c85945b3745c37166ca3e506c57253373"
+    },
+    {
+      "path": "shared/config.js",
+      "size": 230,
+      "sha256": "2a70a78436ddf97913a397b6601908500cd057e8d40d169b9e92a18fe5965afc"
+    },
+    {
+      "path": "shared/afb-api.js",
+      "size": 2640,
+      "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
+    },
+    {
+      "path": "shared/afb-tracker.js",
+      "size": 1275,
+      "sha256": "f0d2e47e5bace76d76ed3cbc31ab55734cf04933de79460e222746901615d99f"
+    },
+    {
+      "path": "shared/style.css",
+      "size": 4226,
+      "sha256": "0ece615194c5076a49ed3e48a3b7c49d0a676e27d79a8bb390e0cd888be91a90"
+    },
+    {
+      "path": "shared/afb-updater.js",
+      "size": 11629,
+      "sha256": "5b2867df349893ad70c673ccfcd894716dcf72b49f5f6f9b2f23244e1c2b3176"
+    },
+    {
+      "path": "account/index.html",
+      "size": 4510,
+      "sha256": "a95ce45f0bbec88c9d3d46771e9e96d619bfaff16ee5221291e782ad64cf18a9"
+    },
+    {
+      "path": "admin/index.html",
+      "size": 4413,
+      "sha256": "48c0bfc2e7868a0871eda99d8524db5811dcc64f20712861ffd32d24f9718980"
+    },
+    {
+      "path": "afewbuds-update.html",
+      "size": 4392,
+      "sha256": "277a4cc0d990b2129a3c0b5638a4eaa9874a289168d889f3faaf42f9335c8711"
+    }
+  ]
+}

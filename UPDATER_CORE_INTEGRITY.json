@@ -1,0 +1,26 @@
+{
+  "protocol": 1,
+  "release_id": "0.7.9-beta.16-autoupdater1",
+  "files": [
+    {
+      "path": "index.service.worker.js",
+      "size": 9676,
+      "sha256": "ba156b601926cb070f8862857c2015c65273beda223d7f676a8a561cb4c13cdd"
+    },
+    {
+      "path": "shared/afb-updater.js",
+      "size": 11629,
+      "sha256": "5b2867df349893ad70c673ccfcd894716dcf72b49f5f6f9b2f23244e1c2b3176"
+    },
+    {
+      "path": "version.json",
+      "size": 3671,
+      "sha256": "a8bcf4e8592ed1261f6a166a58cc998b9fbe61bf1eecc9e35010dbf501208b65"
+    },
+    {
+      "path": "afewbuds-update.html",
+      "size": 4392,
+      "sha256": "277a4cc0d990b2129a3c0b5638a4eaa9874a289168d889f3faaf42f9335c8711"
+    }
+  ]
+}

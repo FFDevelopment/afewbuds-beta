@@ -1,6 +1,12 @@
-# AFewBuds 0.7.9-beta.16
+AFewBuds Web Release 0.7.9-beta.16-autoupdater1
 
-- Widened grow tents 2 and 3 while keeping their established depth and room anchors.
-- Returned all three expansion-tent pots to one side-by-side row with visible gaps between saucers.
-- Replaced oversized spherical plant click zones with tighter box-shaped hit areas, with extra-tight zones in tents 2 and 3 so adjacent plants do not steal taps.
-- Preserves beta.15 shelf/panel camera fixes and beta.13 per-substitute acceptance odds.
+- Keeps the known-good AFewBuds 0.7.9-beta.16 Godot runtime unchanged.
+- Adds a pre-launch automatic update check.
+- New releases are staged in a separate CacheStorage cache and verified by SHA-256 and byte size before activation.
+- Keeps the previous release cache for rollback.
+- New releases are not confirmed until the Godot engine starts successfully.
+- Failed downloads keep the existing release active.
+- Failed startup rolls back to the previous release.
+- Offline/update-server failure starts the installed release.
+- Adds a safe repair page for legacy-cache migration/recovery without clearing local saves.
+- Preserves the browser-native account gate, Supabase player accounts, admin portal, and telemetry from Account Fix 1.
