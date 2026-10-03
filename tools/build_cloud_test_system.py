@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-restore2.pck")
+OUT_PCK = Path("cloud-test/index-system-restore3.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -71,17 +71,96 @@ def patch_main(text):
 
 '''
     text = text.replace(cloud_marker, cloud_block + cloud_marker, 1)
+    toast_var_marker = "var reset_message: Label\n"
+    if toast_var_marker not in text:
+        raise RuntimeError("Save notification variable marker not found")
+    text = text.replace(
+        toast_var_marker,
+        toast_var_marker + "var save_notice_panel: PanelContainer\nvar save_notice_title: Label\nvar save_notice_detail: Label\nvar save_notice_timer: Timer\n",
+        1,
+    )
+
     router_old = '\t\t"heat":\n\t\t\tphone_title.text = "Heat"\n\t\t\t_build_heat_app()\n\t\t_:\n'
     router_new = '\t\t"heat":\n\t\t\tphone_title.text = "Heat"\n\t\t\t_build_heat_app()\n\t\t"system":\n\t\t\tphone_title.text = "System"\n\t\t\t_build_system_app()\n\t\t_:\n'
     if router_old not in text:
         raise RuntimeError("Phone router marker not found")
     text = text.replace(router_old, router_new, 1)
 
+    ui_call_marker = "\t_build_reset_confirmation()\n"
+    if ui_call_marker not in text:
+        raise RuntimeError("Save notification UI call marker not found")
+    text = text.replace(ui_call_marker, ui_call_marker + "\t_build_save_notification()\n", 1)
+
     home_old = '\t_add_phone_app_tile(grid, "", "Stats", "Progress & revenue", "stats")\n\t_add_phone_app_tile(grid, "", "Help", "Basics & controls", "help")\n'
     home_new = '\t_add_phone_app_tile(grid, "", "Stats", "Progress & revenue", "stats")\n\t_add_phone_app_tile(grid, "", "System", "Save game & safe quit", "system")\n\t_add_phone_app_tile(grid, "", "Help", "Basics & controls", "help")\n'
     if home_old not in text:
         raise RuntimeError("Phone home marker not found")
     text = text.replace(home_old, home_new, 1)
+
+    toast_func_marker = "func _build_pause_overlay() -> void:\n"
+    if toast_func_marker not in text:
+        raise RuntimeError("Save notification function marker not found")
+    toast_block = '''func _build_save_notification() -> void:
+\tvar layer: CanvasLayer = CanvasLayer.new()
+\tlayer.name = "SaveNotificationLayer"
+\tlayer.layer = 40
+\tadd_child(layer)
+\tvar root: Control = Control.new()
+\troot.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+\troot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+\tlayer.add_child(root)
+\tvar center: CenterContainer = CenterContainer.new()
+\tcenter.set_anchors_preset(Control.PRESET_TOP_WIDE)
+\tcenter.offset_top = 94
+\tcenter.offset_bottom = 178
+\tcenter.mouse_filter = Control.MOUSE_FILTER_IGNORE
+\troot.add_child(center)
+\tsave_notice_panel = PanelContainer.new()
+\tsave_notice_panel.custom_minimum_size = Vector2(390, 72)
+\tsave_notice_panel.add_theme_stylebox_override("panel", _style_box(Color("14251b"), Color("68bd7d"), 16, 2))
+\tsave_notice_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+\tsave_notice_panel.visible = false
+\tcenter.add_child(save_notice_panel)
+\tvar box: VBoxContainer = VBoxContainer.new()
+\tbox.add_theme_constant_override("separation", 2)
+\tbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+\tsave_notice_panel.add_child(box)
+\tsave_notice_title = Label.new()
+\tsave_notice_title.text = "GAME SAVED ✓"
+\tsave_notice_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+\tsave_notice_title.add_theme_font_size_override("font_size", 21)
+\tsave_notice_title.modulate = Color("e8fff0")
+\tsave_notice_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+\tbox.add_child(save_notice_title)
+\tsave_notice_detail = Label.new()
+\tsave_notice_detail.text = "Your career is safe."
+\tsave_notice_detail.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+\tsave_notice_detail.add_theme_font_size_override("font_size", 15)
+\tsave_notice_detail.modulate = Color("bcd6c4")
+\tsave_notice_detail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+\tbox.add_child(save_notice_detail)
+\tsave_notice_timer = Timer.new()
+\tsave_notice_timer.one_shot = true
+\tsave_notice_timer.wait_time = 2.4
+\tsave_notice_timer.timeout.connect(_hide_save_notification)
+\tadd_child(save_notice_timer)
+
+func _show_save_notification(title_text: String = "GAME SAVED ✓", detail_text: String = "Your career is safe.") -> void:
+\tif save_notice_panel == null:
+\t\treturn
+\tsave_notice_title.text = title_text
+\tsave_notice_detail.text = detail_text
+\tsave_notice_panel.visible = true
+\tif save_notice_timer != null:
+\t\tsave_notice_timer.stop()
+\t\tsave_notice_timer.start()
+
+func _hide_save_notification() -> void:
+\tif save_notice_panel != null:
+\t\tsave_notice_panel.visible = false
+
+'''
+    text = text.replace(toast_func_marker, toast_block + toast_func_marker, 1)
 
     marker = "func _phone_category_grid() -> GridContainer:\n"
     if marker not in text:
@@ -220,14 +299,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-restore2.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-restore3.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-restore2.pck"',
+            '"mainPack":"index-system-restore3.pck"',
             config,
             count=1,
         )
@@ -260,10 +339,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account2', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account3', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=canonical-account2',
+        'shared/afb-cloud.js?v=canonical-account3',
         html,
         count=1,
     )
