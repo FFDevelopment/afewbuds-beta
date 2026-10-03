@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-heatcomplete1.pck")
+OUT_PCK = Path("cloud-test/index-system-heatreeves2.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -599,6 +599,302 @@ var last_enforcement_report: String = ""
         raise RuntimeError("Heat load marker not found")
     text = text.replace(load_old, load_new, 1)
 
+    # Reeves $8,000 protection-balance model + Lay Low integration.
+    obligation_const = "const REEVES_FINAL_PAYOFF_BASE: int = 10000\n"
+    if obligation_const not in text:
+        raise RuntimeError("Reeves obligation constant marker not found")
+    text = text.replace(
+        obligation_const,
+        obligation_const + "const REEVES_TOTAL_OBLIGATION: int = 8000\n",
+        1,
+    )
+
+    old_advancement = '{"id": "reeves_negotiate", "category": "Heat", "tier": 4, "title": "Play Hardball", "description": "Successfully negotiate better terms with Reeves.", "metric": "reeves_negotiations", "target": 1, "reward_cash": 0, "reward_xp": 180, "reward_rep": 5},'
+    new_advancement = '{"id": "reeves_negotiate", "category": "Heat", "tier": 4, "title": "Settle Up", "description": "Clear Reeves\\'s remaining protection balance in one payment.", "metric": "reeves_negotiations", "target": 1, "reward_cash": 0, "reward_xp": 180, "reward_rep": 5},'
+    if old_advancement not in text:
+        raise RuntimeError("Reeves advancement marker not found")
+    text = text.replace(old_advancement, new_advancement, 1)
+
+    payment_helpers_old = '''func _reeves_payment_amount() -> int:
+\treturn REEVES_BASE_PAYMENT + reeves_payment_level * 300 + maxi(0, grower_level - 5) * 55
+
+func _reeves_final_payoff_cost() -> int:
+\treturn REEVES_FINAL_PAYOFF_BASE + reeves_payment_level * 2500
+'''
+    payment_helpers_new = '''func _reeves_remaining_balance() -> int:
+\treturn maxi(0, REEVES_TOTAL_OBLIGATION - reeves_total_paid)
+
+func _reeves_half_payment_amount() -> int:
+\tvar remaining: int = _reeves_remaining_balance()
+\tif remaining <= 0 or cash <= 0:
+\t\treturn 0
+\treturn mini(remaining, maxi(1, int(floor(float(cash) * 0.50))))
+
+func _reeves_payment_amount() -> int:
+\treturn _reeves_half_payment_amount()
+
+func _reeves_final_payoff_cost() -> int:
+\treturn _reeves_remaining_balance()
+'''
+    if payment_helpers_old not in text:
+        raise RuntimeError("Reeves payment helper marker not found")
+    text = text.replace(payment_helpers_old, payment_helpers_new, 1)
+
+    text = text.replace(
+        'return reeves_arrangement_active and reeves_next_payment_day > 0 and game_day >= reeves_next_payment_day',
+        'return reeves_arrangement_active and _reeves_remaining_balance() > 0 and reeves_next_payment_day > 0 and game_day >= reeves_next_payment_day',
+        1,
+    )
+
+    visit_pattern = r'func _open_reeves_visit\(\) -> void:\n.*?(?=func _reeves_primary_action\(\) -> void:\n)'
+    visit_new = '''func _open_reeves_visit() -> void:
+\tif customer_patience_timer != null:
+\t\tcustomer_patience_timer.stop()
+\tcustomer_answered = true
+\tknock_banner.visible = false
+\tsale_panel.visible = true
+\tif sale_customer_art != null:
+\t\tsale_customer_art.visible = false
+\t_clear_substitutes()
+\tif not reeves_met:
+\t\treeves_met = true
+\t\t_increment_advancement_stat("reeves_meetings")
+\t\tcorrupt_contact_unlocked = true
+\tvar remaining: int = _reeves_remaining_balance()
+\tvar half_now: int = _reeves_half_payment_amount()
+\tif not reeves_arrangement_active:
+\t\tsale_title.text = "AGENT REEVES - FIRST ENCOUNTER"
+\t\tsale_body.text = "\\"You are getting noticed. My number is $%d total.\\"\\n\\nPAY HALF puts 50%% of your current cash toward the balance. PAY FULL clears the entire remaining balance. REFUSE keeps your money, but Heat and enforcement risk stay on you. You can use Phone > Heat > LAY LOW to shut the operation down and hide out." % REEVES_TOTAL_OBLIGATION
+\telse:
+\t\tsale_title.text = "AGENT REEVES - PAYMENT DUE"
+\t\tsale_body.text = "\\"Time to keep your end.\\"\\n\\nProtection balance: $%d / $%d remaining\\nPay half now: $%d\\nCurrent enforcement risk: %d%%\\nMissed payments: %d\\n\\nYou can REFUSE and then LAY LOW, but protection is suspended while the payment is missed." % [remaining, REEVES_TOTAL_OBLIGATION, half_now, int(round(enforcement_risk)), reeves_missed_payments]
+\t_set_sale_action_labels("PAY HALF $%d" % half_now, "PAY FULL $%d" % remaining, "REFUSE")
+\t_save_game()
+
+'''
+    text, count = re.subn(visit_pattern, visit_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves visit function replacement failed")
+
+    primary_pattern = r'func _reeves_primary_action\(\) -> void:\n.*?(?=func _reeves_secondary_action\(\) -> void:\n)'
+    primary_new = '''func _reeves_primary_action() -> void:
+\t_reeves_pay_half(false)
+
+'''
+    text, count = re.subn(primary_pattern, primary_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves primary action replacement failed")
+
+    secondary_pattern = r'func _reeves_secondary_action\(\) -> void:\n.*?(?=func _reeves_decline_action\(\) -> void:\n)'
+    secondary_new = '''func _reeves_secondary_action() -> void:
+\t_reeves_pay_full(false)
+
+'''
+    text, count = re.subn(secondary_pattern, secondary_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves secondary action replacement failed")
+
+    decline_pattern = r'func _reeves_decline_action\(\) -> void:\n.*?(?=func _start_reeves_arrangement\(negotiated: bool\) -> void:\n)'
+    decline_new = '''func _reeves_decline_action() -> void:
+\tif reeves_visit_reason == "first_offer" or not reeves_arrangement_active:
+\t\tenforcement_risk = clampf(enforcement_risk + 20.0, 0.0, 100.0)
+\t\treeves_next_payment_day = game_day + 2
+\t\t_add_heat(5.0, "Reeves arrangement refused", false)
+\t\traid_warning_day = game_day if enforcement_risk >= RAID_RISK_WARNING_THRESHOLD else raid_warning_day
+\t\t_log_heat_event("You refused Reeves. Enforcement risk increased. Laying low can cool the operation down.")
+\t\tstatus_label.text = "You refused Reeves. Use Phone > Heat > LAY LOW if you want to shut down, turn the lights down, and hide out."
+\t\t_end_reeves_visit()
+\telse:
+\t\t_miss_reeves_payment()
+
+'''
+    text, count = re.subn(decline_pattern, decline_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves decline action replacement failed")
+
+    payment_functions_pattern = r'func _start_reeves_arrangement\(negotiated: bool\) -> void:\n.*?(?=func _miss_reeves_payment\(\) -> void:\n)'
+    payment_functions_new = '''func _reeves_apply_payment(amount: int, full_payment: bool, early: bool) -> void:
+\tvar remaining_before: int = _reeves_remaining_balance()
+\tif remaining_before <= 0:
+\t\tif reeves_arrangement_active:
+\t\t\t_end_reeves_arrangement("balance already settled")
+\t\treturn
+\tif early and reeves_last_payment_day == game_day:
+\t\tstatus_label.text = "You already paid Reeves today."
+\t\treturn
+\tamount = mini(amount, remaining_before)
+\tif amount <= 0:
+\t\tstatus_label.text = "You do not have cash available for a Reeves payment. Refuse or lay low."
+\t\treturn
+\tif cash < amount:
+\t\tstatus_label.text = "You need $%d for that Reeves payment." % amount
+\t\treturn
+\tvar first_payment: bool = not reeves_arrangement_active
+\tcash -= amount
+\t_record_daily_expense("Reeves protection payment", amount)
+\treeves_total_paid = mini(REEVES_TOTAL_OBLIGATION, reeves_total_paid + amount)
+\treeves_last_payment_day = game_day
+\treeves_last_missed_day = -1
+\treeves_missed_payments = 0
+\treeves_arrangement_active = true
+\treeves_arrangement_ended = false
+\treeves_relationship = mini(100, maxi(25, reeves_relationship) + (8 if full_payment else 4))
+\tenforcement_risk = maxf(0.0, enforcement_risk - (20.0 if full_payment else 12.0))
+\t_increment_advancement_stat("reeves_payments")
+\tif first_payment:
+\t\t_increment_advancement_stat("reeves_arrangements")
+\t\t_reduce_heat(REEVES_INITIAL_HEAT_REDUCTION, "Reeves arrangement started", true)
+\t_update_cash_ui()
+\tvar remaining_after: int = _reeves_remaining_balance()
+\tif remaining_after <= 0:
+\t\tif full_payment:
+\t\t\t_increment_advancement_stat("reeves_negotiations")
+\t\tstatus_label.text = "Reeves is paid in full. The $%d protection balance is settled." % REEVES_TOTAL_OBLIGATION
+\t\t_end_reeves_arrangement("protection balance paid")
+\t\tif sale_panel != null and sale_panel.visible and str(current_customer.get("special", "")) == "reeves":
+\t\t\t_end_reeves_visit()
+\t\treturn
+\treeves_next_payment_day = maxi(game_day, reeves_next_payment_day) + REEVES_PAYMENT_INTERVAL_DAYS if early and reeves_next_payment_day > game_day else game_day + REEVES_PAYMENT_INTERVAL_DAYS
+\tstatus_label.text = "Paid Reeves $%d. $%d remains. Next payment: Day %d." % [amount, remaining_after, reeves_next_payment_day]
+\tif sale_panel != null and sale_panel.visible and str(current_customer.get("special", "")) == "reeves":
+\t\t_end_reeves_visit()
+\telse:
+\t\t_save_game()
+\t\t_refresh_phone()
+
+func _reeves_pay_half(early: bool = false) -> void:
+\t_reeves_apply_payment(_reeves_half_payment_amount(), false, early)
+
+func _reeves_pay_full(early: bool = false) -> void:
+\tvar remaining: int = _reeves_remaining_balance()
+\tif remaining <= 0:
+\t\tstatus_label.text = "Reeves's $%d protection balance is already settled." % REEVES_TOTAL_OBLIGATION
+\t\treturn
+\tif cash < remaining:
+\t\tstatus_label.text = "You need $%d to clear Reeves's remaining balance." % remaining
+\t\treturn
+\t_reeves_apply_payment(remaining, true, early)
+
+func _start_reeves_arrangement(negotiated: bool) -> void:
+\t_reeves_pay_half(false)
+
+func _pay_reeves_due(early: bool = false) -> void:
+\t_reeves_pay_half(early)
+
+'''
+    text, count = re.subn(payment_functions_pattern, payment_functions_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves payment functions replacement failed")
+
+    text = text.replace(
+        'status_label.text = "Reeves payment missed. Enforcement risk: %d%%." % int(round(enforcement_risk))',
+        'status_label.text = "Reeves payment refused. Enforcement risk: %d%%. LAY LOW is available in Phone > Heat." % int(round(enforcement_risk))',
+        1,
+    )
+
+    lay_low_old = '''func _start_lay_low() -> void:
+\tlay_low_active = true
+\tif business_open:
+\t\t_set_business_away()
+\tstatus_label.text = "You are laying low. Listings are paused and Heat will cool much faster while AFewBuds stays quiet."
+\t_save_game()
+\t_refresh_phone()
+'''
+    lay_low_new = '''func _start_lay_low() -> void:
+\tlay_low_active = true
+\tif business_open:
+\t\t_set_business_away()
+\tmain_ceiling_light_on = false
+\tfloor_lamp_on = false
+\tgrow_room_light_on = false
+\tgrow_lights_on = false
+\t_refresh_light_interaction_visuals()
+\t_update_day_night_visuals()
+\tstatus_label.text = "LAY LOW active. Storefront closed, customer/dealer traffic stopped, and lights are down. Heat will cool much faster while you hide out."
+\t_save_game()
+\t_refresh_phone()
+'''
+    if lay_low_old not in text:
+        raise RuntimeError("Lay Low function marker not found")
+    text = text.replace(lay_low_old, lay_low_new, 1)
+
+    text = text.replace(
+        'lay_low.text = "REOPEN AFewBuds" if lay_low_active else "LAY LOW • CLOSE STOREFRONT"',
+        'lay_low.text = "REOPEN AFewBuds" if lay_low_active else "LAY LOW - CLOSE + LIGHTS DOWN"',
+        1,
+    )
+
+    reeves_card_pattern = r'\tif reeves_met or reeves_arrangement_active:\n.*?(?=\tif OS\.is_debug_build\(\) and not reeves_met:\n)'
+    reeves_card_new = '''\tif reeves_met or reeves_arrangement_active:
+\t\tvar reeves_card: PanelContainer = PanelContainer.new()
+\t\treeves_card.add_theme_stylebox_override("panel", _style_box(Color("17191d"), Color("8d6e56"), 16, 1))
+\t\tphone_list.add_child(reeves_card)
+\t\tvar reeves_box: VBoxContainer = VBoxContainer.new()
+\t\treeves_box.add_theme_constant_override("separation", 7)
+\t\treeves_card.add_child(reeves_box)
+\t\tvar reeves_title: Label = Label.new()
+\t\treeves_title.text = "AGENT REEVES - %s" % ("ACTIVE BALANCE" if reeves_arrangement_active else ("SETTLED" if reeves_arrangement_ended else "NO ARRANGEMENT"))
+\t\treeves_title.add_theme_font_size_override("font_size", 20)
+\t\treeves_box.add_child(reeves_title)
+\t\tvar remaining: int = _reeves_remaining_balance()
+\t\tvar half_now: int = _reeves_half_payment_amount()
+\t\tvar reeves_info: Label = Label.new()
+\t\treeves_info.text = "Relationship: %d / 100\\nEnforcement risk: %d%%\\nMissed/refused payments: %d\\nProtection paid: $%d / $%d\\nRemaining balance: $%d%s" % [reeves_relationship, int(round(enforcement_risk)), reeves_missed_payments, mini(reeves_total_paid, REEVES_TOTAL_OBLIGATION), REEVES_TOTAL_OBLIGATION, remaining, ("\\nNext Reeves visit: Day %d" % reeves_next_payment_day) if reeves_arrangement_active and remaining > 0 else ""]
+\t\treeves_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\t\treeves_box.add_child(reeves_info)
+\t\tif reeves_arrangement_active and remaining > 0:
+\t\t\tvar pay_half: Button = Button.new()
+\t\t\tpay_half.text = "PAY HALF EARLY - $%d" % half_now
+\t\t\tpay_half.disabled = half_now <= 0
+\t\t\tpay_half.custom_minimum_size.y = 50
+\t\t\tpay_half.pressed.connect(_reeves_pay_half.bind(true))
+\t\t\treeves_box.add_child(pay_half)
+\t\t\tvar pay_full: Button = Button.new()
+\t\t\tpay_full.text = "PAY FULL BALANCE - $%d" % remaining
+\t\t\tpay_full.disabled = cash < remaining
+\t\t\tpay_full.custom_minimum_size.y = 50
+\t\t\tpay_full.pressed.connect(_reeves_pay_full.bind(true))
+\t\t\treeves_box.add_child(pay_full)
+\t\t\tvar quiet_exit: Button = Button.new()
+\t\t\tquiet_exit.text = "END ARRANGEMENT - GO QUIET (%d/%d DAYS)" % [reeves_quiet_days, REEVES_QUIET_EXIT_DAYS]
+\t\t\tquiet_exit.disabled = business_open or heat > 10.0 or reeves_quiet_days < REEVES_QUIET_EXIT_DAYS
+\t\t\tquiet_exit.custom_minimum_size.y = 50
+\t\t\tquiet_exit.pressed.connect(_reeves_quiet_exit)
+\t\t\treeves_box.add_child(quiet_exit)
+\t\tvar legal_note: Label = Label.new()
+\t\tlegal_note.text = "REFUSE at the door if you want to keep your cash. Then use LAY LOW above to close the operation and cool pressure. Paying the full $8,000 balance settles Reeves completely."
+\t\tlegal_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\t\tlegal_note.modulate = Color("aeb9bf")
+\t\treeves_box.add_child(legal_note)
+
+'''
+    text, count = re.subn(reeves_card_pattern, reeves_card_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves Heat card replacement failed")
+
+    final_payoff_pattern = r'func _reeves_final_payoff\(\) -> void:\n.*?(?=func _reeves_quiet_exit\(\) -> void:\n)'
+    final_payoff_new = '''func _reeves_final_payoff() -> void:
+\t_reeves_pay_full(true)
+
+'''
+    text, count = re.subn(final_payoff_pattern, final_payoff_new, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError("Reeves final payoff replacement failed")
+
+    # Existing careers that already paid at least $8,000 under the old recurring model
+    # are treated as settled instead of asking them to pay again.
+    migration_marker = '\treeves_total_paid = maxi(0, int(data.get("reeves_total_paid", reeves_total_paid)))\n'
+    migration_new = '''\treeves_total_paid = clampi(int(data.get("reeves_total_paid", reeves_total_paid)), 0, REEVES_TOTAL_OBLIGATION)
+\tif reeves_total_paid >= REEVES_TOTAL_OBLIGATION:
+\t\treeves_arrangement_active = false
+\t\treeves_arrangement_ended = true
+\t\treeves_next_payment_day = 0
+\t\treeves_missed_payments = 0
+'''
+    if migration_marker not in text:
+        raise RuntimeError("Reeves old-save migration marker not found")
+    text = text.replace(migration_marker, migration_new, 1)
+
     # Portable UI glyph pass. Keep the phone back arrow (‹), which is known-good,
     # and replace symbols that fall back to incorrect glyphs on iOS/PWA/web fonts.
     portable_glyphs = {
@@ -682,14 +978,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-heatcomplete1.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-heatreeves2.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-heatcomplete1.pck"',
+            '"mainPack":"index-system-heatreeves2.pck"',
             config,
             count=1,
         )
@@ -722,10 +1018,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=heatcomplete1', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=heatreeves2', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=heatcomplete1',
+        'shared/afb-cloud.js?v=heatreeves2',
         html,
         count=1,
     )
