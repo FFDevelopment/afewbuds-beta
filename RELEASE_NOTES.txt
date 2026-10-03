@@ -1,8 +1,6 @@
-AFewBuds Web Release 0.7.9-beta.19
+AFewBuds 0.7.9-beta.20
 
-- Removes the separate grow-room ROOM / GROW / VENT wall switch board.
-- Moves ROOM LIGHT, GROW LIGHTS, and VENTILATION controls into the approached Grow Room System panel.
-- Adds a live status card above the system controls.
-- Uses large phone-friendly buttons inside a scrollable panel so controls remain on-screen.
-- Keeps Phone → Lights as an alternate control path.
-- Preserves the transactional pre-launch updater, rollback safeguards, account/admin pages, and player save storage.
+- Godot now sends the exact career JSON to the account cloud bridge after loading a local career and after every successful save.
+- Cloud uploads are serialized so rapid saves cannot arrive out of order.
+- If cloud upload fails, the local Godot save remains untouched and gameplay continues.
+- Existing browser-to-Home-Screen restore logic and the transactional auto-updater remain enabled.

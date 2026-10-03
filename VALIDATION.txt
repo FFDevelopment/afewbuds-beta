@@ -1,6 +1,8 @@
-AFewBuds 0.7.9-beta.19
-Updater manifest files: 23
-index.pck rebuilt from the beta.16 web PCK with beta.19 main.gd/project.godot.
-PCK entry count: 160.
-All PCK entry MD5 hashes verified after rebuild.
-Release manifest SHA-256 hashes generated from final package bytes.
+AFewBuds 0.7.9-beta.20 validation
+
+- index.pck rebuilt from the beta.19 package with beta.20 scripts/main.gd and project.godot.
+- PCK directory: 160 entries; replaced file MD5 values regenerated.
+- index.html PCK byte count matches the rebuilt PCK.
+- Direct Godot -> browser cloud bridge is present in scripts/main.gd and shared/afb-cloud.js.
+- Transactional updater manifest hashes are regenerated for release 0.7.9-beta.20-cloudpush1.
+- Existing cloud restore and account flows remain present.
