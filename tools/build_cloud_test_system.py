@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-restore4.pck")
+OUT_PCK = Path("cloud-test/index-system-restore5.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -225,11 +225,12 @@ func _hide_save_notification() -> void:
 
 func _phone_manual_save() -> void:
 \t_save_game()
-\tstatus_label.text = "Game saved. Cloud backup will update automatically while signed in."
+\t_show_save_notification("GAME SAVED ✓", "Saved locally. Cloud backup updates automatically while signed in.")
 \t_refresh_phone()
 
 func _phone_safe_quit() -> void:
 \t_save_game()
+\t_show_save_notification("GAME SAVED ✓", "Career saved. AFewBuds is safe to close.")
 \tphone_open = false
 \tphone_panel.visible = false
 \t_set_world_controls_visible(true)
@@ -299,14 +300,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-restore4.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-restore5.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-restore4.pck"',
+            '"mainPack":"index-system-restore5.pck"',
             config,
             count=1,
         )
@@ -339,10 +340,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account4', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account5', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=canonical-account4',
+        'shared/afb-cloud.js?v=canonical-account5',
         html,
         count=1,
     )
