@@ -1,0 +1,8 @@
+AFewBuds 0.7.9-beta.19-accountsync10
+
+- Keeps all validated accountsync9 behavior.
+- Automatically detects and clears stale answered customer sessions restored without an active sale/patience/exit timer.
+- Clears stale current customer/request state and explicitly re-arms the next customer timer after recovery.
+- Also re-arms customer scheduling after load whenever no visitor and no visit timer are active.
+- Existing storefront/Lay Low, raid lockdown, listed-stock, and simulation-block rules remain respected.
+- Force Reeves debug remains removed.
