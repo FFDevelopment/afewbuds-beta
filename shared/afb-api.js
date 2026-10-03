@@ -42,6 +42,60 @@
     return data;
   }
 
+  async function adminRefresh(refreshToken) {
+    if (!enabled) throw new Error('Backend is not configured yet.');
+    if (!refreshToken) throw new Error('Admin session expired.');
+    const res = await fetch(base + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: headers(),
+      body: JSON.stringify({refresh_token: refreshToken})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || 'Admin session expired.');
+    return data;
+  }
+
+  function saveAdminSession(value, remember=true) {
+    const key = 'afb_admin_session';
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+    if (!value || !value.access_token) return;
+    const stored = {
+      access_token: value.access_token,
+      refresh_token: value.refresh_token || '',
+      expires_at: Number(value.expires_at || 0) || (Math.floor(Date.now()/1000) + Number(value.expires_in || 3600)),
+      token_type: value.token_type || 'bearer'
+    };
+    (remember ? localStorage : sessionStorage).setItem(key, JSON.stringify(stored));
+  }
+
+  function getAdminSession() {
+    const raw = localStorage.getItem('afb_admin_session') || sessionStorage.getItem('afb_admin_session');
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch (_) { return null; }
+  }
+
+  function clearAdminSession() {
+    localStorage.removeItem('afb_admin_session');
+    sessionStorage.removeItem('afb_admin_session');
+  }
+
+  async function ensureAdminSession() {
+    let current = getAdminSession();
+    if (!current || !current.access_token) return null;
+    const now = Math.floor(Date.now()/1000);
+    if (Number(current.expires_at || 0) > now + 90) return current;
+    try {
+      const refreshed = await adminRefresh(current.refresh_token);
+      const remember = !!localStorage.getItem('afb_admin_session');
+      saveAdminSession(refreshed, remember);
+      return getAdminSession();
+    } catch (error) {
+      clearAdminSession();
+      throw error;
+    }
+  }
+
   function savePlayerSession(value, remember) {
     const key = 'afb_player_session';
     localStorage.removeItem(key);
@@ -73,6 +127,11 @@
     cfg,
     rpc,
     adminLogin,
+    adminRefresh,
+    saveAdminSession,
+    getAdminSession,
+    clearAdminSession,
+    ensureAdminSession,
     savePlayerSession,
     getPlayerSession,
     clearPlayerSession,
