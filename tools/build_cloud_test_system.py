@@ -41,6 +41,36 @@ def parse_pck(path):
     return blob, file_base, entries
 
 def patch_main(text):
+    ready_old = "func _ready() -> void:\n\trng.randomize()\n\t_load_game()\n"
+    ready_new = "func _ready() -> void:\n\trng.randomize()\n\t_apply_cloud_boot_save()\n\t_load_game()\n"
+    if ready_old not in text:
+        raise RuntimeError("Ready/load marker not found")
+    text = text.replace(ready_old, ready_new, 1)
+
+    cloud_marker = "func _load_game() -> void:\n"
+    if cloud_marker not in text:
+        raise RuntimeError("Load game marker not found")
+    cloud_block = '''func _apply_cloud_boot_save() -> void:
+\tif not OS.has_feature("web"):
+\t\treturn
+\tvar raw_variant: Variant = JavaScriptBridge.eval("window.AFB_CLOUD_BOOT_SAVE || ''", true)
+\tif not (raw_variant is String):
+\t\treturn
+\tvar raw: String = str(raw_variant)
+\tif raw.is_empty():
+\t\treturn
+\tvar parsed: Variant = JSON.parse_string(raw)
+\tif not (parsed is Dictionary):
+\t\treturn
+\tvar file: FileAccess = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+\tif file == null:
+\t\treturn
+\tfile.store_string(raw)
+\tfile.close()
+\tJavaScriptBridge.eval("window.AFB_CLOUD_BOOT_SAVE = '';", true)
+
+'''
+    text = text.replace(cloud_marker, cloud_block + cloud_marker, 1)
     router_old = '\t\t"heat":\n\t\t\tphone_title.text = "Heat"\n\t\t\t_build_heat_app()\n\t\t_:\n'
     router_new = '\t\t"heat":\n\t\t\tphone_title.text = "Heat"\n\t\t\t_build_heat_app()\n\t\t"system":\n\t\t\tphone_title.text = "System"\n\t\t\t_build_system_app()\n\t\t_:\n'
     if router_old not in text:
