@@ -1,8 +1,8 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync4",
+  "release_id": "0.7.9-beta.19-accountsync5",
   "game_build": "0.7.9-beta.19",
-  "generated_at_utc": "2026-10-03T16:06:02.995647+00:00",
+  "generated_at_utc": "2026-10-03T16:15:44.523787+00:00",
   "web_features": [
     "single-account-career",
     "cross-device-cloud-sync",
@@ -11,23 +11,25 @@
     "phone-manual-save",
     "manual-save-toast",
     "safe-sleep-quit",
+    "portable-ui-glyphs",
+    "persistent-admin-session",
     "transactional-updater"
   ],
   "files": [
     {
       "path": "index.html",
       "size": 19806,
-      "sha256": "9bb8056d5db5d203ac8cc6e49a65b3ccd74aa1264e704689ac8421faf770bb8a"
+      "sha256": "ca6f681b2e88464eb4db365c1adf45a0e4685fb22fb7b56cb73e65b89cf238f1"
     },
     {
-      "path": "index-accountsync4.js",
+      "path": "index-accountsync5.js",
       "size": 316041,
       "sha256": "2919613e2912ddb5409709b2ebe4efd83b6e20bc169b69c84e45893a0df37508"
     },
     {
-      "path": "index-accountsync4.pck",
-      "size": 25362704,
-      "sha256": "3f05ba6bec76e370ab00bf29f7f42f7a139517bafda1a14e1d5a565f7e679643"
+      "path": "index-accountsync5.pck",
+      "size": 25362576,
+      "sha256": "88a8ebcb43dad86f1e41e782281008a5975b947ba83716f8d30c34d43947f78e"
     },
     {
       "path": "index.wasm",
@@ -106,11 +108,11 @@
     },
     {
       "path": "shared/afb-api.js",
-      "size": 2640,
-      "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
+      "size": 4773,
+      "sha256": "27c8d09b6090529cdeaacd412f9d037401e021152a364a0f51ffb494f9726ea6"
     },
     {
-      "path": "shared/afb-cloud-accountsync4.js",
+      "path": "shared/afb-cloud-accountsync5.js",
       "size": 20052,
       "sha256": "5caeea0e4c66866b58bf3f0a2f12033a3b3f10b9ba3734bff09b5c8acfc2fd69"
     },
@@ -136,8 +138,8 @@
     },
     {
       "path": "admin/index.html",
-      "size": 4413,
-      "sha256": "48c0bfc2e7868a0871eda99d8524db5811dcc64f20712861ffd32d24f9718980"
+      "size": 5740,
+      "sha256": "d47b1b2a5ceb5aaa86bee4bf07d041e2c9349e5a7623b1b503eb171eec93080a"
     }
   ]
 }
