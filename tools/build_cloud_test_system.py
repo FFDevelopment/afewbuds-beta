@@ -1149,10 +1149,21 @@ func _apply_production_worker_character_style(friend_name: String) -> void:
 \t\t\tcontinue
 \t\tvar unlock_level: int = int(info.get("unlock", 1))
 '''
-    # Replace both normal seed-shop and next-locked scans.
-    if text.count(seed_shop_loop_old) < 2:
-        raise RuntimeError("Seed shop loop markers not found")
-    text = text.replace(seed_shop_loop_old, seed_shop_loop_new, 2)
+    if seed_shop_loop_old not in text:
+        raise RuntimeError("Seed shop list marker not found")
+    text = text.replace(seed_shop_loop_old, seed_shop_loop_new, 1)
+
+    next_locked_old = '''\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif grower_level < int(info.get("unlock", 1)):
+'''
+    next_locked_new = '''\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif bool(info.get("recipe_only", false)):
+\t\t\tcontinue
+\t\tif grower_level < int(info.get("unlock", 1)):
+'''
+    if next_locked_old not in text:
+        raise RuntimeError("Next locked seed marker not found")
+    text = text.replace(next_locked_old, next_locked_new, 1)
 
     genetics_pattern = r'func _build_genetics_app\(\) -> void:\n.*?(?=func _max_friend_loyalty\(\) -> int:\n)'
     genetics_new = '''func _genetics_recipe_catalog() -> Array[Dictionary]:
