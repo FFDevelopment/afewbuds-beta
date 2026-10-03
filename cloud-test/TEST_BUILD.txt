@@ -1,0 +1,8 @@
+AFewBuds isolated cloud test
+Build: beta.19 cloud + System phone test
+Features:
+- automatic local saves and background Supabase sync remain enabled
+- routine cloud sync notifications are silent
+- Phone -> System -> Save Game
+- Phone -> System -> Save & Sleep / Quit
+- live tester root build remains beta.19 unchanged
