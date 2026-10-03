@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>AFewBuds 0.7.9-beta.19 • Cloud Test</title>
+		<title>AFewBuds 0.7.9-beta.19 • Cloud + System Test</title>
 		<style>
 html, body, #canvas {
 	margin: 0;
@@ -247,10 +247,10 @@ body {
 
 		<script src="shared/config.js"></script>
 		<script src="shared/afb-api.js"></script>
-		<script src="shared/afb-cloud.js?v=cloudsync2"></script>
-		<script src="index.js?v=cloudsync2"></script>
+		<script src="shared/afb-cloud.js?v=cloudsync3-system"></script>
+		<script src="index.js?v=cloudsync3-system"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index.pck":25354652,"index.wasm":37902138},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":""};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index-system.pck":25359408,"index.wasm":37902138},"focusCanvas":true,"mainPack":"index-system.pck","gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":""};
 const GODOT_THREADS_ENABLED = false;
 let AFB_GAME_STARTED = false;
 
@@ -319,11 +319,6 @@ function afbShowCloudTestResult(ok, text) {
 	el.hidden = false;
 	setTimeout(() => { if (el) el.hidden = true; }, 8000);
 }
-window.addEventListener('afb-cloud-status', (event) => {
-	const d = event && event.detail || {};
-	if (d.state === 'synced') afbShowCloudTestResult(true, 'latest game save synced to Supabase');
-	else if (d.state === 'local_only') afbShowCloudTestResult(false, d.error || 'cloud sync failed');
-});
 async function afbCloudUploadOnlyTest() {
 	if (!window.AFB_API || !AFB_API.enabled || !window.AFB_CLOUD) return {ok:false, reason:'cloud_unavailable'};
 	const player = AFB_API.getPlayerSession();
@@ -340,11 +335,9 @@ async function afbLaunchGame() {
 	try {
 		const result = await afbCloudUploadOnlyTest();
 		console.log('AFewBuds cloud upload-only test:', result);
-		afbShowCloudTestResult(true, 'career uploaded to Supabase');
 	} catch (error) {
 		console.error('AFewBuds cloud upload-only test failed:', error);
 		window.AFB_CLOUD_TEST_RESULT = {ok:false, error:String(error && error.message || error), at:Date.now()};
-		afbShowCloudTestResult(false, String(error && error.message || error));
 	}
 	document.getElementById('afb-account-gate').hidden = true;
 	afbLoadTracker();
