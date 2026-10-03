@@ -1,8 +1,8 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync3",
+  "release_id": "0.7.9-beta.19-accountsync4",
   "game_build": "0.7.9-beta.19",
-  "generated_at_utc": "2026-10-03T15:59:13.868541+00:00",
+  "generated_at_utc": "2026-10-03T16:06:02.995647+00:00",
   "web_features": [
     "single-account-career",
     "cross-device-cloud-sync",
@@ -17,17 +17,17 @@
     {
       "path": "index.html",
       "size": 19806,
-      "sha256": "f87e5fd9d1ac6194b6ec9ba7a8ecf62dd8f20261049d4480087a1f010acf07c5"
+      "sha256": "9bb8056d5db5d203ac8cc6e49a65b3ccd74aa1264e704689ac8421faf770bb8a"
     },
     {
-      "path": "index-accountsync3.js",
+      "path": "index-accountsync4.js",
       "size": 316041,
       "sha256": "2919613e2912ddb5409709b2ebe4efd83b6e20bc169b69c84e45893a0df37508"
     },
     {
-      "path": "index-accountsync3.pck",
-      "size": 25362608,
-      "sha256": "4552e4a1ae35bde4f74c9300097af0dcc5543ec7bebd98bd8d2931f71dfc88f2"
+      "path": "index-accountsync4.pck",
+      "size": 25362704,
+      "sha256": "3f05ba6bec76e370ab00bf29f7f42f7a139517bafda1a14e1d5a565f7e679643"
     },
     {
       "path": "index.wasm",
@@ -110,7 +110,7 @@
       "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
     },
     {
-      "path": "shared/afb-cloud-accountsync3.js",
+      "path": "shared/afb-cloud-accountsync4.js",
       "size": 20052,
       "sha256": "5caeea0e4c66866b58bf3f0a2f12033a3b3f10b9ba3734bff09b5c8acfc2fd69"
     },
