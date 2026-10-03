@@ -1,0 +1,195 @@
+{
+  "build": "0.7.9-beta.16-accountfix1",
+  "files": [
+    {
+      "file": ".gitattributes",
+      "bytes": 85,
+      "sha256": "4c2ac4e9806ae548ec4528422b838f98e263142624942d8dda11ab544ac124be"
+    },
+    {
+      "file": ".nojekyll",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "ACCOUNT_FIX_README.txt",
+      "bytes": 844,
+      "sha256": "e4416d8090a38f89da2dc792fdace01c5716fc8d761be122cfa68a4af1cb0f23"
+    },
+    {
+      "file": "BUILD_VERSION.txt",
+      "bytes": 50,
+      "sha256": "71caa2aa481b54de74b597de02458223c4540634af0519a230a85313b4fa2e06"
+    },
+    {
+      "file": "HEAT_SYSTEM_AUDIT.md",
+      "bytes": 5022,
+      "sha256": "f3ac48fc00a35a23eab18a383c37ed3005e21e6b8810f213abb7a68e9c5eda21"
+    },
+    {
+      "file": "LOGO_UPDATE_README.txt",
+      "bytes": 3807,
+      "sha256": "470b50eb626956fb137597332ce0e359914e4585ad560d9794c0ba2e5876fac6"
+    },
+    {
+      "file": "PACKAGE_INTEGRITY.json",
+      "bytes": 1004,
+      "sha256": "b3a4ef01daebcb4bf69dddfff6aeaf80e83c2fb2b0e58de8a1a87cbbe77202fd"
+    },
+    {
+      "file": "RELEASE_NOTES.txt",
+      "bytes": 462,
+      "sha256": "4f7d7f12a09a9619338b5f299bb8ceba8a7019e32a6306cb67c66caa1b853ec0"
+    },
+    {
+      "file": "UPLOAD_ACCOUNT_FIX.txt",
+      "bytes": 777,
+      "sha256": "71d3ccb83652039285d06f6febc85041d3cccdcd041018d8b62d1687205cca10"
+    },
+    {
+      "file": "UPLOAD_INSTRUCTIONS.txt",
+      "bytes": 600,
+      "sha256": "d411cc07726b3d9a5e2e8dcceacada8b22dd24a9782b3ebce68ea80b364c5c1d"
+    },
+    {
+      "file": "VALIDATION.txt",
+      "bytes": 226,
+      "sha256": "42a2eca08188d4a0059d432e0060a166c404363fc83a66af9d3ef738e3b009b1"
+    },
+    {
+      "file": "account/index.html",
+      "bytes": 4510,
+      "sha256": "a95ce45f0bbec88c9d3d46771e9e96d619bfaff16ee5221291e782ad64cf18a9"
+    },
+    {
+      "file": "admin/index.html",
+      "bytes": 4413,
+      "sha256": "48c0bfc2e7868a0871eda99d8524db5811dcc64f20712861ffd32d24f9718980"
+    },
+    {
+      "file": "afewbuds-update.html",
+      "bytes": 2537,
+      "sha256": "01f5bfd3674b6840c818104e1eb71703b227eb4eef49d19c72d437d36bc77bf6"
+    },
+    {
+      "file": "index.144x144.png",
+      "bytes": 42461,
+      "sha256": "02f8bf5cfde6f6ec589872eeebca9af4e16ecadf9010b3e81338db024d6bc237"
+    },
+    {
+      "file": "index.180x180.png",
+      "bytes": 63167,
+      "sha256": "c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"
+    },
+    {
+      "file": "index.192x192.png",
+      "bytes": 70908,
+      "sha256": "2f08affc9ba792bbb049f0d70f1f3d478a19522b9fa2850311729220b3ec7df9"
+    },
+    {
+      "file": "index.512x512.png",
+      "bytes": 417417,
+      "sha256": "e62a8a7f9b04379c6c3dee56e6d9e30c85945b3745c37166ca3e506c57253373"
+    },
+    {
+      "file": "index.apple-touch-icon.png",
+      "bytes": 63167,
+      "sha256": "c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"
+    },
+    {
+      "file": "index.audio.position.worklet.js",
+      "bytes": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    },
+    {
+      "file": "index.audio.worklet.js",
+      "bytes": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    {
+      "file": "index.html",
+      "bytes": 16639,
+      "sha256": "e2cbda655d9f2b9ab6317c08b5a4fd8b41e3e0810265dc3fda5da77c7a1fcc1f"
+    },
+    {
+      "file": "index.icon.png",
+      "bytes": 11333,
+      "sha256": "9f401ca6e5b379d5b497b2d897174506ab5977af632882eca3361972ff60f12a"
+    },
+    {
+      "file": "index.js",
+      "bytes": 315645,
+      "sha256": "ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"
+    },
+    {
+      "file": "index.manifest.json",
+      "bytes": 746,
+      "sha256": "6a7e26454632f2442e99d286f8235f2fb63a1b605cc0aff685041729fd50a74f"
+    },
+    {
+      "file": "index.offline.html",
+      "bytes": 866,
+      "sha256": "6fb56f215819a021df7f1e9c4f41687ce776e70b6662a58f6fe4ad82ada7d286"
+    },
+    {
+      "file": "index.pck",
+      "bytes": 25354652,
+      "sha256": "d1abe3e56f3317c3d95ec350580930a0613bad1ae8817c522d754bd5e4f2916d"
+    },
+    {
+      "file": "index.png",
+      "bytes": 203379,
+      "sha256": "6fab8d8120280ba62714110d7baaf030419f649ed95d5840259b2aaf7ecf078f"
+    },
+    {
+      "file": "index.service.worker.js",
+      "bytes": 6354,
+      "sha256": "277e427b836aec0f44d58470f052dde0b6680de8f972179665f544bd7f140463"
+    },
+    {
+      "file": "index.wasm",
+      "bytes": 37902138,
+      "sha256": "11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"
+    },
+    {
+      "file": "inline_3.js",
+      "bytes": 7873,
+      "sha256": "17982f44439cd2530764fc023320fa8434c9be478c0e46c109609ebd2492608b"
+    },
+    {
+      "file": "shared/afb-api.js",
+      "bytes": 2640,
+      "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
+    },
+    {
+      "file": "shared/afb-tracker.js",
+      "bytes": 1275,
+      "sha256": "f0d2e47e5bace76d76ed3cbc31ab55734cf04933de79460e222746901615d99f"
+    },
+    {
+      "file": "shared/config.example.js",
+      "bytes": 192,
+      "sha256": "06325cd001091bebb926288a71c5448c22503b929c27cdd8c75aeac599cc6e2b"
+    },
+    {
+      "file": "shared/config.js",
+      "bytes": 229,
+      "sha256": "aff130ab79416dc114bf9aff22ebb6139dffc6e0f0332a5eded2b0e29d6846b1"
+    },
+    {
+      "file": "shared/style.css",
+      "bytes": 4226,
+      "sha256": "0ece615194c5076a49ed3e48a3b7c49d0a676e27d79a8bb390e0cd888be91a90"
+    },
+    {
+      "file": "supabase/PATCH_EXISTING.sql",
+      "bytes": 1120,
+      "sha256": "11e66d56804dad3421ab59d40e10418b4ecad032739aed7874d0e09aecd838d0"
+    },
+    {
+      "file": "supabase/schema.sql",
+      "bytes": 15799,
+      "sha256": "5701671d9886d16b79a3318e98a91b26f6effabdab15032b8253eb32ff6ec14d"
+    }
+  ]
+}

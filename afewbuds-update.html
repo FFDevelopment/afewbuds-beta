@@ -1,149 +1,16 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex"><meta name="color-scheme" content="dark">
-<title>AFewBuds — Repair beta.16 browser update</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#101914;color:#f1f5f2;font:17px/1.5 system-ui,-apple-system,sans-serif;padding:24px 18px;min-height:100vh}main{max-width:680px;margin:auto;padding:clamp(18px,4vw,32px);background:#19271e;border:1px solid #3d5343;border-radius:18px}h1{font-size:clamp(25px,6vw,34px);line-height:1.2;margin:12px 0 18px}.eyebrow{color:#b2d0bc;letter-spacing:.07em;font-size:13px;font-weight:700}.note{padding:14px;border-left:3px solid #b2d0bc;background:#203629}button,a.button{display:block;width:100%;font:inherit;font-weight:700;text-align:center;border:0;border-radius:11px;padding:16px;background:#b8e4c2;color:#102017;text-decoration:none;cursor:pointer;margin-top:18px;touch-action:manipulation}button:disabled{opacity:.6;cursor:wait}a{color:#c7ead0}label{display:flex;align-items:flex-start;gap:12px;margin:20px 0}input{min-width:24px;min-height:24px;margin:2px 0 0}#status{white-space:pre-wrap;overflow-wrap:anywhere}progress{width:100%;height:20px;margin-top:16px}small{color:#c0cdc4}#log{max-height:160px;overflow:auto;font:13px/1.5 ui-monospace,monospace;white-space:pre-wrap;color:#c5d4c9}body.busy a:not(.button){pointer-events:none}[hidden]{display:none!important}
-</style>
-</head>
-<body><main>
-<img src="index.180x180.png?v=0.7.9-beta.16" alt="AFewBuds" width="80" height="80" style="border-radius:18px"><div class="eyebrow">AFEWBUDS · BROWSER UPDATE REPAIR</div>
-<h1>Load the beta.16 update</h1>
-<p>This downloads and verifies the website game files for <strong>0.7.9-beta.16</strong>, then refreshes this browser's game cache. It does not reset your career.</p>
-<p class="note"><strong>Before starting:</strong> save or pause your game, then close every other AFewBuds tab or home-screen game window. Open this page in the <strong>same browser</strong> where you normally play.</p>
-<p><strong>Do not clear website data.</strong> This repair never reads, changes, or deletes your save database, local storage, cookies, or Xogot project.</p>
-<label><input id="confirmed" type="checkbox"><span>I have saved/paused and closed the other game windows.</span></label>
-<button id="repair" type="button">Download and verify beta.16</button>
-<progress id="progress" value="0" max="100" hidden></progress>
-<p id="status" role="status" aria-live="polite">Use a reliable connection. The game files total approximately 61 MB. Keep this page open during the repair.</p>
-<a id="play" class="button" hidden>Open AFewBuds</a>
-<pre id="log" aria-label="Verified download details"></pre>
-<small>This is a one-time beta.16 repair, not a newer gameplay release. A different or incomplete server build is rejected instead of silently mixing versions.</small>
-</main><script>
-'use strict';
-// The exact unmodified beta.16 export. Digests are generated from the supplied ZIP.
-const MANIFEST = [{"name":"index.144x144.png","bytes":42461,"sha256":"02f8bf5cfde6f6ec589872eeebca9af4e16ecadf9010b3e81338db024d6bc237"},{"name":"index.180x180.png","bytes":63167,"sha256":"c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"},{"name":"index.192x192.png","bytes":70908,"sha256":"2f08affc9ba792bbb049f0d70f1f3d478a19522b9fa2850311729220b3ec7df9"},{"name":"index.512x512.png","bytes":417417,"sha256":"e62a8a7f9b04379c6c3dee56e6d9e30c85945b3745c37166ca3e506c57253373"},{"name":"index.apple-touch-icon.png","bytes":63167,"sha256":"c2cd4b8b26592391af54bee68d3f2865bbe46d6e38e5da492545ba8f4da6a1bf"},{"name":"index.audio.position.worklet.js","bytes":2973,"sha256":"be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"},{"name":"index.audio.worklet.js","bytes":7298,"sha256":"5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"},{"name":"index.html","bytes":5900,"sha256":"ee4b878b9727947f03c0578eab733cd41da878145245eda3dcb4ae3418d17d71"},{"name":"index.icon.png","bytes":11333,"sha256":"9f401ca6e5b379d5b497b2d897174506ab5977af632882eca3361972ff60f12a"},{"name":"index.js","bytes":315645,"sha256":"ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"},{"name":"index.manifest.json","bytes":746,"sha256":"6a7e26454632f2442e99d286f8235f2fb63a1b605cc0aff685041729fd50a74f"},{"name":"index.offline.html","bytes":866,"sha256":"6fb56f215819a021df7f1e9c4f41687ce776e70b6662a58f6fe4ad82ada7d286"},{"name":"index.pck","bytes":25354652,"sha256":"d1abe3e56f3317c3d95ec350580930a0613bad1ae8817c522d754bd5e4f2916d"},{"name":"index.png","bytes":203379,"sha256":"6fab8d8120280ba62714110d7baaf030419f649ed95d5840259b2aaf7ecf078f"},{"name":"index.service.worker.js","bytes":6267,"sha256":"932d34e890baf98447d4cb478118c8dcd5faa29635813f16e181fa0bc8bb9f5f"},{"name":"index.wasm","bytes":37902138,"sha256":"11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"}];
-const TARGET_CACHE = 'AFewBuds Beta v0-sw-cache-afewbuds-0.7.9-beta.16-room-phone-rewards-d1abe3e56f33';
-const EXPECTED_FOLDER = '/afewbuds-beta/';
-const BASE = new URL('./', location.href);
-const button = document.getElementById('repair');
-const status = document.getElementById('status');
-const progress = document.getElementById('progress');
-const play = document.getElementById('play');
-const log = document.getElementById('log');
-const totalBytes = MANIFEST.reduce((n, file) => n + file.bytes, 0);
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-let busy = false;
-function say(message) { status.textContent = message; }
-function digest(bytes) {
-  return crypto.subtle.digest('SHA-256', bytes).then(value =>
-    Array.from(new Uint8Array(value), byte => byte.toString(16).padStart(2, '0')).join(''));
-}
-async function freshFile(file, token) {
-  const url = new URL(file.name, BASE);
-  // A unique resource URL avoids the old worker's exact-URL cache lookup.
-  url.searchParams.set('afb_repair', token);
-  const abort = new AbortController();
-  const timer = setTimeout(() => abort.abort(), 180000);
-  try {
-    const response = await fetch(url.href, {cache:'no-store', credentials:'same-origin', signal:abort.signal});
-    if (!response.ok) throw new Error(file.name + ': HTTP ' + response.status + '. Check the Pages deployment.');
-    const bytes = await response.arrayBuffer();
-    if (bytes.byteLength !== file.bytes || await digest(bytes) !== file.sha256) {
-      throw new Error(file.name + ' does not match the complete beta.16 export. The server may still have an older, incomplete, or newer build. No save data was changed.');
-    }
-    const headers = new Headers(response.headers);
-    // Bytes are already decoded; do not attach stale compressed-transfer metadata.
-    headers.delete('content-encoding');headers.delete('transfer-encoding');
-    headers.set('content-length', String(bytes.byteLength));
-    return new Response(bytes, {status:200, headers});
-  } finally { clearTimeout(timer); }
-}
-async function waitForWorker(registration, scriptURL) {
-  const deadline = Date.now() + 45000;
-  while (Date.now() < deadline) {
-    const candidate = [registration.waiting, registration.installing, registration.active]
-      .find(worker => worker && worker.scriptURL === scriptURL);
-    if (candidate && (candidate.state === 'installed' || candidate.state === 'activated')) return candidate;
-    if (candidate && candidate.state === 'redundant') throw new Error('The browser could not install the game loader. Retry with a stable connection.');
-    await delay(100);
-  }
-  throw new Error('Timed out installing the game loader. Keep other AFewBuds windows closed and retry.');
-}
-async function takeControl(worker, scriptURL) {
-  // Use the existing Godot worker's claim handler; do NOT reload other tabs.
-  worker.postMessage('claim');
-  const deadline = Date.now() + 15000;
-  while (Date.now() < deadline) {
-    if (worker.state === 'activated' && navigator.serviceWorker.controller &&
-        navigator.serviceWorker.controller.scriptURL === scriptURL) return;
-    await delay(100);
-  }
-  throw new Error('The files are verified, but this browser has not switched its loader. Close the other game windows and retry. Do not clear website data.');
-}
-button.addEventListener('click', async () => {
-  if (busy) return;
-  if (!document.getElementById('confirmed').checked) {
-    say('First save/pause the game, close its other windows, then check the confirmation box.');return;
-  }
-  if (BASE.pathname !== EXPECTED_FOLDER) {
-    say('Upload afewbuds-update.html beside index.html at the root of your afewbuds-beta repository, then open it through the published website. Do not open the downloaded HTML directly.');return;
-  }
-  if (!window.isSecureContext || !('serviceWorker' in navigator) || !('caches' in window) || !crypto.subtle) {
-    say('This needs HTTPS and a browser that supports service workers and Cache Storage. Open it in the normal browser where you play, not a file preview.');return;
-  }
-  busy = true;button.disabled = true;document.body.classList.add('busy');
-  progress.hidden = false;progress.value = 0;play.hidden = true;log.textContent = '';
-  const token = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
-  const stageName = 'afewbuds-repair-staging-' + BASE.pathname + '-' + token;
-  let stage;
-  try {
-    stage = await caches.open(stageName);
-    let downloaded = 0;
-    for (const file of MANIFEST) {
-      say('Downloading and verifying ' + file.name + '\nKeep this page open. Save data is not accessed.');
-      const response = await freshFile(file, token);
-      await stage.put(new URL(file.name, BASE).href, response);
-      downloaded += file.bytes;progress.value = downloaded / totalBytes * 90;
-      log.textContent += '\u2713 ' + file.name + '\n';log.scrollTop = log.scrollHeight;
-    }
-    // Only proceed after EVERY file passes its exact beta.16 integrity check.
-    say('All game files verified. Installing the browser loader…');
-    const swURL = new URL('index.service.worker.js', BASE);
-    swURL.searchParams.set('afb_repair', token);
-    const registration = await navigator.serviceWorker.register(swURL.href, {scope:BASE.href, updateViaCache:'none'});
-    if (registration.scope !== BASE.href) throw new Error('Unexpected service-worker scope; repair stopped.');
-    const worker = await waitForWorker(registration, swURL.href);
-    const target = await caches.open(TARGET_CACHE);
-    for (const file of MANIFEST) {
-      if (file.name === 'index.service.worker.js') continue;
-      const url = new URL(file.name, BASE).href;
-      const response = await stage.match(url);
-      if (!response) throw new Error('A verified download is missing. Retry the repair.');
-      await target.put(url, response);
-    }
-    // Also cover the usual trailing-slash play URL, not only /index.html.
-    await target.put(BASE.href, await stage.match(new URL('index.html', BASE).href));
-    progress.value = 97;
-    await takeControl(worker, swURL.href);
-    // Check the game-data request through the now-active worker before offering Play.
-    const loadedPack = await fetch(new URL('index.pck', BASE).href, {cache:'no-store'});
-    if (!loadedPack.ok || await digest(await loadedPack.arrayBuffer()) !== MANIFEST.find(file => file.name === 'index.pck').sha256) {
-      throw new Error('The browser is still serving a different game-data file. Keep game windows closed and retry.');
-    }
-    progress.value = 100;
-    say('Ready: beta.16 game files and the active browser loader are verified.\nOpen the game, then check Phone → Help for 0.7.9-beta.16. Your save storage was not changed.');
-    play.href = BASE.href;play.hidden = false;button.textContent = 'Verify again';
-  } catch (error) {
-    const message = error && error.name === 'AbortError' ? 'The download timed out. Retry with a stable connection.' : String(error && error.message || error);
-    say('Repair did not finish.\n' + message + '\nDo not clear website data.');
-    button.textContent = 'Retry beta.16 repair';
-  } finally {
-    // Remove ONLY this attempt's temporary download cache, never user storage.
-    try { await caches.delete(stageName); } catch (_) {}
-    busy = false;button.disabled = false;document.body.classList.remove('busy');
-  }
-});
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AFewBuds Account Fix</title>
+<style>body{margin:0;background:#07110b;color:#eef6ec;font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;display:grid;place-items:center;padding:20px;box-sizing:border-box}.card{width:min(620px,100%);background:#121d16;border:1px solid #314538;border-radius:22px;padding:26px;box-shadow:0 24px 70px #0008}h1{margin:0 0 8px}.sub{color:#aab6aa;line-height:1.5}.ok{color:#a9d492}.bad{color:#ffab96}button{width:100%;min-height:50px;border:0;border-radius:12px;background:#8fc379;color:#0b150d;font-weight:800;font-size:16px;cursor:pointer;margin-top:12px}.note{font-size:13px;color:#899789;line-height:1.5;margin-top:16px}</style></head>
+<body><main class="card"><h1>AFewBuds account hotfix</h1><p class="sub">This clears only old AFewBuds web-cache files and service workers. It does not clear localStorage, IndexedDB, or Godot save data.</p><p id="state">Ready.</p><button id="repair">Repair browser cache and open AFewBuds</button><p class="note">Use this after the GitHub Pages deployment finishes. Do not use Safari's “Clear Website Data” option.</p></main>
+<script>
+const state=document.getElementById('state'),btn=document.getElementById('repair');
+btn.onclick=async()=>{btn.disabled=true;state.className='';state.textContent='Checking the new build…';try{
+ const res=await fetch('index.html?afb_accountfix1='+Date.now(),{cache:'no-store'}); const html=await res.text();
+ if(!res.ok||!html.includes('AFewBuds 0.7.9-beta.16 Account Fix')||!html.includes('afb-login-form')) throw new Error('The new account-fix index.html is not live yet. Wait for GitHub Pages to finish deploying and try again.');
+ state.textContent='Removing old AFewBuds caches…';
+ if('serviceWorker' in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.filter(r=>r.scope.includes('/afewbuds-beta/')).map(r=>r.unregister()));}
+ if('caches' in window){const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith('AFewBuds Beta v0-sw-cache-')||k.toLowerCase().includes('afewbuds')).map(k=>caches.delete(k)));}
+ state.className='ok';state.textContent='Done. Your save storage was not touched. Opening AFewBuds…';
+ setTimeout(()=>location.replace('index.html?afb_accountfix1='+Date.now()),700);
+}catch(e){state.className='bad';state.textContent=e.message||String(e);btn.disabled=false;}};
 </script></body></html>
