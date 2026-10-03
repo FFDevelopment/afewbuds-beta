@@ -1,23 +1,32 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19",
+  "release_id": "0.7.9-beta.19-accountsync1",
   "game_build": "0.7.9-beta.19",
-  "generated_at_utc": "2026-10-03T11:56:16.739168+00:00",
+  "generated_at_utc": "2026-10-03T15:45:32.722127+00:00",
+  "web_features": [
+    "single-account-career",
+    "cross-device-cloud-sync",
+    "direct-godot-cloud-restore",
+    "silent-background-sync",
+    "phone-manual-save",
+    "safe-sleep-quit",
+    "transactional-updater"
+  ],
   "files": [
     {
       "path": "index.html",
-      "size": 19145,
-      "sha256": "8856b1ebe4f9e375915c371ca6f3f8583d61bfbb956a333802a15434e79c8c43"
+      "size": 19806,
+      "sha256": "8d4c4b6fd2a0b937a366aefb9d125bbab92212651ce01ff5c4b678d21e609bd7"
     },
     {
-      "path": "index.js",
-      "size": 315645,
-      "sha256": "ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"
+      "path": "index-accountsync1.js",
+      "size": 316041,
+      "sha256": "2919613e2912ddb5409709b2ebe4efd83b6e20bc169b69c84e45893a0df37508"
     },
     {
-      "path": "index.pck",
-      "size": 25356016,
-      "sha256": "ba0607d40a7a0308fce5911b71050d2ca8b0dedf42886e80a7e60bbd4e9bcdc6"
+      "path": "index-accountsync1.pck",
+      "size": 25359984,
+      "sha256": "264d6b04fadfc704bd2720aab383a5949024087474adc9ff69553fff659c796c"
     },
     {
       "path": "index.wasm",
@@ -80,6 +89,16 @@
       "sha256": "e62a8a7f9b04379c6c3dee56e6d9e30c85945b3745c37166ca3e506c57253373"
     },
     {
+      "path": "index.service.worker.js",
+      "size": 9676,
+      "sha256": "ba156b601926cb070f8862857c2015c65273beda223d7f676a8a561cb4c13cdd"
+    },
+    {
+      "path": "afewbuds-update.html",
+      "size": 4392,
+      "sha256": "277a4cc0d990b2129a3c0b5638a4eaa9874a289168d889f3faaf42f9335c8711"
+    },
+    {
       "path": "shared/config.js",
       "size": 217,
       "sha256": "b58eab527e512731d3728880a20d02a4341011d94ee5f2452ed55d656866ebd0"
@@ -88,6 +107,16 @@
       "path": "shared/afb-api.js",
       "size": 2640,
       "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
+    },
+    {
+      "path": "shared/afb-cloud-accountsync1.js",
+      "size": 20052,
+      "sha256": "5caeea0e4c66866b58bf3f0a2f12033a3b3f10b9ba3734bff09b5c8acfc2fd69"
+    },
+    {
+      "path": "shared/afb-updater.js",
+      "size": 11616,
+      "sha256": "c75fd0d83881b672c3d9335914dc4b4db13f3a0c6d982abec412757cab6e18f5"
     },
     {
       "path": "shared/afb-tracker.js",
@@ -100,11 +129,6 @@
       "sha256": "0ece615194c5076a49ed3e48a3b7c49d0a676e27d79a8bb390e0cd888be91a90"
     },
     {
-      "path": "shared/afb-updater.js",
-      "size": 11616,
-      "sha256": "c75fd0d83881b672c3d9335914dc4b4db13f3a0c6d982abec412757cab6e18f5"
-    },
-    {
       "path": "account/index.html",
       "size": 4510,
       "sha256": "a95ce45f0bbec88c9d3d46771e9e96d619bfaff16ee5221291e782ad64cf18a9"
@@ -113,11 +137,6 @@
       "path": "admin/index.html",
       "size": 4413,
       "sha256": "48c0bfc2e7868a0871eda99d8524db5811dcc64f20712861ffd32d24f9718980"
-    },
-    {
-      "path": "afewbuds-update.html",
-      "size": 4392,
-      "sha256": "277a4cc0d990b2129a3c0b5638a4eaa9874a289168d889f3faaf42f9335c8711"
     }
   ]
 }
