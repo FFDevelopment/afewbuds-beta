@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-glyphfix1.pck")
+OUT_PCK = Path("cloud-test/index-system-rewards1.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -91,11 +91,104 @@ def patch_main(text):
         raise RuntimeError("Save notification UI call marker not found")
     text = text.replace(ui_call_marker, ui_call_marker + "\t_build_save_notification()\n", 1)
 
+    phone_hud_old = '''\tvar phone_button: Button = Button.new()
+\tphone_button.text = "PHONE"
+\tphone_button.custom_minimum_size = Vector2(124, 48)
+\tphone_button.pressed.connect(_toggle_phone)
+\ttop_row.add_child(phone_button)
+'''
+    phone_hud_new = '''\tvar phone_button: Button = Button.new()
+\tphone_button.text = "PHONE"
+\tphone_button.custom_minimum_size = Vector2(140, 52)
+\tphone_button.add_theme_font_size_override("font_size", 18)
+\tphone_button.add_theme_color_override("font_color", Color("effff3"))
+\tphone_button.add_theme_color_override("font_hover_color", Color("ffffff"))
+\tphone_button.add_theme_stylebox_override("normal", _style_box(Color("1b3324"), Color("78c98a"), 13, 2))
+\tphone_button.add_theme_stylebox_override("hover", _style_box(Color("274b34"), Color("9be0aa"), 13, 2))
+\tphone_button.add_theme_stylebox_override("pressed", _style_box(Color("13271b"), Color("5dac70"), 13, 2))
+\tphone_button.tooltip_text = "Open phone"
+\tphone_button.pressed.connect(_toggle_phone)
+\ttop_row.add_child(phone_button)
+'''
+    if phone_hud_old not in text:
+        raise RuntimeError("HUD phone button marker not found")
+    text = text.replace(phone_hud_old, phone_hud_new, 1)
+
     home_old = '\t_add_phone_app_tile(grid, "", "Stats", "Progress & revenue", "stats")\n\t_add_phone_app_tile(grid, "", "Help", "Basics & controls", "help")\n'
     home_new = '\t_add_phone_app_tile(grid, "", "Stats", "Progress & revenue", "stats")\n\t_add_phone_app_tile(grid, "", "System", "Save game & safe quit", "system")\n\t_add_phone_app_tile(grid, "", "Help", "Basics & controls", "help")\n'
     if home_old not in text:
         raise RuntimeError("Phone home marker not found")
     text = text.replace(home_old, home_new, 1)
+
+    claim_summary_old = '''\tsummary.modulate = Color("d7c28a") if ready_count > 0 else Color("9fb0ba")
+\tsummary_box.add_child(summary)
+
+\tvar hint: Label = Label.new()
+'''
+    claim_summary_new = '''\tsummary.modulate = Color("d7c28a") if ready_count > 0 else Color("9fb0ba")
+\tsummary_box.add_child(summary)
+\tif ready_count > 0:
+\t\tvar claim_all: Button = Button.new()
+\t\tclaim_all.text = "CLAIM ALL (%d)" % ready_count
+\t\tclaim_all.custom_minimum_size.y = 54
+\t\tclaim_all.add_theme_font_size_override("font_size", 18)
+\t\tclaim_all.add_theme_stylebox_override("normal", _style_box(Color("1b3324"), Color("78c98a"), 12, 2))
+\t\tclaim_all.add_theme_stylebox_override("hover", _style_box(Color("274b34"), Color("9be0aa"), 12, 2))
+\t\tclaim_all.add_theme_stylebox_override("pressed", _style_box(Color("13271b"), Color("5dac70"), 12, 2))
+\t\tclaim_all.pressed.connect(_claim_all_advancements)
+\t\tsummary_box.add_child(claim_all)
+
+\tvar hint: Label = Label.new()
+'''
+    if claim_summary_old not in text:
+        raise RuntimeError("Rewards summary marker not found")
+    text = text.replace(claim_summary_old, claim_summary_new, 1)
+
+    claim_func_marker = "func _increment_advancement_stat(metric_name: String, amount: int = 1) -> void:\n"
+    if claim_func_marker not in text:
+        raise RuntimeError("Advancement claim function marker not found")
+    claim_all_block = '''func _claim_all_advancements() -> void:
+\tvar ready_entries: Array[Dictionary] = []
+\tfor entry: Dictionary in advancement_catalog:
+\t\tvar advancement_id: String = str(entry.get("id", ""))
+\t\tif advancement_id.is_empty():
+\t\t\tcontinue
+\t\tif bool(advancement_claimed.get(advancement_id, false)):
+\t\t\tcontinue
+\t\tif _advancement_is_ready(entry):
+\t\t\tready_entries.append(entry)
+\tif ready_entries.is_empty():
+\t\treturn
+
+\tvar total_cash: int = 0
+\tvar total_xp: int = 0
+\tvar total_rep: int = 0
+\tvar total_fertilizer: int = 0
+\tvar seed_totals: Dictionary = {}
+\tfor entry: Dictionary in ready_entries:
+\t\tvar advancement_id: String = str(entry.get("id", ""))
+\t\tadvancement_claimed[advancement_id] = true
+\t\ttotal_cash += int(entry.get("reward_cash", 0))
+\t\ttotal_xp += int(entry.get("reward_xp", 0))
+\t\ttotal_rep += int(entry.get("reward_rep", 0))
+\t\ttotal_fertilizer += int(entry.get("reward_fertilizer", 0))
+\t\tvar reward_seed: String = str(entry.get("reward_seed", ""))
+\t\tvar reward_seed_count: int = int(entry.get("reward_seed_count", 0))
+\t\tif not reward_seed.is_empty() and reward_seed_count > 0:
+\t\t\tseed_totals[reward_seed] = int(seed_totals.get(reward_seed, 0)) + reward_seed_count
+
+\tcash += total_cash
+\tfertilizer_units += total_fertilizer
+\tfor seed_name: String in seed_totals.keys():
+\t\tseed_inventory[seed_name] = int(seed_inventory.get(seed_name, 0)) + int(seed_totals[seed_name])
+\t_add_progress(total_xp, total_rep)
+\t_update_cash_ui()
+\tstatus_label.text = "Claimed %d completed rewards." % ready_entries.size()
+\t_save_game()
+\t_refresh_phone()
+
+'''
+    text = text.replace(claim_func_marker, claim_all_block + claim_func_marker, 1)
 
     toast_func_marker = "func _build_pause_overlay() -> void:\n"
     if toast_func_marker not in text:
@@ -322,14 +415,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-glyphfix1.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-rewards1.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-glyphfix1.pck"',
+            '"mainPack":"index-system-rewards1.pck"',
             config,
             count=1,
         )
@@ -362,10 +455,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=glyphfix1', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=rewards1', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=glyphfix1',
+        'shared/afb-cloud.js?v=rewards1',
         html,
         count=1,
     )
