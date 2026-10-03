@@ -896,12 +896,12 @@ func _pay_reeves_due(early: bool = false) -> void:
     text = text.replace(migration_marker, migration_new, 1)
 
     # Malik production-worker 3D v1 + genetics recipe progression.
-    worker_var_old = "var production_worker_face_shell: MeshInstance3D\\n"
+    worker_var_old = "var production_worker_face_shell: MeshInstance3D\n"
     if worker_var_old not in text:
         raise RuntimeError("Production worker variable marker not found")
     text = text.replace(
         worker_var_old,
-        worker_var_old + "var production_worker_malik_details: Node3D\\n",
+        worker_var_old + "var production_worker_malik_details: Node3D\n",
         1,
     )
 
@@ -918,7 +918,7 @@ func _pay_reeves_due(early: bool = false) -> void:
         raise RuntimeError("Production worker build marker not found")
     text = text.replace(worker_build_old, worker_build_new, 1)
 
-    worker_face_marker = "func _worker_face_texture_path(friend_name: String) -> String:\\n"
+    worker_face_marker = "func _worker_face_texture_path(friend_name: String) -> String:\n"
     malik_model_block = '''func _malik_detail_box(parent: Node3D, detail_name: String, size: Vector3, position_value: Vector3, color_value: Color, rotation_value: Vector3 = Vector3.ZERO) -> MeshInstance3D:
 \tvar part: MeshInstance3D = MeshInstance3D.new()
 \tpart.name = detail_name
