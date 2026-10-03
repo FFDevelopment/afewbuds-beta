@@ -1,1 +1,1 @@
-AFewBuds 0.7.9-beta.17 — account, cloud-save and analytics update
+AFewBuds 0.7.9-beta.16 — layout, 24-minute day and strain-color update

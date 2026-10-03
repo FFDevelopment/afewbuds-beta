@@ -1,3 +1,6 @@
+HISTORICAL beta.5 branding notes. Current build: 0.7.9-beta.1.
+Use UPLOAD_INSTRUCTIONS.txt for this release.
+
 AFewBuds 0.7.8-beta.5 — AFB logo integration
 
 WHAT CHANGED

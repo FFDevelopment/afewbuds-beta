@@ -1,18 +1,10 @@
-AFewBuds beta.17 GitHub Pages upload
+AFewBuds 0.7.9-beta.4
 
-1. Extract this ZIP.
-2. Copy ALL contents into the existing local afewbuds-beta repository root.
-3. Replace matching old game files when prompted.
-4. Keep .git and your repository settings.
-5. Commit to main, then Push origin.
-6. Wait for GitHub Actions -> Pages build and deployment to turn green.
-
-Important:
-- Upload the CONTENTS of this folder, not the ZIP itself.
-- index.html, index.pck, index.wasm and afewbuds-update.html stay at repo root.
-- admin/ and shared/ stay as folders at repo root.
-- SUPABASE_SETUP/ is documentation/schema only; it is harmless on Pages but you may keep it locally instead if preferred.
-
-Live game: https://ffdevelopment.github.io/afewbuds-beta/
-Admin:     https://ffdevelopment.github.io/afewbuds-beta/admin/
-Repair:    https://ffdevelopment.github.io/afewbuds-beta/afewbuds-update.html
+Test the Godot/Xogot project before replacing the live website.
+Extract this ZIP and replace all exported files at the existing repository root.
+Do not upload the ZIP itself or create a nested folder. Keep .git/.gitattributes.
+Include the new afewbuds-update.html; it verifies this exact build only.
+Commit and push the intended changed files, then confirm the Pages deployment.
+The regular game address stays the same. Check Phone → Help for 0.7.9-beta.4.
+Do not clear website data or reset a career to update.
+See RELEASE_NOTES.txt and VALIDATION.txt for scope and limits.

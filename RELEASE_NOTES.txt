@@ -1,17 +1,6 @@
-# AFewBuds 0.7.9-beta.17
+# AFewBuds 0.7.9-beta.16
 
-## Account and save linking
-
-- Requires a player account before the game loads the career.
-- Supports username/password registration and sign-in; update email is optional and opt-in only.
-- First sign-in links the existing local save to the account. If the account already has another save, the player chooses which career to continue. The local file is backed up before a cloud save replaces it.
-- Saves sync to Supabase after the local save is written. Existing application identity and save path remain unchanged for beta.16 players.
-- Opens and play time are reported to the AFewBuds admin dashboard.
-
-## Setup
-
-Run `supabase/schema.sql` from the matching admin portal in the project’s Supabase SQL Editor, create an administrator under Authentication → Users, then add that user UUID to `afb_admin_users`. See the admin portal README for website setup.
-
-## Verification
-
-The project files and Supabase SQL were inspected and the packaged archives were integrity-checked. Godot/Xogot is not installed in this workspace, so import, engine parsing, and live Supabase sign-in/save round-trips still need to be run in the game editor against the configured project.
+- Widened grow tents 2 and 3 while keeping their established depth and room anchors.
+- Returned all three expansion-tent pots to one side-by-side row with visible gaps between saucers.
+- Replaced oversized spherical plant click zones with tighter box-shaped hit areas, with extra-tight zones in tents 2 and 3 so adjacent plants do not steal taps.
+- Preserves beta.15 shelf/panel camera fixes and beta.13 per-substitute acceptance odds.
