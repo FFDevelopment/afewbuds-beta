@@ -1,0 +1,5 @@
+AFewBuds 0.7.9-beta.19-accountsync8
+
+- Keeps all validated accountsync7 gameplay, Heat/Reeves, cloud save, UI, admin-session and Claim All behavior.
+- Removes the Force Reeves debug control now that the natural Reeves flow has been validated.
+- Does not include the experimental Malik 3D model or cloud-test genetics additions.
