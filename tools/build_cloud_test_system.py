@@ -610,7 +610,7 @@ var last_enforcement_report: String = ""
     )
 
     old_advancement = '{"id": "reeves_negotiate", "category": "Heat", "tier": 4, "title": "Play Hardball", "description": "Successfully negotiate better terms with Reeves.", "metric": "reeves_negotiations", "target": 1, "reward_cash": 0, "reward_xp": 180, "reward_rep": 5},'
-    new_advancement = '{"id": "reeves_negotiate", "category": "Heat", "tier": 4, "title": "Settle Up", "description": "Clear Reeves\\'s remaining protection balance in one payment.", "metric": "reeves_negotiations", "target": 1, "reward_cash": 0, "reward_xp": 180, "reward_rep": 5},'
+    new_advancement = """{"id": "reeves_negotiate", "category": "Heat", "tier": 4, "title": "Settle Up", "description": "Clear Reeves's remaining protection balance in one payment.", "metric": "reeves_negotiations", "target": 1, "reward_cash": 0, "reward_xp": 180, "reward_rep": 5},"""
     if old_advancement not in text:
         raise RuntimeError("Reeves advancement marker not found")
     text = text.replace(old_advancement, new_advancement, 1)
