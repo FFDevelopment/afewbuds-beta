@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-restore5.pck")
+OUT_PCK = Path("cloud-test/index-system-glyphfix1.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -126,7 +126,7 @@ def patch_main(text):
 \tbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 \tsave_notice_panel.add_child(box)
 \tsave_notice_title = Label.new()
-\tsave_notice_title.text = "GAME SAVED ✓"
+\tsave_notice_title.text = "GAME SAVED"
 \tsave_notice_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 \tsave_notice_title.add_theme_font_size_override("font_size", 21)
 \tsave_notice_title.modulate = Color("e8fff0")
@@ -145,7 +145,7 @@ def patch_main(text):
 \tsave_notice_timer.timeout.connect(_hide_save_notification)
 \tadd_child(save_notice_timer)
 
-func _show_save_notification(title_text: String = "GAME SAVED ✓", detail_text: String = "Your career is safe.") -> void:
+func _show_save_notification(title_text: String = "GAME SAVED", detail_text: String = "Your career is safe.") -> void:
 \tif save_notice_panel == null:
 \t\treturn
 \tsave_notice_title.text = title_text
@@ -225,19 +225,41 @@ func _hide_save_notification() -> void:
 
 func _phone_manual_save() -> void:
 \t_save_game()
-\t_show_save_notification("GAME SAVED ✓", "Saved locally. Cloud backup updates automatically while signed in.")
+\t_show_save_notification("GAME SAVED", "Saved locally. Cloud backup updates automatically while signed in.")
 \t_refresh_phone()
 
 func _phone_safe_quit() -> void:
 \t_save_game()
-\t_show_save_notification("GAME SAVED ✓", "Career saved. AFewBuds is safe to close.")
+\t_show_save_notification("GAME SAVED", "Career saved. AFewBuds is safe to close.")
 \tphone_open = false
 \tphone_panel.visible = false
 \t_set_world_controls_visible(true)
 \t_pause_gameplay("Game saved. It is safe to close AFewBuds now. Resume whenever you return.")
 
 '''
-    return text.replace(marker, block + marker, 1)
+    text = text.replace(marker, block + marker, 1)
+
+    # Portable UI glyph pass. Keep the phone back arrow (‹), which is known-good,
+    # and replace symbols that fall back to incorrect glyphs on iOS/PWA/web fonts.
+    portable_glyphs = {
+        "✕": "X",
+        "✓": "OK",
+        "○": "[ ]",
+        "★": "READY",
+        "⏻": "PWR",
+        "●": "O",
+        "×": "x",
+        "›": ">",
+        "→": "->",
+        "•": " | ",
+        "·": " - ",
+        "…": "...",
+        "–": "-",
+        "—": "-",
+    }
+    for old, new in portable_glyphs.items():
+        text = text.replace(old, new)
+    return text
 
 def rebuild():
     original, file_base, entries = parse_pck(BASE_PCK)
@@ -300,14 +322,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-restore5.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-glyphfix1.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-restore5.pck"',
+            '"mainPack":"index-system-glyphfix1.pck"',
             config,
             count=1,
         )
@@ -340,10 +362,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account5', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=glyphfix1', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=canonical-account5',
+        'shared/afb-cloud.js?v=glyphfix1',
         html,
         count=1,
     )
