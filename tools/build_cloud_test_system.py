@@ -4,7 +4,7 @@ import hashlib
 import re
 
 BASE_PCK = Path("cloud-test/index.pck")
-OUT_PCK = Path("cloud-test/index-system-restore3.pck")
+OUT_PCK = Path("cloud-test/index-system-restore4.pck")
 INDEX_HTML = Path("cloud-test/index.html")
 TARGET = "scripts/main.gd"
 
@@ -111,8 +111,8 @@ def patch_main(text):
 \tlayer.add_child(root)
 \tvar center: CenterContainer = CenterContainer.new()
 \tcenter.set_anchors_preset(Control.PRESET_TOP_WIDE)
-\tcenter.offset_top = 94
-\tcenter.offset_bottom = 178
+\tcenter.offset_top = 26
+\tcenter.offset_bottom = 110
 \tcenter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 \troot.add_child(center)
 \tsave_notice_panel = PanelContainer.new()
@@ -299,14 +299,14 @@ def patch_index(pck_size):
     config = match.group(1)
     config = re.sub(
         r'"fileSizes":\{[^}]*\}',
-        f'"fileSizes":{{"index-system-restore3.pck":{pck_size},"index.wasm":37902138}}',
+        f'"fileSizes":{{"index-system-restore4.pck":{pck_size},"index.wasm":37902138}}',
         config,
         count=1,
     )
     if '"mainPack"' in config:
         config = re.sub(
             r'"mainPack":"[^"]*"',
-            '"mainPack":"index-system-restore3.pck"',
+            '"mainPack":"index-system-restore4.pck"',
             config,
             count=1,
         )
@@ -339,10 +339,10 @@ def patch_index(pck_size):
         "\n\t\tafbShowCloudTestResult(false, String(error && error.message || error));",
         "",
     )
-    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account3', html, count=1)
+    html = re.sub(r'index\.js\?v=[^"]+', 'index.js?v=canonical-account4', html, count=1)
     html = re.sub(
         r'shared/afb-cloud\.js\?v=[^"]+',
-        'shared/afb-cloud.js?v=canonical-account3',
+        'shared/afb-cloud.js?v=canonical-account4',
         html,
         count=1,
     )
