@@ -150,3 +150,12 @@ for i in starts:
         j=next((x for x in starts if x>i),len(lines))
         print("\n===== "+lines[i]+" =====")
         print("\n".join(lines[i:j]))
+
+
+print("\n===== PERSONAL SALE STOCK FUNCTIONS =====")
+needles = ["_available_amount","_open_customer_sale","_complete_sale","_accept_sale","_sell_to_customer","_finalize_sale","active_request","product[\"stock\"]"]
+for i,line in enumerate(lines):
+    if line.startswith("func ") and any(n in line for n in needles):
+        j=next((x for x in starts if x>i),len(lines))
+        print("\n===== "+line+" =====")
+        print("\n".join(lines[i:j]))
