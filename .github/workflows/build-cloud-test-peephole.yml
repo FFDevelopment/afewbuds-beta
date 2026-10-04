@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - "tools/build_cloud_test_peephole.py"
-      - "tools/peephole_assets192.zip"
+      - "tools/peephole_assets96.zip"
       - ".github/workflows/build-cloud-test-peephole.yml"
 
 permissions:
