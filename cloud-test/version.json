@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync11-cloudtest-backpack4",
+  "release_id": "0.7.9-beta.19-accountsync11-cloudtest-backpack5",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -37,7 +37,8 @@
     "locker-stash",
     "player-pocket-sales",
     "top-layer-inventory-ui",
-    "safe-resume-view"
+    "safe-resume-view",
+    "cloud-test-network-first"
   ],
   "files": [
     {
@@ -117,8 +118,8 @@
     },
     {
       "path": "index.service.worker.js",
-      "size": 9676,
-      "sha256": "ba156b601926cb070f8862857c2015c65273beda223d7f676a8a561cb4c13cdd"
+      "size": 2095,
+      "sha256": "5254e89aaea582fb5e38d64af25c5dd0afb8aff36c971668b2b0f3f39a639ea0"
     },
     {
       "path": "afewbuds-update.html",
@@ -142,8 +143,8 @@
     },
     {
       "path": "shared/afb-updater.js",
-      "size": 11616,
-      "sha256": "c75fd0d83881b672c3d9335914dc4b4db13f3a0c6d982abec412757cab6e18f5"
+      "size": 1731,
+      "sha256": "7489cb96b307653a4d02567a3c19b2d7c38035b016d9f42df9270a35648d53fd"
     },
     {
       "path": "shared/afb-tracker.js",
