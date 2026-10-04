@@ -187,3 +187,23 @@ for i,line in enumerate(lines):
         j=next((x for x in starts if x>i),len(lines))
         print("\n".join(lines[i:j]))
         break
+
+
+print("\n===== BACKPACK LOCKER VERIFY =====")
+checks = [
+    'const PersonalInventory = preload("res://scripts/personal_inventory.gd")',
+    'var personal_weed: Dictionary = {}',
+    'var locker_weed: Dictionary = {}',
+    'var locker_cash: int = 0',
+    '"personal_weed": personal_weed',
+    '"locker_weed": locker_weed',
+    '"locker_cash": locker_cash',
+    'func _player_available_amount(product_name: String) -> int:',
+    'func _consume_player_sale_stock(product_name: String, qty: int) -> bool:',
+    '"station_locker"',
+    'personal_inventory.open_locker()'
+]
+for c in checks:
+    print(c, "=>", c in text)
+print("dealer still business stock direct =>", 'var available: int = int(product.get("stock", 0))' in text)
+print("player sale helper calls =>", text.count("_player_available_amount("))
