@@ -38,6 +38,12 @@ PORTRAIT_SOURCE = {
     "Devon":"devon.webp","Omar":"omar.webp","Nico":"nico.webp","Nolan":"tyler.webp",
 }
 
+GENETICS_TASKS = '''\t{"id": "recipe_citrus_velvet", "category": "Genetics", "tier": 2, "title": "Flavor Notes", "description": "Complete a hybrid batch and build a five-variety seed shelf.", "metric": "hybrids_created", "target": 1, "reward_cash": 0, "reward_xp": 90, "reward_rep": 5, "reward_recipe": "Citrus Velvet", "requires": [{"state": "seed_varieties", "target": 5, "label": "Seed varieties"}]},
+\t{"id": "recipe_cherry_frost", "category": "Genetics", "tier": 3, "title": "Cold & Sweet", "description": "Create 3 hybrid batches and reach Grower Level 7.", "metric": "hybrids_created", "target": 3, "reward_cash": 0, "reward_xp": 150, "reward_rep": 8, "reward_recipe": "Cherry Frost", "requires": [{"state": "grower_level", "target": 7, "label": "Grower Level"}]},
+\t{"id": "recipe_ember_berry", "category": "Genetics", "tier": 3, "title": "Color Theory", "description": "Create 5 hybrid batches and reach Grower Level 9.", "metric": "hybrids_created", "target": 5, "reward_cash": 0, "reward_xp": 200, "reward_rep": 10, "reward_recipe": "Ember Berry", "requires": [{"state": "grower_level", "target": 9, "label": "Grower Level"}]},
+\t{"id": "recipe_crown_cake", "category": "Genetics", "tier": 4, "title": "Crown Lab", "description": "Create 8 hybrid batches, reach Grower Level 11, and complete 50 harvests.", "metric": "hybrids_created", "target": 8, "reward_cash": 0, "reward_xp": 300, "reward_rep": 15, "reward_recipe": "Crown Cake", "requires": [{"state": "grower_level", "target": 11, "label": "Grower Level"}, {"metric": "harvests", "target": 50, "label": "Harvests"}]},
+'''
+
 def align(n,a):
     return (n+a-1)//a*a
 
@@ -151,6 +157,260 @@ def patch_peephole(text):
         text=text.replace(marker,loader+marker,1)
     return text
 
+
+
+def patch_full_genetics(text):
+    old_order='const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost"]'
+    new_order='const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost", "Citrus Velvet", "Cherry Frost", "Ember Berry", "Crown Cake"]'
+    if old_order not in text:
+        raise RuntimeError("seed order marker missing")
+    text=text.replace(old_order,new_order,1)
+
+    inv_old='''\t"Aurora Reserve": 0
+}'''
+    inv_new='''\t"Aurora Reserve": 0,
+\t"Citrus Velvet": 0,
+\t"Cherry Frost": 0,
+\t"Ember Berry": 0,
+\t"Crown Cake": 0
+}'''
+    if inv_old not in text:
+        raise RuntimeError("seed inventory marker missing")
+    text=text.replace(inv_old,inv_new,1)
+
+    cat_old='''\t"Solar Frost": {"unlock": 14, "cost": 210, "price": 70, "grade": "S+", "profile": "solar", "harvest": 5, "description": "Late-career prestige genetics intended for reserve-level customers."}
+}'''
+    cat_new='''\t"Solar Frost": {"unlock": 14, "cost": 210, "price": 70, "grade": "S+", "profile": "solar", "harvest": 5, "description": "Late-career prestige genetics intended for reserve-level customers."},
+\t"Citrus Velvet": {"unlock": 99, "cost": 0, "price": 34, "grade": "S", "profile": "citrus", "harvest": 8, "recipe_only": true, "description": "A fictional crossbreed unlocked through Story rewards."},
+\t"Cherry Frost": {"unlock": 99, "cost": 0, "price": 46, "grade": "S+", "profile": "cherry", "harvest": 6, "recipe_only": true, "description": "A fictional cold-fruit crossbreed unlocked through progression."},
+\t"Ember Berry": {"unlock": 99, "cost": 0, "price": 54, "grade": "S+", "profile": "berry", "harvest": 6, "recipe_only": true, "description": "A fictional gold-and-berry crossbreed unlocked through progression."},
+\t"Crown Cake": {"unlock": 99, "cost": 0, "price": 63, "grade": "S+", "profile": "luxury", "harvest": 5, "recipe_only": true, "description": "A fictional prestige crossbreed reserved for late-career genetics work."}
+}'''
+    if cat_old not in text:
+        raise RuntimeError("seed catalog marker missing")
+    text=text.replace(cat_old,cat_new,1)
+
+    # Frozen Purple is also recipe-only now.
+    frozen_pat=r'(\t"Frozen Purple": \{[^\n}]*)(\})'
+    m=re.search(frozen_pat,text)
+    if not m:
+        raise RuntimeError("Frozen Purple catalog entry missing")
+    frozen_line=m.group(0)
+    if '"recipe_only": true' not in frozen_line:
+        frozen_line=frozen_line[:-1]+', "recipe_only": true}'
+        text=text[:m.start()]+frozen_line+text[m.end():]
+
+    adv='''\t{"id": "three_hybrids", "category": "Genetics", "tier": 4, "title": "Breeding Program", "description": "Create 3 hybrid seed batches.", "metric": "hybrids_created", "target": 3, "reward_cash": 100, "reward_xp": 250, "reward_rep": 15},
+'''
+    if adv not in text:
+        raise RuntimeError("genetics advancement marker missing")
+    text=text.replace(adv,adv+GENETICS_TASKS,1)
+
+    reward_vars='''\tvar reward_seed: String = str(entry.get("reward_seed", ""))
+\tvar reward_seed_count: int = int(entry.get("reward_seed_count", 0))
+'''
+    if reward_vars not in text:
+        raise RuntimeError("reward text vars missing")
+    text=text.replace(reward_vars,reward_vars+'\tvar reward_recipe: String = str(entry.get("reward_recipe", ""))\n',1)
+
+    reward_func_pat=r'func _advancement_reward_text\(entry: Dictionary\) -> String:\n.*?(?=\nfunc )'
+    reward_match=re.search(reward_func_pat,text,flags=re.S)
+    if not reward_match:
+        raise RuntimeError("advancement reward function missing")
+    reward_block=reward_match.group(0)
+    if "GENETICS RECIPE:" not in reward_block:
+        return_match=re.search(r'\n\treturn "[^"]*"\.join\(parts\)',reward_block)
+        if not return_match:
+            raise RuntimeError("advancement reward return missing")
+        recipe_lines='\n\tif not reward_recipe.is_empty():\n\t\tparts.append("GENETICS RECIPE: %s" % reward_recipe)'
+        reward_block=reward_block[:return_match.start()]+recipe_lines+reward_block[return_match.start():]
+        text=text[:reward_match.start()]+reward_block+text[reward_match.end():]
+
+    # Hide every recipe-only seed from Shop > Seeds.
+    shop_anchor='next_unlock.text = "NEXT GENETIC'
+    anchor=text.find(shop_anchor)
+    if anchor < 0:
+        raise RuntimeError("seed shop anchor missing")
+    loop='''\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+'''
+    loop_new='''\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif bool(info.get("recipe_only", false)):
+\t\t\tcontinue
+'''
+    pos=text.find(loop,anchor)
+    if pos < 0:
+        raise RuntimeError("seed shop loop missing")
+    text=text[:pos]+text[pos:].replace(loop,loop_new,1)
+
+    next_old='''func _next_locked_seed_name() -> String:
+\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif grower_level < int(info.get("unlock", 1)):
+\t\t\treturn seed_name
+\treturn ""
+'''
+    next_new='''func _next_locked_seed_name() -> String:
+\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif bool(info.get("recipe_only", false)):
+\t\t\tcontinue
+\t\tif grower_level < int(info.get("unlock", 1)):
+\t\t\treturn seed_name
+\treturn ""
+'''
+    if next_old not in text:
+        raise RuntimeError("next locked seed function missing")
+    text=text.replace(next_old,next_new,1)
+
+    # Defensive purchase block for every recipe-only hybrid.
+    buy_old='''func _buy_seed(seed_name: String) -> void:
+\tif tutorial_active:
+'''
+    buy_new='''func _buy_seed(seed_name: String) -> void:
+\tif seed_catalog.has(seed_name):
+\t\tvar purchase_info: Dictionary = seed_catalog[seed_name]
+\t\tif bool(purchase_info.get("recipe_only", false)):
+\t\t\tstatus_label.text = "%s is genetics-only. Create it in Phone -> Genetics." % seed_name
+\t\t\treturn
+\tif tutorial_active:
+'''
+    if buy_old not in text:
+        raise RuntimeError("seed purchase function missing")
+    text=text.replace(buy_old,buy_new,1)
+
+    # Do not announce recipe-only strains as shop unlocks on level-up.
+    level_old='''\t\tfor seed_name in SEED_ORDER:
+\t\t\tif seed_catalog.has(seed_name):
+\t\t\t\tvar seed_info: Dictionary = seed_catalog[seed_name]
+\t\t\t\tif int(seed_info.get("unlock", 1)) == grower_level:
+\t\t\t\t\tunlocked_names.append(seed_name)
+'''
+    level_new='''\t\tfor seed_name in SEED_ORDER:
+\t\t\tif seed_catalog.has(seed_name):
+\t\t\t\tvar seed_info: Dictionary = seed_catalog[seed_name]
+\t\t\t\tif bool(seed_info.get("recipe_only", false)):
+\t\t\t\t\tcontinue
+\t\t\t\tif int(seed_info.get("unlock", 1)) == grower_level:
+\t\t\t\t\tunlocked_names.append(seed_name)
+'''
+    if level_old not in text:
+        raise RuntimeError("grower unlock loop missing")
+    text=text.replace(level_old,level_new,1)
+
+    genetics_new='''func _genetics_recipe_catalog() -> Array[Dictionary]:
+\treturn [
+\t\t{"id": "frozen_purple", "title": "FROZEN PURPLE", "parent_a": "Purple Dream", "parent_b": "Blue Frost", "output": "Frozen Purple", "count": 2, "min_level": 5, "unlock_task": "", "unlock_label": "Grower Level 5"},
+\t\t{"id": "citrus_velvet", "title": "CITRUS VELVET", "parent_a": "Citrus Rush", "parent_b": "Velvet Haze", "output": "Citrus Velvet", "count": 2, "min_level": 5, "unlock_task": "recipe_citrus_velvet", "unlock_label": "Flavor Notes reward"},
+\t\t{"id": "cherry_frost", "title": "CHERRY FROST", "parent_a": "Cherry Glow", "parent_b": "Blue Frost", "output": "Cherry Frost", "count": 2, "min_level": 7, "unlock_task": "recipe_cherry_frost", "unlock_label": "Cold & Sweet reward"},
+\t\t{"id": "ember_berry", "title": "EMBER BERRY", "parent_a": "Golden Ember", "parent_b": "Neon Berry", "output": "Ember Berry", "count": 2, "min_level": 9, "unlock_task": "recipe_ember_berry", "unlock_label": "Color Theory reward"},
+\t\t{"id": "crown_cake", "title": "CROWN CAKE", "parent_a": "Midnight Crown", "parent_b": "Moon Cake", "output": "Crown Cake", "count": 2, "min_level": 11, "unlock_task": "recipe_crown_cake", "unlock_label": "Crown Lab reward"}
+\t]
+
+func _genetics_recipe_unlocked(recipe: Dictionary) -> bool:
+\tvar unlock_task: String = str(recipe.get("unlock_task", ""))
+\treturn unlock_task.is_empty() or bool(advancement_claimed.get(unlock_task, false))
+
+func _build_genetics_app() -> void:
+\tvar intro: Label = Label.new()
+\tintro.text = "GENETICS LAB - combine two parent seeds to create fictional hybrid seeds. Reward recipes unlock here after you claim the matching Story / Rewards task; they are never sold in Shop > Seeds."
+\tintro.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\tphone_list.add_child(intro)
+\tfor recipe: Dictionary in _genetics_recipe_catalog():
+\t\tvar parent_a: String = str(recipe.get("parent_a", ""))
+\t\tvar parent_b: String = str(recipe.get("parent_b", ""))
+\t\tvar output_name: String = str(recipe.get("output", ""))
+\t\tvar min_level: int = int(recipe.get("min_level", 1))
+\t\tvar unlocked: bool = _genetics_recipe_unlocked(recipe)
+\t\tvar a_owned: int = int(seed_inventory.get(parent_a, 0))
+\t\tvar b_owned: int = int(seed_inventory.get(parent_b, 0))
+\t\tvar card: PanelContainer = PanelContainer.new()
+\t\tcard.add_theme_stylebox_override("panel", _style_box(Color("171d1a"), Color("496b55") if unlocked else Color("3e4541"), 14, 1))
+\t\tphone_list.add_child(card)
+\t\tvar box: VBoxContainer = VBoxContainer.new()
+\t\tbox.add_theme_constant_override("separation", 7)
+\t\tcard.add_child(box)
+\t\tvar title: Label = Label.new()
+\t\ttitle.text = str(recipe.get("title", output_name))
+\t\ttitle.add_theme_font_size_override("font_size", 20)
+\t\tbox.add_child(title)
+\t\tvar detail: Label = Label.new()
+\t\tdetail.text = "%s + %s\\nOwned: %s %d | %s %d\\nProduces: %dx %s seed" % [parent_a, parent_b, parent_a, a_owned, parent_b, b_owned, int(recipe.get("count", 2)), output_name]
+\t\tdetail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+\t\tbox.add_child(detail)
+\t\tvar action: Button = Button.new()
+\t\taction.custom_minimum_size.y = 50
+\t\tif not unlocked:
+\t\t\taction.text = "LOCKED - CLAIM %s" % str(recipe.get("unlock_label", "STORY REWARD")).to_upper()
+\t\t\taction.disabled = true
+\t\telif grower_level < min_level:
+\t\t\taction.text = "REQUIRES GROWER LEVEL %d" % min_level
+\t\t\taction.disabled = true
+\t\telif a_owned < 1 or b_owned < 1:
+\t\t\taction.text = "NEED BOTH PARENT SEEDS"
+\t\t\taction.disabled = true
+\t\telse:
+\t\t\taction.text = "CREATE %s" % output_name.to_upper()
+\t\t\taction.pressed.connect(_create_genetics_cross.bind(str(recipe.get("id", ""))))
+\t\tbox.add_child(action)
+
+func _create_genetics_cross(recipe_id: String) -> void:
+\tvar selected: Dictionary = {}
+\tfor recipe: Dictionary in _genetics_recipe_catalog():
+\t\tif str(recipe.get("id", "")) == recipe_id:
+\t\t\tselected = recipe
+\t\t\tbreak
+\tif selected.is_empty() or not _genetics_recipe_unlocked(selected):
+\t\treturn
+\tvar min_level: int = int(selected.get("min_level", 1))
+\tif grower_level < min_level:
+\t\treturn
+\tvar parent_a: String = str(selected.get("parent_a", ""))
+\tvar parent_b: String = str(selected.get("parent_b", ""))
+\tvar a_owned: int = int(seed_inventory.get(parent_a, 0))
+\tvar b_owned: int = int(seed_inventory.get(parent_b, 0))
+\tif a_owned < 1 or b_owned < 1:
+\t\treturn
+\tvar output_name: String = str(selected.get("output", ""))
+\tvar output_count: int = maxi(1, int(selected.get("count", 2)))
+\tseed_inventory[parent_a] = a_owned - 1
+\tseed_inventory[parent_b] = b_owned - 1
+\tseed_inventory[output_name] = int(seed_inventory.get(output_name, 0)) + output_count
+\t_increment_advancement_stat("hybrids_created")
+\t_add_progress(30, 5)
+\tstatus_label.text = "Genetics discovery: %s. %d hybrid seeds were added to your grow shelf." % [output_name, output_count]
+\t_save_game()
+\t_refresh_phone()
+
+'''
+    pat=r'func _build_genetics_app\(\) -> void:\n.*?(?=func _max_friend_loyalty\(\) -> int:\n)'
+    text,n=re.subn(pat,genetics_new,text,count=1,flags=re.S)
+    if n!=1:
+        raise RuntimeError("genetics app block replacement failed")
+
+    must=[
+        '"reward_recipe": "Citrus Velvet"',
+        '"reward_recipe": "Cherry Frost"',
+        '"reward_recipe": "Ember Berry"',
+        '"reward_recipe": "Crown Cake"',
+        'func _genetics_recipe_catalog() -> Array[Dictionary]:',
+        'seed_inventory[parent_a] = a_owned - 1',
+        'seed_inventory[parent_b] = b_owned - 1',
+        '"recipe_only": true',
+    ]
+    for fragment in must:
+        if fragment not in text:
+            raise RuntimeError("restored genetics fragment missing: "+fragment)
+    return text
 
 def patch_genetics_only_seeds(text):
     # Frozen Purple remains in SEED_ORDER/inventory so genetics output, planting,
@@ -277,7 +537,7 @@ def patch_main(text):
             raise RuntimeError("Stable client missing: "+name)
     text=add_new_clients(text)
     text=patch_peephole(text)
-    text=patch_genetics_only_seeds(text)
+    text=patch_full_genetics(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -375,9 +635,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-portraits2-geneticsonly1"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-genetics3"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
