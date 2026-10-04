@@ -54,16 +54,19 @@ def replace_once(text, old, new, label):
     if old not in text: raise RuntimeError(label+' marker missing')
     return text.replace(old,new,1)
 
-def map_portrait(text,name,rel):
-    pat=re.compile(r'^\t\{"name": "'+re.escape(name)+r'".*?\},$',re.M)
-    m=pat.search(text)
-    if not m: raise RuntimeError('customer missing: '+name)
-    line=m.group(0)
+def map_portrait(text, name, rel):
+    pat = re.compile(r'^\t\{"name": "' + re.escape(name) + r'".*?\},?$', re.M)
+    m = pat.search(text)
+    if not m:
+        raise RuntimeError('customer missing: ' + name)
+    line = m.group(0)
     if '"peephole_art"' in line:
-        line=re.sub(r'"peephole_art": "[^"]+"',f'"peephole_art": "res://{rel}"',line)
+        line = re.sub(r'"peephole_art": "[^"]+"', f'"peephole_art": "res://{rel}"', line)
     else:
-        line=line[:-2]+f', "peephole_art": "res://{rel}"'+line[-2:]
-    return text[:m.start()]+line+text[m.end():]
+        trailing_comma = line.endswith('},')
+        body = line[:-2] if trailing_comma else line[:-1]
+        line = body + f', "peephole_art": "res://{rel}"' + ('},' if trailing_comma else '}')
+    return text[:m.start()] + line + text[m.end():]
 
 def patch_genetics(text):
     old_order='const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost"]'
