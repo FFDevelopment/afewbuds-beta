@@ -230,8 +230,88 @@ func _create_genetics_cross(recipe_id: String) -> void:
 def patch_main(text):
     # peephole1 was built from a catalog snapshot that omitted Tino; restore his
     # current accountsync10 customer record before applying the portrait map.
-    if not re.search(r'^\\t\\{"name": "Tino"', text, re.M):
-        bree=re.search(r'^\\t\\{"name": "Bree".*?\\},
+    if '"name": "Tino"' not in text:
+        bree = re.search(r'^\t\{"name": "Bree".*?\},def build():
+    original,fb,entries=parse_pck(BASE)
+    extras={}
+    for customer in PORTRAITS:
+        filename=f"{customer.lower()}.webp"
+        source=ASSET_DIR/filename
+        if not source.exists():
+            raise RuntimeError("portrait asset missing: "+str(source))
+        extras[f"assets/characters/peephole/{filename}"]=source.read_bytes()
+    if len(extras)!=11: raise RuntimeError('expected 11 portrait files')
+    patched=[]; found=False; existing={n for n,_,_ in entries}
+    for name,content,flags in entries:
+        if name==TARGET:
+            found=True; content=patch_main(content.decode('utf-8')).encode('utf-8')
+        if name in extras: content=extras[name]
+        patched.append((name,content,flags))
+    if not found: raise RuntimeError('main.gd missing')
+    for name,data in extras.items():
+        if name not in existing: patched.append((name,data,0))
+    out=bytearray(original[:fb]); cur=0; directory=[]
+    for name,content,flags in patched:
+        target=align(cur,32)
+        if target>cur: out.extend(b'\0'*(target-cur))
+        off=target; out.extend(content); cur=off+len(content)
+        directory.append((name,off,len(content),hashlib.md5(content).digest(),flags))
+    ndo=align(len(out),32)
+    if ndo>len(out): out.extend(b'\0'*(ndo-len(out)))
+    struct.pack_into('<Q',out,32,ndo); out.extend(struct.pack('<I',len(directory)))
+    for name,off,size,md5,flags in directory:
+        raw=name.encode(); plen=align(len(raw),4)
+        out.extend(struct.pack('<I',plen)); out.extend(raw); out.extend(b'\0'*(plen-len(raw)))
+        out.extend(struct.pack('<Q',off)); out.extend(struct.pack('<Q',size)); out.extend(md5); out.extend(struct.pack('<I',flags))
+    OUT.write_bytes(out)
+    _,_,check=parse_pck(OUT)
+    names={n for n,_,_ in check}
+    for rel in PORTRAITS.values():
+        if rel not in names: raise RuntimeError('packed portrait missing '+rel)
+    return len(out),hashlib.sha256(out).hexdigest()
+
+def patch_index(size):
+    html=INDEX.read_text()
+    html=re.sub(r'<title>.*?</title>','<title>AFewBuds 0.7.9-beta.19 • Peephole + Genetics Test</title>',html,count=1)
+    m=re.search(r'const GODOT_CONFIG = (\{.*?\});',html)
+    if not m: raise RuntimeError('GODOT_CONFIG missing')
+    cfg=m.group(1)
+    cfg=re.sub(r'"fileSizes":\{[^}]*\}',f'"fileSizes":{{"index-peephole-genetics2.pck":{size},"index.wasm":37902138}}',cfg,count=1)
+    cfg=re.sub(r'"mainPack":"[^"]+"','"mainPack":"index-peephole-genetics2.pck"',cfg,count=1)
+    html=html[:m.start(1)]+cfg+html[m.end(1):]
+    html=re.sub(r'index\.js\?v=[^"]+','index.js?v=peepholegenetics2',html,count=1)
+    html=re.sub(r'shared/afb-cloud\.js\?v=[^"]+','shared/afb-cloud.js?v=peepholegenetics2',html,count=1)
+    INDEX.write_text(html)
+
+def main():
+    size,sha=build(); patch_index(size)
+    mapping={name:f'res://{rel}' for name,rel in PORTRAITS.items()}
+    (ROOT/'cloud-test/TEST_BUILD.txt').write_text(
+        'AFewBuds cloud test\nBaseline: 0.7.9-beta.19-accountsync10 / peephole1\nTest: peephole-genetics2\n\n'
+        '- Retains accountsync10 cloud/scheduler/Heat/Reeves fixes.\n'
+        '- 19 unique non-friend peephole portraits are mapped in the test build.\n'
+        '- Remaining 11 mappings: '+json.dumps(mapping,sort_keys=True)+'\n'
+        '- Portrait backgrounds were visually reviewed and cleaned of obvious real-world delivery branding/logos.\n'
+        '- Genetics task rewards unlock recipes in Phone > Genetics only.\n'
+        '- Citrus Velvet = Citrus Rush + Velvet Haze.\n'
+        '- Cherry Frost = Cherry Glow + Blue Frost.\n'
+        '- Ember Berry = Golden Ember + Neon Berry.\n'
+        '- Crown Cake = Midnight Crown + Moon Cake.\n'
+        '- Mixing consumes one of each parent and creates two hybrid seeds.\n'
+        '- Recipe-only hybrids are hidden from Shop > Seeds.\n'
+        '- Main tester root remains unchanged.\n'
+        f'- PCK sha256: {sha}\n'
+    )
+    print(json.dumps({'size':size,'sha256':sha,'portraits':len(PORTRAITS),'output':str(OUT)},indent=2))
+
+if __name__=='__main__': main()
+, text, re.M)
+        if not bree:
+            raise RuntimeError("Bree insertion anchor missing for Tino migration")
+        tino='\\t{"name": "Tino", "recognition_visits": 3, "favorite": "Solar Frost", "fallback_profile": "solar", "flexibility": 0.30, "min_qty": 3, "max_qty": 6, "tier": "Reserve", "unlock_level": 14},'
+        text=text[:bree.end()]+"\\n"+tino+text[bree.end():]
+    for name,rel in PORTRAITS.items(): text=map_portrait(text,name,rel)
+    text=patch_genetics(text)
     must=[
         'stale_customer_session','_schedule_next_customer(true)','load_webp_from_buffer',
         'const REEVES_TOTAL_OBLIGATION: int = 8000','Use Phone > Heat > LAY LOW',
@@ -250,6 +330,114 @@ def patch_main(text):
         if f'"name": "{name}"' not in text or f'res://{rel}' not in text:
             raise RuntimeError('missing portrait mapping '+name)
     refs=re.findall(r'"peephole_art": "(res://assets/characters/peephole/[^"]+)"',text)
+    if len(refs) < 19 or len(set(refs)) != len(refs):
+        raise RuntimeError(f'peephole art refs not unique: total={len(refs)} unique={len(set(refs))}')
+    return text
+
+def build():
+    original,fb,entries=parse_pck(BASE)
+    extras={}
+    for customer in PORTRAITS:
+        filename=f"{customer.lower()}.webp"
+        source=ASSET_DIR/filename
+        if not source.exists():
+            raise RuntimeError("portrait asset missing: "+str(source))
+        extras[f"assets/characters/peephole/{filename}"]=source.read_bytes()
+    if len(extras)!=11: raise RuntimeError('expected 11 portrait files')
+    patched=[]; found=False; existing={n for n,_,_ in entries}
+    for name,content,flags in entries:
+        if name==TARGET:
+            found=True; content=patch_main(content.decode('utf-8')).encode('utf-8')
+        if name in extras: content=extras[name]
+        patched.append((name,content,flags))
+    if not found: raise RuntimeError('main.gd missing')
+    for name,data in extras.items():
+        if name not in existing: patched.append((name,data,0))
+    out=bytearray(original[:fb]); cur=0; directory=[]
+    for name,content,flags in patched:
+        target=align(cur,32)
+        if target>cur: out.extend(b'\0'*(target-cur))
+        off=target; out.extend(content); cur=off+len(content)
+        directory.append((name,off,len(content),hashlib.md5(content).digest(),flags))
+    ndo=align(len(out),32)
+    if ndo>len(out): out.extend(b'\0'*(ndo-len(out)))
+    struct.pack_into('<Q',out,32,ndo); out.extend(struct.pack('<I',len(directory)))
+    for name,off,size,md5,flags in directory:
+        raw=name.encode(); plen=align(len(raw),4)
+        out.extend(struct.pack('<I',plen)); out.extend(raw); out.extend(b'\0'*(plen-len(raw)))
+        out.extend(struct.pack('<Q',off)); out.extend(struct.pack('<Q',size)); out.extend(md5); out.extend(struct.pack('<I',flags))
+    OUT.write_bytes(out)
+    _,_,check=parse_pck(OUT)
+    names={n for n,_,_ in check}
+    for rel in PORTRAITS.values():
+        if rel not in names: raise RuntimeError('packed portrait missing '+rel)
+    return len(out),hashlib.sha256(out).hexdigest()
+
+def patch_index(size):
+    html=INDEX.read_text()
+    html=re.sub(r'<title>.*?</title>','<title>AFewBuds 0.7.9-beta.19 • Peephole + Genetics Test</title>',html,count=1)
+    m=re.search(r'const GODOT_CONFIG = (\{.*?\});',html)
+    if not m: raise RuntimeError('GODOT_CONFIG missing')
+    cfg=m.group(1)
+    cfg=re.sub(r'"fileSizes":\{[^}]*\}',f'"fileSizes":{{"index-peephole-genetics2.pck":{size},"index.wasm":37902138}}',cfg,count=1)
+    cfg=re.sub(r'"mainPack":"[^"]+"','"mainPack":"index-peephole-genetics2.pck"',cfg,count=1)
+    html=html[:m.start(1)]+cfg+html[m.end(1):]
+    html=re.sub(r'index\.js\?v=[^"]+','index.js?v=peepholegenetics2',html,count=1)
+    html=re.sub(r'shared/afb-cloud\.js\?v=[^"]+','shared/afb-cloud.js?v=peepholegenetics2',html,count=1)
+    INDEX.write_text(html)
+
+def main():
+    size,sha=build(); patch_index(size)
+    mapping={name:f'res://{rel}' for name,rel in PORTRAITS.items()}
+    (ROOT/'cloud-test/TEST_BUILD.txt').write_text(
+        'AFewBuds cloud test\nBaseline: 0.7.9-beta.19-accountsync10 / peephole1\nTest: peephole-genetics2\n\n'
+        '- Retains accountsync10 cloud/scheduler/Heat/Reeves fixes.\n'
+        '- 19 unique non-friend peephole portraits are mapped in the test build.\n'
+        '- Remaining 11 mappings: '+json.dumps(mapping,sort_keys=True)+'\n'
+        '- Portrait backgrounds were visually reviewed and cleaned of obvious real-world delivery branding/logos.\n'
+        '- Genetics task rewards unlock recipes in Phone > Genetics only.\n'
+        '- Citrus Velvet = Citrus Rush + Velvet Haze.\n'
+        '- Cherry Frost = Cherry Glow + Blue Frost.\n'
+        '- Ember Berry = Golden Ember + Neon Berry.\n'
+        '- Crown Cake = Midnight Crown + Moon Cake.\n'
+        '- Mixing consumes one of each parent and creates two hybrid seeds.\n'
+        '- Recipe-only hybrids are hidden from Shop > Seeds.\n'
+        '- Main tester root remains unchanged.\n'
+        f'- PCK sha256: {sha}\n'
+    )
+    print(json.dumps({'size':size,'sha256':sha,'portraits':len(PORTRAITS),'output':str(OUT)},indent=2))
+
+if __name__=='__main__': main()
+, text, re.M)
+        if not bree:
+            raise RuntimeError("Bree insertion anchor missing for Tino migration")
+        tino = '\t{"name": "Tino", "recognition_visits": 3, "favorite": "Solar Frost", "fallback_profile": "solar", "flexibility": 0.30, "min_qty": 3, "max_qty": 6, "tier": "Reserve", "unlock_level": 14},'
+        text = text[:bree.end()] + "\n" + tino + text[bree.end():]
+
+    for name, rel in PORTRAITS.items():
+        text = map_portrait(text, name, rel)
+    text = patch_genetics(text)
+
+    must = [
+        'stale_customer_session', '_schedule_next_customer(true)', 'load_webp_from_buffer',
+        'const REEVES_TOTAL_OBLIGATION: int = 8000', 'Use Phone > Heat > LAY LOW',
+        'func _claim_all_advancements() -> void:',
+        '"reward_recipe": "Citrus Velvet"', '"reward_recipe": "Cherry Frost"',
+        '"reward_recipe": "Ember Berry"', '"reward_recipe": "Crown Cake"',
+        'func _genetics_recipe_catalog() -> Array[Dictionary]:', 'recipe_only',
+        'NEED BOTH PARENT SEEDS', 'seed_inventory[parent_a] = a_owned - 1',
+        'seed_inventory[parent_b] = b_owned - 1'
+    ]
+    for fragment in must:
+        if fragment not in text:
+            raise RuntimeError('missing required source fragment: ' + fragment)
+    if 'OS.is_debug_build() and not reeves_met' in text or 'FORCE REEVES' in text.upper():
+        raise RuntimeError('Force Reeves debug regressed')
+    for name, rel in PORTRAITS.items():
+        if f'"name": "{name}"' not in text or f'res://{rel}' not in text:
+            raise RuntimeError('missing portrait mapping ' + name)
+
+    refs = re.findall(r'"peephole_art": "(res://assets/characters/peephole/[^"]+)"', text)
     if len(refs) < 19 or len(set(refs)) != len(refs):
         raise RuntimeError(f'peephole art refs not unique: total={len(refs)} unique={len(set(refs))}')
     return text
