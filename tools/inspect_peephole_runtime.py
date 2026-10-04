@@ -118,3 +118,20 @@ for line in lines:
             if val not in seen:
                 seen.add(val)
                 print(val)
+
+
+print("\n===== INVENTORY / LOCKER / SALES CONTEXT =====")
+keys = ["locker","cash","products","bagged_inventory","storage","dealer","sale","bagging","_open_storage_panel","_open_bagging_panel","_open_customer_sale","dealer_sales"]
+for i,line in enumerate(lines):
+    low=line.lower()
+    if any(k in low for k in keys) and (
+        line.startswith("func ") or
+        line.startswith("var ") or
+        "pressed.connect" in line or
+        "products[" in line or
+        "bagged_inventory" in line or
+        "cash " in line or
+        "cash=" in line
+    ):
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-10):min(len(lines),i+36)]))
