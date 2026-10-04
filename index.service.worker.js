@@ -118,14 +118,6 @@ self.addEventListener('fetch', (event) => {
   const scope = new URL(self.registration.scope);
   if (url.origin !== scope.origin || !url.pathname.startsWith(scope.pathname)) return;
 
-  // cloud-test is an isolated test channel. Never serve it from the stable
-  // root release cache; always let the browser fetch the current test files.
-  const relativePath = url.pathname.slice(scope.pathname.length);
-  if (relativePath.startsWith('cloud-test/')) {
-    event.respondWith(fetch(event.request, { cache: 'no-store' }));
-    return;
-  }
-
   // Staging requests and the tiny version manifest must always hit the network.
   if (url.searchParams.has('afb_stage') || url.pathname.endsWith('/version.json') || url.pathname.endsWith('/index.service.worker.js')) {
     event.respondWith(fetch(event.request, { cache: 'no-store' }));
