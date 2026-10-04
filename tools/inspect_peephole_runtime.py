@@ -207,3 +207,18 @@ for c in checks:
     print(c, "=>", c in text)
 print("dealer still business stock direct =>", 'var available: int = int(product.get("stock", 0))' in text)
 print("player sale helper calls =>", text.count("_player_available_amount("))
+
+
+print("\n===== INVENTORY INITIALIZATION CONTEXT =====")
+for term in [
+    'const PersonalInventory = preload("res://scripts/personal_inventory.gd")',
+    'personal_inventory = PersonalInventory.new()',
+    'personal_inventory.setup(self)',
+    '"station_locker"',
+    'func _any_modal_open() -> bool:'
+]:
+    idx=text.find(term)
+    print("\nTERM",term,"AT",idx)
+    if idx >= 0:
+        line_no=text[:idx].count("\n")
+        print("\n".join(lines[max(0,line_no-10):min(len(lines),line_no+30)]))
