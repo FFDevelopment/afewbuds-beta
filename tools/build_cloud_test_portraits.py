@@ -521,6 +521,52 @@ def patch_task_markers(text):
     text=text.replace(old_req,new_req,1)
     return text
 
+
+def patch_tent_pot_switching(text):
+    # While a direct pot panel is open, allow only plant taps in the current
+    # approached tent. This lets the player switch Pot 1/2/3 without closing
+    # the panel, while blocking camera/world navigation and panel click-through.
+    modal_old='''\tif _any_modal_open():
+\t\t_reset_world_pointer()
+\t\treturn
+
+\tvar can_room_look: bool = room_ring.has(current_view) or current_view in ["grow", "grow2", "grow3"]
+'''
+    modal_new='''\tif plant_direct_panel != null and plant_direct_panel.visible and current_view in ["grow", "grow2", "grow3"]:
+\t\tif _handle_room_pointer(event, false, false, true):
+\t\t\tget_viewport().set_input_as_handled()
+\t\treturn
+\tif _any_modal_open():
+\t\t_reset_world_pointer()
+\t\treturn
+
+\tvar can_room_look: bool = room_ring.has(current_view) or current_view in ["grow", "grow2", "grow3"]
+'''
+    if modal_old not in text:
+        raise RuntimeError("input modal gate marker missing")
+    text=text.replace(modal_old,modal_new,1)
+
+    pointer_old='''\tfor control: Control in [world_top_bar, view_label, status_label, contextual_button, left_button, right_button, back_button, door_quick_button, tutorial_world_coach]:
+'''
+    pointer_new='''\tfor control: Control in [world_top_bar, view_label, status_label, contextual_button, left_button, right_button, back_button, door_quick_button, tutorial_world_coach, plant_direct_panel]:
+'''
+    if pointer_old not in text:
+        raise RuntimeError("room UI pointer guard marker missing")
+    text=text.replace(pointer_old,pointer_new,1)
+
+    # Keep the current pot panel visible when another pot is selected. Existing
+    # _open_direct_plant already replaces selected_plant_slot and refreshes it.
+    required=[
+        'func _open_direct_plant(slot_index: int) -> void:',
+        'selected_plant_slot = slot_index',
+        '_refresh_direct_plant_panel()',
+        'var can_tap_plants: bool = current_view in ["grow", "grow2", "grow3"]',
+    ]
+    for fragment in required:
+        if fragment not in text:
+            raise RuntimeError("direct pot switch guard missing: "+fragment)
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -554,6 +600,7 @@ def patch_main(text):
     text=patch_peephole(text)
     text=patch_full_genetics(text)
     text=patch_task_markers(text)
+    text=patch_tent_pot_switching(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -651,9 +698,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-genetics3-checkmarks1"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-tentswitch1"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
