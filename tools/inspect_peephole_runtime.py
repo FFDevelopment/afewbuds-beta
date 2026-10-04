@@ -179,3 +179,11 @@ for target in [8705,8720,8765,8794]:
     a=max(0,target-28); b=min(len(lines),target+32)
     print("\n--- around", target, "---")
     print("\n".join(lines[a:b]))
+
+
+print("\n===== READY ORDER =====")
+for i,line in enumerate(lines):
+    if line.startswith("func _ready"):
+        j=next((x for x in starts if x>i),len(lines))
+        print("\n".join(lines[i:j]))
+        break
