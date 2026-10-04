@@ -106,3 +106,15 @@ for i,line in enumerate(lines):
     ):
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-8):min(len(lines),i+24)]))
+
+
+print("\n===== INTERACTION MESH NAME CANDIDATES =====")
+patterns = ["Bench","Packing","Workbench","Storage","Vault","FrontDoor","Door","Supply","Shelf","Climate","Panel","TentBody","ExpansionTent2Body","ExpansionTent3Body"]
+seen=set()
+for line in lines:
+    if "_add_box(" in line or "_add_cylinder(" in line or ".name =" in line:
+        if any(p in line for p in patterns):
+            val=line.strip()
+            if val not in seen:
+                seen.add(val)
+                print(val)
