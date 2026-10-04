@@ -228,10 +228,47 @@ func _create_genetics_cross(recipe_id: String) -> void:
     return text
 
 def patch_main(text):
-    # peephole1 was built from a catalog snapshot that omitted Tino; restore his
-    # current accountsync10 customer record before applying the portrait map.
+    # peephole1 omitted Tino; restore the current Reserve/Lv14 record first.
     if '"name": "Tino"' not in text:
-        bree = re.search(r'^\t\{"name": "Bree".*?\},def build():
+        anchor = '\t{"name": "Bree"'
+        anchor_pos = text.find(anchor)
+        if anchor_pos < 0:
+            raise RuntimeError("Bree insertion anchor missing for Tino migration")
+        line_end = text.find("\n", anchor_pos)
+        if line_end < 0:
+            raise RuntimeError("Bree customer line has no newline")
+        tino = '\t{"name": "Tino", "recognition_visits": 3, "favorite": "Solar Frost", "fallback_profile": "solar", "flexibility": 0.30, "min_qty": 3, "max_qty": 6, "tier": "Reserve", "unlock_level": 14},'
+        text = text[:line_end + 1] + tino + "\n" + text[line_end + 1:]
+
+    for name, rel in PORTRAITS.items():
+        text = map_portrait(text, name, rel)
+    text = patch_genetics(text)
+
+    must = [
+        'stale_customer_session', '_schedule_next_customer(true)', 'load_webp_from_buffer',
+        'const REEVES_TOTAL_OBLIGATION: int = 8000', 'Use Phone > Heat > LAY LOW',
+        'func _claim_all_advancements() -> void:',
+        '"reward_recipe": "Citrus Velvet"', '"reward_recipe": "Cherry Frost"',
+        '"reward_recipe": "Ember Berry"', '"reward_recipe": "Crown Cake"',
+        'func _genetics_recipe_catalog() -> Array[Dictionary]:', 'recipe_only',
+        'NEED BOTH PARENT SEEDS', 'seed_inventory[parent_a] = a_owned - 1',
+        'seed_inventory[parent_b] = b_owned - 1'
+    ]
+    for fragment in must:
+        if fragment not in text:
+            raise RuntimeError('missing required source fragment: ' + fragment)
+    if 'OS.is_debug_build() and not reeves_met' in text or 'FORCE REEVES' in text.upper():
+        raise RuntimeError('Force Reeves debug regressed')
+    for name, rel in PORTRAITS.items():
+        if ('"name": "' + name + '"') not in text or ('res://' + rel) not in text:
+            raise RuntimeError('missing portrait mapping ' + name)
+
+    refs = re.findall(r'"peephole_art": "(res://assets/characters/peephole/[^"]+)"', text)
+    if len(refs) < 19 or len(set(refs)) != len(refs):
+        raise RuntimeError('peephole art refs not unique: total=%d unique=%d' % (len(refs), len(set(refs))))
+    return text
+
+def build():
     original,fb,entries=parse_pck(BASE)
     extras={}
     for customer in PORTRAITS:
