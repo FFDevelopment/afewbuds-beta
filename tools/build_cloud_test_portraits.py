@@ -201,7 +201,7 @@ def patch_web_release():
         item["sha256"] = hashlib.sha256(data).hexdigest()
 
     (ROOT / "cloud-test/version.json").write_text(
-        json.dumps(manifest, indent=2) + "\\n",
+        json.dumps(manifest, indent=2) + "\n",
         encoding="utf-8",
     )
 
