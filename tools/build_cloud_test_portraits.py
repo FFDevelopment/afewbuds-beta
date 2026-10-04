@@ -506,6 +506,21 @@ def patch_genetics_only_seeds(text):
             raise RuntimeError("Frozen Purple genetics recipe missing: " + fragment)
     return text
 
+
+def patch_task_markers(text):
+    old_story='return "%s %s" % ["OK" if done else "[ ]", text_value]'
+    new_story='return "%s %s" % ["[x]" if done else "[ ]", text_value]'
+    if old_story not in text:
+        raise RuntimeError("story checklist marker missing")
+    text=text.replace(old_story,new_story,1)
+
+    old_req='requirement_label.text = "%s %s: %d / %d" % ["OK" if progress_value >= needed else "[ ]", str(requirement.get("label", "Extra goal")), progress_value, needed]'
+    new_req='requirement_label.text = "%s %s: %d / %d" % ["[x]" if progress_value >= needed else "[ ]", str(requirement.get("label", "Extra goal")), progress_value, needed]'
+    if old_req not in text:
+        raise RuntimeError("advancement requirement marker missing")
+    text=text.replace(old_req,new_req,1)
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -538,6 +553,7 @@ def patch_main(text):
     text=add_new_clients(text)
     text=patch_peephole(text)
     text=patch_full_genetics(text)
+    text=patch_task_markers(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -635,9 +651,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-genetics3"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-genetics3-checkmarks1"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
