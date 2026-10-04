@@ -85,3 +85,10 @@ for i,line in enumerate(lines):
     ):
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-12):min(len(lines),i+34)]))
+
+
+print("\n===== ROOM INTERACTION FUNCTIONS =====")
+for i,line in enumerate(lines):
+    if line.startswith("func _room_interaction_at") or line.startswith("func _activate_room_interaction") or line.startswith("func _go_to_view") or line.startswith("func _finish") and "view" in line.lower():
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[i:min(len(lines),i+100)]))
