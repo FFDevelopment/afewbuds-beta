@@ -159,3 +159,9 @@ for i,line in enumerate(lines):
         j=next((x for x in starts if x>i),len(lines))
         print("\n===== "+line+" =====")
         print("\n".join(lines[i:j]))
+
+
+print("\n===== AVAILABLE AMOUNT CALLERS =====")
+for i,line in enumerate(lines):
+    if "_available_amount(" in line:
+        print(i+1, line)
