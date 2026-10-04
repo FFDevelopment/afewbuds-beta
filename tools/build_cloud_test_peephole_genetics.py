@@ -1,10 +1,10 @@
 from pathlib import Path
-import struct, hashlib, re, zipfile, json
+import struct, hashlib, re, json
 
 ROOT = Path('.')
 BASE = ROOT / 'cloud-test/index-peephole1.pck'
 OUT = ROOT / 'cloud-test/index-peephole-genetics2.pck'
-ASSET_ZIP = ROOT / 'tools/peephole_remaining160.zip'
+ASSET_DIR = ROOT / 'tools/peephole_remaining160'
 INDEX = ROOT / 'cloud-test/index.html'
 TARGET = 'scripts/main.gd'
 
@@ -254,8 +254,13 @@ def patch_main(text):
 
 def build():
     original,fb,entries=parse_pck(BASE)
-    with zipfile.ZipFile(ASSET_ZIP,'r') as z:
-        extras={f'assets/characters/peephole/{n}':z.read(n) for n in z.namelist() if n.endswith('.webp')}
+    extras={}
+    for customer in PORTRAITS:
+        filename=f"{customer.lower()}.webp"
+        source=ASSET_DIR/filename
+        if not source.exists():
+            raise RuntimeError("portrait asset missing: "+str(source))
+        extras[f"assets/characters/peephole/{filename}"]=source.read_bytes()
     if len(extras)!=11: raise RuntimeError('expected 11 portrait files')
     patched=[]; found=False; existing={n for n,_,_ in entries}
     for name,content,flags in entries:
