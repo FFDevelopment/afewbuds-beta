@@ -41,3 +41,10 @@ print("\n===== BASIC BALANCE =====")
 print("braces", text.count("{"), text.count("}"))
 print("brackets", text.count("["), text.count("]"))
 print("parens", text.count("("), text.count(")"))
+
+
+print("\n===== SEED SHOP CONTEXT =====")
+for i,line in enumerate(lines):
+    if "seed_catalog[seed_name]" in line or "SEED_ORDER" in line or "Frozen Purple" in line:
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-12):min(len(lines),i+22)]))
