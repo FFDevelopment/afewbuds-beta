@@ -6,7 +6,7 @@ const BACKPACK_WEED_CAPACITY := 40
 const LOCKER_SLOTS := 12
 const LOCKER_WEED_CAPACITY := 120
 
-var game: Node
+var game = null
 var backpack_button: Button
 var backpack_panel: PanelContainer
 var backpack_body: VBoxContainer
@@ -14,7 +14,7 @@ var locker_panel: PanelContainer
 var locker_body: VBoxContainer
 var return_station: String = ""
 
-func setup(game_node: Node) -> void:
+func setup(game_node) -> void:
 	game = game_node
 	_build_backpack_button()
 	_build_backpack_panel()
