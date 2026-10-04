@@ -75,3 +75,13 @@ for i,line in enumerate(lines):
     if "_open_direct_plant" in line or "plant_direct_panel.visible" in line or "_set_world_controls_visible" in line or "_handle" in line and "input" in line.lower():
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-18):min(len(lines),i+45)]))
+
+
+print("\n===== STATION DIRECT CLICK =====")
+for i,line in enumerate(lines):
+    low=line.lower()
+    if ("station" in low or "world" in low or "approach" in low or "contextual" in low or "vault" in low or "storage" in low or "workbench" in low or "grow_supply_shelf" in low) and (
+        line.startswith("func ") or "set_meta" in line or "pressed.connect" in line or "current_view" in line or "world_pointer_target" in line or "contextual_button" in line
+    ):
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-12):min(len(lines),i+34)]))
