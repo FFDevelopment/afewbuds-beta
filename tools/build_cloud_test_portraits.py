@@ -1248,10 +1248,32 @@ def patch_web_release():
     html,n=re.subn(r'"index-accountsync11\.pck":\d+','"index-accountsync11.pck":%d'%size,html,count=1)
     if n!=1:
         raise RuntimeError("Could not patch cloud-test PCK size")
+    cleanup_script='''<script>
+(async function(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('afb_clean')==='1') return;
+  try{
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.unregister()));
+    }
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+  }catch(e){ console.warn('AFB cloud-test cleanup',e); }
+  p.set('afb_clean','1');
+  p.set('afb_stage','force');
+  p.set('t',String(Date.now()));
+  location.replace(location.pathname+'?'+p.toString());
+})();
+</script>
+'''
+    html=html.replace("</head>",cleanup_script+"</head>")
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync11-cloudtest-backpack5"
+    manifest["release_id"]="0.7.9-beta.19-accountsync11-cloudtest-backpack6"
     features=list(manifest.get("web_features",[]))
     for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales","top-layer-inventory-ui","safe-resume-view","cloud-test-network-first"]:
         if feature not in features:
