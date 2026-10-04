@@ -718,6 +718,53 @@ func _finish_direct_station_approach(action_id: String) -> void:
             raise RuntimeError("station approach fragment missing: "+fragment)
     return text
 
+
+def patch_direct_room_transitions(text):
+    # Add the shared grow-room doorway as a clickable world target from either
+    # side. Existing _enter_grow_room/_leave_grow_room already provide the
+    # actual walk-through camera animation, so reuse those rather than inventing
+    # another transition.
+    old='''const ROOM_DIRECT_STATIONS: Array[Dictionary] = [
+\t{"id": "station_workbench", "room": "main", "pos": Vector3(3.95, 1.15, 0.30), "view": "workbench"},
+'''
+    new='''const ROOM_DIRECT_STATIONS: Array[Dictionary] = [
+\t{"id": "room_enter_grow", "room": "main", "pos": Vector3(0.0, 1.55, -3.88), "view": ""},
+\t{"id": "room_enter_main", "room": "grow", "pos": Vector3(0.0, 1.55, -3.88), "view": ""},
+\t{"id": "station_workbench", "room": "main", "pos": Vector3(3.95, 1.15, 0.30), "view": "workbench"},
+'''
+    if old not in text:
+        raise RuntimeError("direct station list marker missing")
+    text=text.replace(old,new,1)
+
+    old_match='''\t\t"station_workbench", "station_storage", "station_door", "station_tent1", "station_tent2", "station_tent3", "station_system", "station_supply":
+\t\t\treturn _approach_station_then_open(action_id)
+'''
+    new_match='''\t\t"room_enter_grow":
+\t\t\t_enter_grow_room()
+\t\t\treturn true
+\t\t"room_enter_main":
+\t\t\t_leave_grow_room()
+\t\t\treturn true
+\t\t"station_workbench", "station_storage", "station_door", "station_tent1", "station_tent2", "station_tent3", "station_system", "station_supply":
+\t\t\treturn _approach_station_then_open(action_id)
+'''
+    if old_match not in text:
+        raise RuntimeError("direct station activation marker missing")
+    text=text.replace(old_match,new_match,1)
+
+    must=[
+        '"room_enter_grow"',
+        '"room_enter_main"',
+        '_enter_grow_room()',
+        '_leave_grow_room()',
+        'status_label.text = "You step through the doorway into the grow room."',
+        'status_label.text = "You step back into the main room."',
+    ]
+    for fragment in must:
+        if fragment not in text:
+            raise RuntimeError("room transition fragment missing: "+fragment)
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -753,6 +800,7 @@ def patch_main(text):
     text=patch_task_markers(text)
     text=patch_tent_pot_switching(text)
     text=patch_direct_station_approach(text)
+    text=patch_direct_room_transitions(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -850,9 +898,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-directstations1"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-directrooms1"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
