@@ -1,6 +1,6 @@
 from pathlib import Path
 import struct,re
-p=Path("index-accountsync10.pck")
+p=Path("cloud-test/index-peephole-genetics2.pck")
 b=p.read_bytes()
 fb=struct.unpack_from("<Q",b,24)[0]
 do=struct.unpack_from("<Q",b,32)[0]
@@ -21,7 +21,12 @@ lines=text.splitlines()
 starts=[i for i,l in enumerate(lines) if l.startswith("func ")]
 for i in starts:
     name=lines[i]
-    if "peephole" in name.lower() or "customer_art" in name.lower() or "door_art" in name.lower():
+    if "peephole" in name.lower() or "customer_art" in name.lower() or "door_art" in name.lower() or "door_view" in name.lower():
         j=next((x for x in starts if x>i),len(lines))
         print("\n===== "+name+" =====")
         print("\n".join(lines[i:j]))
+
+print("\n===== PEEPHOLE VAR CONTEXT =====")
+for i,line in enumerate(lines):
+    if "peephole_portrait" in line or "peephole_silhouette" in line:
+        print("\n".join(lines[max(0,i-8):min(len(lines),i+14)]))
