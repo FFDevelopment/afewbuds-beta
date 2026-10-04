@@ -222,3 +222,19 @@ for term in [
     if idx >= 0:
         line_no=text[:idx].count("\n")
         print("\n".join(lines[max(0,line_no-10):min(len(lines),line_no+30)]))
+
+
+print("\n===== HUD Z ORDER / RUNTIME RESTORE =====")
+for i,line in enumerate(lines):
+    low=line.lower()
+    if (
+        line.startswith("func _restore_runtime_state") or
+        line.startswith("func _capture_runtime_state") or
+        line.startswith("func _save_runtime") or
+        "restored_runtime" in line or
+        "current_view" in line and ("runtime" in low or "restore" in low) or
+        "z_index" in line or
+        "mouse_filter" in line and "hud" in low
+    ):
+        print("\n--- line",i+1,"---")
+        print("\n".join(lines[max(0,i-14):min(len(lines),i+60)]))
