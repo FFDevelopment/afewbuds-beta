@@ -1038,6 +1038,66 @@ func _consume_player_sale_stock(product_name: String, qty: int) -> bool:
             raise RuntimeError("personal inventory patch missing: "+frag)
     return text
 
+
+def patch_safe_resume_view(text):
+    capture_old='''\t\t"current_view": current_view,
+\t\t"current_room": current_room,
+'''
+    capture_new='''\t\t"current_view": _safe_resume_view(current_view, current_room),
+\t\t"current_room": current_room,
+'''
+    if capture_old not in text:
+        raise RuntimeError("runtime capture view marker missing")
+    text=text.replace(capture_old,capture_new,1)
+
+    helper_code='''func _safe_resume_view(view_name: String, room_name: String) -> String:
+\tif room_name == "grow":
+\t\tmatch view_name:
+\t\t\t"grow2":
+\t\t\t\treturn "grow_room_tent2"
+\t\t\t"grow3":
+\t\t\t\treturn "grow_room_tent3"
+\t\t\t"grow_system", "grow_supply_shelf", "grow", "room_transition":
+\t\t\t\treturn "grow_room_tent"
+\t\t\t_:
+\t\t\t\treturn view_name if grow_room_ring.has(view_name) else "grow_room_tent"
+\tmatch view_name:
+\t\t"workbench":
+\t\t\treturn "main_workbench"
+\t\t"storage", "locker":
+\t\t\treturn "main_storage"
+\t\t"door":
+\t\t\treturn "main_door"
+\t\t"room_transition":
+\t\t\treturn "main_grow_door"
+\t\t_:
+\t\t\treturn view_name if main_room_ring.has(view_name) else "main_grow_door"
+
+'''
+    restore_marker='func _restore_runtime_state() -> void:\n'
+    if helper_code.strip() not in text:
+        if restore_marker not in text:
+            raise RuntimeError("restore runtime marker missing")
+        text=text.replace(restore_marker,helper_code+restore_marker,1)
+
+    restore_old='''\tvar saved_view: String = str(restored_runtime.get("current_view", "main_grow_door"))
+\tif views.has(saved_view):
+\t\t_go_to_view(saved_view, false)
+'''
+    restore_new='''\tvar saved_view: String = _safe_resume_view(str(restored_runtime.get("current_view", "main_grow_door")), current_room)
+\tif views.has(saved_view):
+\t\t_go_to_view(saved_view, false)
+\telse:
+\t\tcurrent_room = "main"
+\t\troom_ring = main_room_ring
+\t\t_go_to_view("main_grow_door", false)
+'''
+    if restore_old not in text:
+        raise RuntimeError("restore saved view marker missing")
+    text=text.replace(restore_old,restore_new,1)
+
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -1075,6 +1135,7 @@ def patch_main(text):
     text=patch_direct_station_approach(text)
     text=patch_direct_room_transitions(text)
     text=patch_personal_inventory(text)
+    text=patch_safe_resume_view(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -1189,9 +1250,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-backpack2"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-backpack3"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales","top-layer-inventory-ui","safe-resume-view"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
