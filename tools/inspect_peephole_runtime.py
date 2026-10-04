@@ -1,4 +1,5 @@
 from pathlib import Path
+from build_cloud_test_portraits import parse_pck
 import struct,re
 p=Path("cloud-test/index-accountsync10.pck")
 b=p.read_bytes()
