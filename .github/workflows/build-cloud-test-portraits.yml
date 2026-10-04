@@ -1,0 +1,33 @@
+name: Build cloud-test portraits
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build_cloud_test_portraits.py"
+      - "tools/peephole_clients96/**"
+      - ".github/workflows/build-cloud-test-portraits.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Patch only cloud-test PCK
+        run: python tools/build_cloud_test_portraits.py
+      - name: Commit cloud-test portrait build
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloud-test/index-accountsync10.pck
+          if git diff --cached --quiet; then
+            echo "No generated changes."
+          else
+            git commit -m "Build cloud-test portrait update [skip ci]"
+            git push origin HEAD:main
+          fi
