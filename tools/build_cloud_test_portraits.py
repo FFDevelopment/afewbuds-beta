@@ -765,6 +765,279 @@ def patch_direct_room_transitions(text):
             raise RuntimeError("room transition fragment missing: "+fragment)
     return text
 
+
+def patch_personal_inventory(text):
+    preload_old='const RoomSurfaces = preload("res://scripts/room_surfaces.gd")\n'
+    preload_new=preload_old+'const PersonalInventory = preload("res://scripts/personal_inventory.gd")\n'
+    if preload_old not in text:
+        raise RuntimeError("RoomSurfaces preload marker missing")
+    text=text.replace(preload_old,preload_new,1)
+
+    vars_old='''var storage_world_label: Label3D
+'''
+    vars_new='''var storage_world_label: Label3D
+var personal_inventory: Node
+var personal_weed: Dictionary = {}
+var locker_weed: Dictionary = {}
+var locker_cash: int = 0
+'''
+    if vars_old not in text:
+        raise RuntimeError("storage vars marker missing")
+    text=text.replace(vars_old,vars_new,1)
+
+    ready_old='''\t_build_ui()
+\tget_viewport().size_changed.connect(_reset_world_pointer)
+'''
+    ready_new='''\t_build_ui()
+\tpersonal_inventory = PersonalInventory.new()
+\tadd_child(personal_inventory)
+\tpersonal_inventory.setup(self)
+\tget_viewport().size_changed.connect(_reset_world_pointer)
+'''
+    if ready_old not in text:
+        raise RuntimeError("ready build ui marker missing")
+    text=text.replace(ready_old,ready_new,1)
+
+    save_old='''\t\t"bagged_inventory": bagged_inventory,
+\t\t"products": products,
+'''
+    save_new='''\t\t"bagged_inventory": bagged_inventory,
+\t\t"personal_weed": personal_weed,
+\t\t"locker_weed": locker_weed,
+\t\t"locker_cash": locker_cash,
+\t\t"products": products,
+'''
+    if save_old not in text:
+        raise RuntimeError("save inventory marker missing")
+    text=text.replace(save_old,save_new,1)
+
+    load_old='''\tvar loaded_bagged: Variant = data.get("bagged_inventory", bagged_inventory)
+\tif loaded_bagged is Dictionary:
+\t\tbagged_inventory = loaded_bagged as Dictionary
+\tvar loaded_products: Variant = data.get("products", products)
+\tif loaded_products is Dictionary:
+\t\tproducts = loaded_products as Dictionary
+'''
+    load_new='''\tvar loaded_bagged: Variant = data.get("bagged_inventory", bagged_inventory)
+\tif loaded_bagged is Dictionary:
+\t\tbagged_inventory = loaded_bagged as Dictionary
+\tvar loaded_personal_weed: Variant = data.get("personal_weed", personal_weed)
+\tif loaded_personal_weed is Dictionary:
+\t\tpersonal_weed = loaded_personal_weed as Dictionary
+\tvar loaded_locker_weed: Variant = data.get("locker_weed", locker_weed)
+\tif loaded_locker_weed is Dictionary:
+\t\tlocker_weed = loaded_locker_weed as Dictionary
+\tlocker_cash = maxi(0, int(data.get("locker_cash", locker_cash)))
+\tvar loaded_products: Variant = data.get("products", products)
+\tif loaded_products is Dictionary:
+\t\tproducts = loaded_products as Dictionary
+\tfor pocket_strain_variant in personal_weed.keys():
+\t\t_ensure_product_exists(str(pocket_strain_variant))
+'''
+    if load_old not in text:
+        raise RuntimeError("load inventory marker missing")
+    text=text.replace(load_old,load_new,1)
+
+    modal_pat=r'(func _any_modal_open\(\) -> bool:\n\treturn [^\n]+)'
+    mm=re.search(modal_pat,text)
+    if not mm:
+        raise RuntimeError("modal function missing")
+    modal_block=mm.group(1)
+    if "personal_inventory.is_modal_open()" not in modal_block:
+        modal_block += ' or (personal_inventory != null and personal_inventory.is_modal_open())'
+        text=text[:mm.start()]+modal_block+text[mm.end():]
+
+    station_line='\t{"id": "station_workbench", "room": "main", "pos": Vector3(3.95, 1.15, 0.30), "view": "workbench"},\n'
+    locker_line='\t{"id": "station_locker", "room": "main", "pos": Vector3(4.13, 1.30, 2.68), "view": "locker"},\n'
+    if station_line not in text:
+        raise RuntimeError("workbench direct station marker missing")
+    text=text.replace(station_line,station_line+locker_line,1)
+
+    view_line='\t\t"workbench": {"pos": Vector3(1.15, 1.60, 1.10), "rot": Vector3(0, -PI / 2.0, 0), "label": "Bagging Station"},\n'
+    locker_view='\t\t"locker": {"pos": Vector3(1.72, 1.56, 2.58), "rot": Vector3(0, -PI / 2.0, 0), "fov": 68.0, "label": "Personal Locker"},\n'
+    if view_line not in text:
+        raise RuntimeError("workbench view marker missing")
+    text=text.replace(view_line,view_line+locker_view,1)
+
+    finish_old='''\t\t"station_workbench":
+\t\t\t_open_bagging_panel()
+\t\t"station_storage", "storage_vault":
+'''
+    finish_new='''\t\t"station_workbench":
+\t\t\t_open_bagging_panel()
+\t\t"station_locker":
+\t\t\tif personal_inventory != null:
+\t\t\t\tpersonal_inventory.open_locker()
+\t\t"station_storage", "storage_vault":
+'''
+    if finish_old not in text:
+        raise RuntimeError("station finish marker missing")
+    text=text.replace(finish_old,finish_new,1)
+
+    activation_old='"station_workbench", "station_storage", "station_door", "station_tent1", "station_tent2", "station_tent3", "station_system", "station_supply":'
+    activation_new='"station_workbench", "station_locker", "station_storage", "station_door", "station_tent1", "station_tent2", "station_tent3", "station_system", "station_supply":'
+    if activation_old not in text:
+        raise RuntimeError("station activation list missing")
+    text=text.replace(activation_old,activation_new,1)
+
+    helpers='''func _player_available_amount(product_name: String) -> int:
+\tvar total: int = _available_amount(product_name)
+\ttotal += maxi(0, int(personal_weed.get(product_name, 0)))
+\treturn total
+
+func _player_product_sellable(product_name: String) -> bool:
+\tvar pocket: int = maxi(0, int(personal_weed.get(product_name, 0)))
+\tif pocket > 0:
+\t\treturn true
+\tif not products.has(product_name):
+\t\treturn false
+\tvar data: Dictionary = products[product_name]
+\treturn bool(data.get("listed", false)) and _available_amount(product_name) > 0
+
+func _consume_player_sale_stock(product_name: String, qty: int) -> bool:
+\tif qty <= 0 or _player_available_amount(product_name) < qty:
+\t\treturn false
+\tvar business_available: int = _available_amount(product_name)
+\tvar from_business: int = mini(qty, business_available)
+\tif from_business > 0 and products.has(product_name):
+\t\tvar data: Dictionary = products[product_name]
+\t\tdata["stock"] = maxi(0, int(data.get("stock", 0)) - from_business)
+\t\tproducts[product_name] = data
+\tvar remaining: int = qty - from_business
+\tif remaining > 0:
+\t\tvar used: int = 0
+\t\tif personal_inventory != null:
+\t\t\tused = int(personal_inventory.consume_weed(product_name, remaining))
+\t\telse:
+\t\t\tvar have: int = maxi(0, int(personal_weed.get(product_name, 0)))
+\t\t\tused = mini(have, remaining)
+\t\t\tpersonal_weed[product_name] = have - used
+\t\t\tif int(personal_weed.get(product_name, 0)) <= 0:
+\t\t\t\tpersonal_weed.erase(product_name)
+\t\tif used < remaining:
+\t\t\treturn false
+\treturn true
+
+'''
+    marker='func _open_customer_sale() -> void:\n'
+    if marker not in text:
+        raise RuntimeError("customer sale marker missing")
+    if "func _player_available_amount" not in text:
+        text=text.replace(marker,helpers+marker,1)
+
+    text=text.replace('var hype_active: bool = hype_visits_remaining > 0 and not hype_product_name.is_empty() and products.has(hype_product_name) and _available_amount(hype_product_name) > 0',
+                      'var hype_active: bool = hype_visits_remaining > 0 and not hype_product_name.is_empty() and products.has(hype_product_name) and _player_available_amount(hype_product_name) > 0',1)
+
+    has_old='''func _has_listed_stock() -> bool:
+\tfor name_variant in products.keys():
+\t\tvar product_name: String = str(name_variant)
+\t\tvar data: Dictionary = products[product_name]
+\t\tif bool(data.get("listed", false)) and _available_amount(product_name) > 0:
+\t\t\treturn true
+\treturn ""
+'''
+    # Stable source returns false, not empty string; use regex replacement instead.
+    has_pat=r'func _has_listed_stock\(\) -> bool:\n.*?(?=\nfunc _customer_arrives\(\) -> void:)'
+    hm=re.search(has_pat,text,flags=re.S)
+    if not hm:
+        raise RuntimeError("has listed stock function missing")
+    has_new='''func _has_listed_stock() -> bool:
+\tfor name_variant in products.keys():
+\t\tif _player_product_sellable(str(name_variant)):
+\t\t\treturn true
+\tfor pocket_name_variant in personal_weed.keys():
+\t\tif int(personal_weed.get(pocket_name_variant, 0)) > 0:
+\t\t\treturn true
+\treturn false
+'''
+    text=text[:hm.start()]+has_new+text[hm.end():]
+
+    text=text.replace('hype_product_available = bool(hype_data.get("listed", false)) and _available_amount(hype_product_name) > 0',
+                      'hype_product_available = _player_product_sellable(hype_product_name) and _player_available_amount(hype_product_name) > 0',1)
+
+    viable_old='''\t\tvar data: Dictionary = products[product_name]
+\t\tif bool(data.get("listed", false)) and _available_amount(product_name) > 0:
+\t\t\tlisted_names.append(product_name)
+'''
+    viable_new='''\t\tvar data: Dictionary = products[product_name]
+\t\tif _player_product_sellable(product_name):
+\t\t\tlisted_names.append(product_name)
+'''
+    if viable_old not in text:
+        raise RuntimeError("viable customer stock loop missing")
+    text=text.replace(viable_old,viable_new,1)
+
+    open_old='''\tvar available: int = _available_amount(product_name)
+\tvar data: Dictionary = products.get(product_name, {})
+\tvar listed: bool = bool(data.get("listed", false))
+'''
+    open_new='''\tvar available: int = _player_available_amount(product_name)
+\tvar data: Dictionary = products.get(product_name, {})
+\tvar listed: bool = _player_product_sellable(product_name)
+'''
+    if open_old not in text:
+        raise RuntimeError("open customer sale availability marker missing")
+    text=text.replace(open_old,open_new,1)
+    text=text.replace('%s is bagged, stored, listed and available.','%s is packaged and available from storage or your backpack.',1)
+    text=text.replace('That strain is not available from stored listed inventory.','That strain is not available from business storage or your backpack.',1)
+
+    sell_old='if not bool(data.get("listed", false)) or _available_amount(product_name) < qty:'
+    sell_new='if not _player_product_sellable(product_name) or _player_available_amount(product_name) < qty:'
+    if sell_old not in text:
+        raise RuntimeError("sell requested stock guard missing")
+    text=text.replace(sell_old,sell_new,1)
+    text=text.replace("That product isn't available in stored listed inventory.","That product isn't available in business storage or your backpack.",1)
+
+    sub_old='if bool(data.get("listed", false)) and _available_amount(product_name) >= qty:'
+    sub_new='if _player_product_sellable(product_name) and _player_available_amount(product_name) >= qty:'
+    if sub_old not in text:
+        raise RuntimeError("substitute stock guard missing")
+    text=text.replace(sub_old,sub_new,1)
+    text=text.replace('No listed substitute has enough stored stock.','No substitute has enough stock between storage and your backpack.',1)
+    text=text.replace('Offer a stored, listed alternative:','Offer an available alternative:',1)
+
+    complete_pat=r'func _complete_sale\(product_name: String, qty: int\) -> void:\n.*?(?=\nfunc )'
+    cm=re.search(complete_pat,text,flags=re.S)
+    if not cm:
+        raise RuntimeError("complete sale function missing")
+    old_block=cm.group(0)
+    new_block='''func _complete_sale(product_name: String, qty: int) -> void:
+\tif not products.has(product_name):
+\t\t_ensure_product_exists(product_name)
+\tif not products.has(product_name) or _player_available_amount(product_name) < qty:
+\t\treturn
+\tvar price: int = _effective_price(product_name)
+\tvar total: int = qty * price
+\tif not _consume_player_sale_stock(product_name, qty):
+\t\treturn
+\tcash += total
+\tlifetime_revenue += total
+\t_record_daily_sale(product_name, qty, total, "player")
+\t_increment_advancement_stat("sales")
+\t_add_heat(1.2 + float(maxi(0, qty - 1)) * 0.65, "Door sale", false)
+\tif _is_night_time():
+\t\t_increment_advancement_stat("night_sales")
+\t_add_progress(qty * 12, qty * 3)
+\t_update_cash_ui()
+\tstatus_label.text = "Sold %dg of %s to %s for $%d." % [qty, product_name, _customer_display_name(current_customer), total]
+\t_save_game()
+\t_end_customer_visit(true)
+'''
+    text=text[:cm.start()]+new_block+text[cm.end():]
+
+    required=[
+        'const PersonalInventory = preload("res://scripts/personal_inventory.gd")',
+        'var locker_cash: int = 0',
+        '"personal_weed": personal_weed',
+        'func _player_available_amount(product_name: String) -> int:',
+        'personal_inventory.open_locker()',
+        '"station_locker"',
+    ]
+    for frag in required:
+        if frag not in text:
+            raise RuntimeError("personal inventory patch missing: "+frag)
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -801,6 +1074,7 @@ def patch_main(text):
     text=patch_tent_pot_switching(text)
     text=patch_direct_station_approach(text)
     text=patch_direct_room_transitions(text)
+    text=patch_personal_inventory(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -847,8 +1121,22 @@ def build_pck_surgically():
     main["md5"]=hashlib.md5(patched).digest()
     main["content"]=patched
 
-    # Append portrait data after the untouched original PCK. The old directory
-    # remains unused; all original file offsets stay identical.
+    # Append portrait data and new helper scripts after the untouched original PCK.
+    helper_files = {
+        "scripts/inventory_slot.gd": ROOT / "tools/inventory_slot.gd",
+        "scripts/personal_inventory.gd": ROOT / "tools/personal_inventory.gd",
+    }
+    for packed_name,source in helper_files.items():
+        if not source.exists():
+            raise RuntimeError("helper source missing: "+str(source))
+        data=source.read_bytes()
+        pos=align(len(out),32)
+        if pos>len(out):
+            out.extend(b"\0"*(pos-len(out)))
+        off=pos-fb
+        out.extend(data)
+        entries.append({"name":packed_name,"off":off,"size":len(data),"md5":hashlib.md5(data).digest(),"flags":0,"content":data})
+
     for client,src_name in PORTRAIT_SOURCE.items():
         packed_name="assets/characters/peephole/%s.webp" % client.lower()
         source=ASSET_DIR/src_name
@@ -879,6 +1167,9 @@ def build_pck_surgically():
         rel="assets/characters/peephole/%s.webp" % client.lower()
         if rel not in names:
             raise RuntimeError("Packed portrait missing: "+rel)
+    for helper_name in ["scripts/inventory_slot.gd","scripts/personal_inventory.gd"]:
+        if helper_name not in names:
+            raise RuntimeError("Packed helper missing: "+helper_name)
 
     # Confirm every original resource except main.gd is byte-identical.
     original_map={e["name"]:e for e in parse_pck(BASE)[3]}
@@ -898,9 +1189,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-directrooms1"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-backpack1"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
