@@ -151,6 +151,101 @@ def patch_peephole(text):
         text=text.replace(marker,loader+marker,1)
     return text
 
+
+def patch_genetics_only_seeds(text):
+    # Frozen Purple remains in SEED_ORDER/inventory so genetics output, planting,
+    # saves, customer demand and progression all continue to work. We only
+    # remove direct shop acquisition and shop-facing unlock messaging.
+    shop_loop = '''\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+'''
+    shop_loop_new = '''\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tif seed_name == "Frozen Purple":
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+'''
+    # This exact block appears in the Seeds shop and elsewhere. Limit the
+    # replacement to the first occurrence after the shop's NEXT GENETIC label.
+    shop_anchor = 'next_unlock.text = "NEXT GENETIC'
+    anchor_pos = text.find(shop_anchor)
+    if anchor_pos < 0:
+        raise RuntimeError("Seeds shop anchor missing")
+    loop_pos = text.find(shop_loop, anchor_pos)
+    if loop_pos < 0:
+        raise RuntimeError("Seeds shop loop missing")
+    text = text[:loop_pos] + text[loop_pos:].replace(shop_loop, shop_loop_new, 1)
+
+    next_old = '''func _next_locked_seed_name() -> String:
+\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif grower_level < int(info.get("unlock", 1)):
+\t\t\treturn seed_name
+\treturn ""
+'''
+    next_new = '''func _next_locked_seed_name() -> String:
+\tfor seed_name in SEED_ORDER:
+\t\tif not seed_catalog.has(seed_name):
+\t\t\tcontinue
+\t\tif seed_name == "Frozen Purple":
+\t\t\tcontinue
+\t\tvar info: Dictionary = seed_catalog[seed_name]
+\t\tif grower_level < int(info.get("unlock", 1)):
+\t\t\treturn seed_name
+\treturn ""
+'''
+    if next_old not in text:
+        raise RuntimeError("Next locked seed function missing")
+    text = text.replace(next_old, next_new, 1)
+
+    buy_old = '''func _buy_seed(seed_name: String) -> void:
+\tif tutorial_active:
+'''
+    buy_new = '''func _buy_seed(seed_name: String) -> void:
+\tif seed_name == "Frozen Purple":
+\t\tstatus_label.text = "Frozen Purple is genetics-only. Create it in Phone -> Genetics."
+\t\treturn
+\tif tutorial_active:
+'''
+    if buy_old not in text:
+        raise RuntimeError("Seed purchase function missing")
+    text = text.replace(buy_old, buy_new, 1)
+
+    level_old = '''\t\tfor seed_name in SEED_ORDER:
+\t\t\tif seed_catalog.has(seed_name):
+\t\t\t\tvar seed_info: Dictionary = seed_catalog[seed_name]
+\t\t\t\tif int(seed_info.get("unlock", 1)) == grower_level:
+\t\t\t\t\tunlocked_names.append(seed_name)
+'''
+    level_new = '''\t\tfor seed_name in SEED_ORDER:
+\t\t\tif seed_name == "Frozen Purple":
+\t\t\t\tcontinue
+\t\t\tif seed_catalog.has(seed_name):
+\t\t\t\tvar seed_info: Dictionary = seed_catalog[seed_name]
+\t\t\t\tif int(seed_info.get("unlock", 1)) == grower_level:
+\t\t\t\t\tunlocked_names.append(seed_name)
+'''
+    if level_old not in text:
+        raise RuntimeError("Grower unlock message loop missing")
+    text = text.replace(level_old, level_new, 1)
+
+    # Genetics recipe itself must remain available and unchanged.
+    required = [
+        'title.text = "PURPLE DREAM x BLUE FROST"',
+        'Discovery: Frozen Purple',
+        'cross.pressed.connect(_create_frozen_purple_cross)',
+        'seed_inventory["Frozen Purple"] = int(seed_inventory.get("Frozen Purple", 0)) + 2',
+    ]
+    for fragment in required:
+        if fragment not in text:
+            raise RuntimeError("Frozen Purple genetics recipe missing: " + fragment)
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -182,6 +277,7 @@ def patch_main(text):
             raise RuntimeError("Stable client missing: "+name)
     text=add_new_clients(text)
     text=patch_peephole(text)
+    text=patch_genetics_only_seeds(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -279,9 +375,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-portraits2"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-portraits2-geneticsonly1"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
