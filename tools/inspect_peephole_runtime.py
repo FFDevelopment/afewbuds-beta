@@ -1,6 +1,6 @@
 from pathlib import Path
 import struct,re
-p=Path("cloud-test/index-peephole-genetics2.pck")
+p=Path("cloud-test/index-accountsync10.pck")
 b=p.read_bytes()
 fb=struct.unpack_from("<Q",b,24)[0]
 do=struct.unpack_from("<Q",b,32)[0]
@@ -30,3 +30,14 @@ print("\n===== PEEPHOLE VAR CONTEXT =====")
 for i,line in enumerate(lines):
     if "peephole_portrait" in line or "peephole_silhouette" in line:
         print("\n".join(lines[max(0,i-8):min(len(lines),i+14)]))
+
+
+print("\n===== CLIENT ROWS =====")
+for line in lines:
+    if line.startswith("\t{\"name\":"):
+        print(line)
+
+print("\n===== BASIC BALANCE =====")
+print("braces", text.count("{"), text.count("}"))
+print("brackets", text.count("["), text.count("]"))
+print("parens", text.count("("), text.count(")"))
