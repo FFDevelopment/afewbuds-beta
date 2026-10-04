@@ -1,12 +1,12 @@
 extends PanelContainer
 
-var inventory_owner: Node
+var inventory_owner = null
 var container_kind: String = ""
 var slot_index: int = 0
 var item_data: Dictionary = {}
 var label: Label
 
-func setup(owner_node: Node, kind: String, index: int, data: Dictionary) -> void:
+func setup(owner_node, kind: String, index: int, data: Dictionary) -> void:
 	inventory_owner = owner_node
 	container_kind = kind
 	slot_index = index
