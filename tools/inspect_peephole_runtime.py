@@ -238,3 +238,27 @@ for i,line in enumerate(lines):
     ):
         print("\n--- line",i+1,"---")
         print("\n".join(lines[max(0,i-14):min(len(lines),i+60)]))
+
+
+print("\n===== PCK HELPER SCRIPT VERIFY =====")
+blob,fb,do,entries = parse_pck(Path("cloud-test/index-accountsync10.pck"))
+emap={e["name"]:e for e in entries}
+for name in ["scripts/personal_inventory.gd","scripts/inventory_slot.gd"]:
+    print("\nFILE",name,"present=",name in emap)
+    if name in emap:
+        body=emap[name]["content"].decode("utf-8","replace")
+        print(body[:12000])
+
+print("\n===== MAIN INVENTORY INIT EXACT =====")
+for term in [
+    'const PersonalInventory = preload("res://scripts/personal_inventory.gd")',
+    'personal_inventory = PersonalInventory.new()',
+    'personal_inventory.setup(self)',
+    'func _safe_resume_view',
+    'func _restore_runtime_state() -> void:'
+]:
+    idx=text.find(term)
+    print("\nTERM",term,"AT",idx)
+    if idx>=0:
+        ln=text[:idx].count("\n")
+        print("\n".join(lines[max(0,ln-8):min(len(lines),ln+36)]))
