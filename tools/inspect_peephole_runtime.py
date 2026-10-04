@@ -172,3 +172,10 @@ for target in [8847,8894,8947]:
     a=max(0,target-22); b=min(len(lines),target+36)
     print("\n--- around", target, "---")
     print("\n".join(lines[a:b]))
+
+
+print("\n===== CUSTOMER REQUEST GENERATION =====")
+for target in [8705,8720,8765,8794]:
+    a=max(0,target-28); b=min(len(lines),target+32)
+    print("\n--- around", target, "---")
+    print("\n".join(lines[a:b]))
