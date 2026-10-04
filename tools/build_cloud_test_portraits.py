@@ -1251,9 +1251,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync11-cloudtest-backpack4"
+    manifest["release_id"]="0.7.9-beta.19-accountsync11-cloudtest-backpack5"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales","top-layer-inventory-ui","safe-resume-view"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales","top-layer-inventory-ui","safe-resume-view","cloud-test-network-first"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
