@@ -68,3 +68,10 @@ for i,line in enumerate(lines):
     ):
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-10):min(len(lines),i+28)]))
+
+
+print("\n===== DIRECT POT INPUT GATE =====")
+for i,line in enumerate(lines):
+    if "_open_direct_plant" in line or "plant_direct_panel.visible" in line or "_set_world_controls_visible" in line or "_handle" in line and "input" in line.lower():
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-18):min(len(lines),i+45)]))
