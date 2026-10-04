@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>AFewBuds 0.7.9-beta.19 • Peephole + Genetics Test</title>
+		<title>AFewBuds 0.7.9-beta.19</title>
 		<style>
 html, body, #canvas {
 	margin: 0;
@@ -187,7 +187,7 @@ body {
 <meta name="apple-mobile-web-app-title" content="AFewBuds"><meta name="theme-color" content="#0e1812"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	</head>
 	<body>
-		<div id="afb-prelaunch" aria-live="polite" hidden>
+		<div id="afb-prelaunch" aria-live="polite">
 			<div class="afb-launch-card">
 				<img class="afb-launch-logo" src="index.png" alt="AFewBuds">
 				<h1 id="afb-prelaunch-title">Checking AFewBuds…</h1>
@@ -200,7 +200,7 @@ body {
 			<div class="afb-auth-card">
 				<div class="afb-auth-brand"><div class="afb-auth-mark">AFB</div><div><h1>AFewBuds</h1><p>Player account</p></div></div>
 				<h2 class="afb-auth-title">Pick up where you left off.</h2>
-				<p class="afb-auth-sub">Sign in or create an account to track your play time and keep your AFewBuds identity. Email is optional and only used for updates when you opt in.</p>
+				<p class="afb-auth-sub">Sign in or create an account to keep one AFewBuds career across your PC, phone browser, and Home Screen app. Email is optional and only used for updates when you opt in.</p>
 				<div class="afb-tabs">
 					<button class="afb-tab active" id="afb-login-tab" type="button">Sign in</button>
 					<button class="afb-tab" id="afb-register-tab" type="button">Create account</button>
@@ -228,7 +228,7 @@ body {
 				<div class="afb-stack" style="margin-top:12px">
 					<button class="afb-btn secondary" id="afb-guest-btn" type="button">Continue without an account</button>
 				</div>
-				<div class="afb-auth-footer">Usernames are unique regardless of capitalization. Your existing browser career is not deleted by signing in, signing up, or continuing as a guest.</div>
+				<div class="afb-auth-footer">Usernames are unique regardless of capitalization. One signed-in AFewBuds account uses one shared career across supported web devices. Guest play stays local to that device.</div>
 			</div>
 		</div>
 		<canvas id="canvas">
@@ -245,14 +245,16 @@ body {
 			<div id="status-notice"></div>
 		</div>
 
+		<script src="shared/afb-updater.js"></script>
 		<script src="shared/config.js"></script>
 		<script src="shared/afb-api.js"></script>
-		<script src="shared/afb-cloud.js?v=peepholegenetics2"></script>
-		<script src="index.js?v=peepholegenetics2"></script>
+		<script src="shared/afb-cloud-accountsync10.js?v=0.7.9-beta.19-accountsync10"></script>
+		<script src="index-accountsync10.js?v=0.7.9-beta.19-accountsync10"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index-peephole-genetics2.pck":25419396,"index.wasm":37902138},"focusCanvas":true,"mainPack":"index-peephole-genetics2.pck","gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":""};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index-accountsync10.pck":25369424,"index.wasm":37902138},"focusCanvas":true,"mainPack":"index-accountsync10.pck","gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 let AFB_GAME_STARTED = false;
+let AFB_GAME_STARTING = false;
 
 function afbSetPane(which) {
 	const login = which === 'login';
@@ -304,38 +306,20 @@ function afbLoadTracker() {
 	s.src = 'shared/afb-tracker.js?v=0.7.9-beta.19';
 	document.body.appendChild(s);
 }
-function afbShowCloudTestResult(ok, text) {
-	let el = document.getElementById('afb-cloud-test-result');
-	if (!el) {
-		el = document.createElement('div');
-		el.id = 'afb-cloud-test-result';
-		el.style.cssText = 'position:fixed;top:12px;right:12px;z-index:20000;max-width:min(420px,calc(100vw - 24px));padding:12px 14px;border-radius:12px;font:700 13px/1.35 system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35);';
-		document.body.appendChild(el);
-	}
-	el.textContent = (ok ? 'Cloud Test ✓ ' : 'Cloud Test ⚠ ') + text;
-	el.style.background = ok ? '#173c28' : '#4a241f';
-	el.style.color = '#f4fff7';
-	el.style.border = ok ? '1px solid #4d9b6a' : '1px solid #b45e50';
-	el.hidden = false;
-	setTimeout(() => { if (el) el.hidden = true; }, 8000);
-}
-async function afbCloudReconcileAccount() {
-	if (!window.AFB_API || !AFB_API.enabled || !window.AFB_CLOUD) return {action:'cloud_unavailable'};
-	const player = AFB_API.getPlayerSession();
-	if (!player || !player.session_token) return {action:'guest'};
-	if (!AFB_CLOUD.reconcileLatestSilently) return {action:'unsupported'};
-	return await AFB_CLOUD.reconcileLatestSilently();
-}
 async function afbLaunchGame() {
-	if (AFB_GAME_STARTED) return;
-	AFB_GAME_STARTED = true;
+	if (AFB_GAME_STARTED || AFB_GAME_STARTING) return;
+	AFB_GAME_STARTING = true;
 	try {
-		const result = await afbCloudReconcileAccount();
-		console.log('AFewBuds account career reconcile:', result);
+		if (window.AFB_CLOUD && window.AFB_API && AFB_API.getPlayerSession && AFB_API.getPlayerSession()) {
+			await AFB_CLOUD.reconcileLatestSilently();
+		}
 	} catch (error) {
-		console.error('AFewBuds account career reconcile failed:', error);
+		console.warn('AFewBuds account career reconcile skipped; using local career.', error);
 	}
+	AFB_GAME_STARTED = true;
+	AFB_GAME_STARTING = false;
 	document.getElementById('afb-account-gate').hidden = true;
+	if (window.AFB_UPDATER) AFB_UPDATER.notifyGameStarting();
 	afbLoadTracker();
 	if (window.AFB_CLOUD) AFB_CLOUD.startAutoSync();
 	launchGodotEngine();
@@ -429,9 +413,13 @@ async function afbBootAccountGate(){
 }
 
 (async function afbPrelaunch(){
-	const overlay = document.getElementById('afb-prelaunch');
-	if (overlay) overlay.hidden = true;
-	console.log('AFewBuds beta.19 cloud upload-only test build');
+	try {
+		if (window.AFB_UPDATER) await AFB_UPDATER.boot();
+	} catch (error) {
+		console.warn('AFewBuds updater unavailable; starting installed build.', error);
+		const overlay = document.getElementById('afb-prelaunch');
+		if (overlay) overlay.hidden = true;
+	}
 	await afbBootAccountGate();
 })();
 		</script>
