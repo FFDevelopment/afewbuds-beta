@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-genetics3",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-genetics3-checkmarks1",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -28,7 +28,8 @@
     "eleven-new-clients",
     "frozen-purple-genetics-only",
     "expanded-genetics-recipes",
-    "genetics-reward-tasks"
+    "genetics-reward-tasks",
+    "completed-task-x-marker"
   ],
   "files": [
     {
@@ -44,7 +45,7 @@
     {
       "path": "index-accountsync10.pck",
       "size": 25503748,
-      "sha256": "b6922bcee8e43d4c0723182d7c349da4c5b752091d1a497d431528c691d45b29"
+      "sha256": "0563fc87ab162909bcad94458b332fcde9b41e98dc2320e815e7453315b871d7"
     },
     {
       "path": "index.wasm",
