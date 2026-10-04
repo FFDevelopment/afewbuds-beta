@@ -48,3 +48,10 @@ for i,line in enumerate(lines):
     if "seed_catalog[seed_name]" in line or "SEED_ORDER" in line or "Frozen Purple" in line:
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-12):min(len(lines),i+22)]))
+
+
+print("\n===== TASK MARKERS =====")
+for i,line in enumerate(lines):
+    if '"OK"' in line or '"[ ]"' in line or "'OK'" in line or "'[ ]'" in line:
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-6):min(len(lines),i+10)]))
