@@ -1,0 +1,14 @@
+name: Inspect peephole customer catalog
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/inspect_peephole_catalog.py"
+      - ".github/workflows/inspect-peephole-catalog.yml"
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python tools/inspect_peephole_catalog.py
