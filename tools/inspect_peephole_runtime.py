@@ -92,3 +92,17 @@ for i,line in enumerate(lines):
     if line.startswith("func _room_interaction_at") or line.startswith("func _activate_room_interaction") or line.startswith("func _go_to_view") or line.startswith("func _finish") and "view" in line.lower():
         print("\n--- line", i+1, "---")
         print("\n".join(lines[i:min(len(lines),i+100)]))
+
+
+print("\n===== VIEWS AND STATION MESHES =====")
+for i,line in enumerate(lines):
+    low=line.lower()
+    if (
+        '"main_workbench"' in line or '"main_storage"' in line or '"main_door"' in line or
+        '"grow_supply_shelf"' in line or '"grow_system"' in line or '"grow_room_utility"' in line or
+        '"grow_room_tent"' in line or '"grow_room_tent2"' in line or '"grow_room_tent3"' in line or
+        "Packing" in line or "Workbench" in line or "StorageVault" in line or "FrontDoor" in line or
+        "SupplyShelf" in line or "Climate" in line or "SystemPanel" in line
+    ):
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-8):min(len(lines),i+24)]))
