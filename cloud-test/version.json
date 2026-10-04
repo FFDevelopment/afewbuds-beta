@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-directstations1",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-directrooms1",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -31,7 +31,8 @@
     "genetics-reward-tasks",
     "completed-task-x-marker",
     "direct-pot-switching",
-    "direct-station-approach"
+    "direct-station-approach",
+    "direct-room-transitions"
   ],
   "files": [
     {
@@ -47,7 +48,7 @@
     {
       "path": "index-accountsync10.pck",
       "size": 25503748,
-      "sha256": "c2fdd1a44c9f52e7bee30f17a69f4028c9b8464cb8a89e8ee7a25b702421be3e"
+      "sha256": "84b82960443804f5ceb807e081a08f8ede8bdd4a8a5c302da182ff753029d1d5"
     },
     {
       "path": "index.wasm",
