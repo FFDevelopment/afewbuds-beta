@@ -15,7 +15,7 @@ PORTRAITS = {
     "Zay":"zay.webp","Bree":"bree.webp","Tino":"tino.webp",
     "Carmen":"carmen.webp","Simone":"simone.webp","Dani":"dani.webp",
     "Marcus":"marcus.webp","Theo":"theo.webp","Devon":"devon.webp",
-    "Omar":"omar.webp","Nico":"nico.webp","Tyler":"tyler.webp",
+    "Omar":"omar.webp","Nico":"nico.webp","Nolan":"tyler.webp",
 }
 
 NEW_CLIENTS = [
@@ -27,7 +27,7 @@ NEW_CLIENTS = [
     {"name":"Devon","recognition_visits":2,"favorite":"Cherry Glow","fallback_profile":"cherry","flexibility":0.48,"min_qty":2,"max_qty":4,"tier":"Established","unlock_level":8},
     {"name":"Omar","recognition_visits":3,"favorite":"Neon Berry","fallback_profile":"berry","flexibility":0.40,"min_qty":2,"max_qty":5,"tier":"Established","unlock_level":9},
     {"name":"Nico","recognition_visits":3,"favorite":"Moon Cake","fallback_profile":"luxury","flexibility":0.36,"min_qty":3,"max_qty":5,"tier":"Premium","unlock_level":11},
-    {"name":"Tyler","recognition_visits":3,"favorite":"Midnight Crown","fallback_profile":"luxury","flexibility":0.32,"min_qty":3,"max_qty":6,"tier":"Premium","unlock_level":12},
+    {"name":"Nolan","recognition_visits":3,"favorite":"Midnight Crown","fallback_profile":"luxury","flexibility":0.32,"min_qty":3,"max_qty":6,"tier":"Premium","unlock_level":12},
 ]
 
 def align(n,a): return (n+a-1)//a*a
