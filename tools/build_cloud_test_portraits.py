@@ -567,6 +567,157 @@ def patch_tent_pot_switching(text):
             raise RuntimeError("direct pot switch guard missing: "+fragment)
     return text
 
+
+def patch_direct_station_approach(text):
+    station_const='''const ROOM_DIRECT_STATIONS: Array[Dictionary] = [
+\t{"id": "station_workbench", "room": "main", "pos": Vector3(3.95, 1.15, 0.30), "view": "workbench"},
+\t{"id": "station_storage", "room": "main", "pos": Vector3(-4.35, 1.35, -0.30), "view": "storage"},
+\t{"id": "station_door", "room": "main", "pos": Vector3(0.0, 1.50, 5.78), "view": "door"},
+\t{"id": "station_tent1", "room": "grow", "pos": Vector3(0.0, 1.25, -9.10), "view": "grow"},
+\t{"id": "station_tent2", "room": "grow", "pos": Vector3(-3.20, 1.18, -9.28), "view": "grow2"},
+\t{"id": "station_tent3", "room": "grow", "pos": Vector3(3.20, 1.18, -9.28), "view": "grow3"},
+\t{"id": "station_system", "room": "grow", "pos": Vector3(4.72, 1.95, -6.65), "view": "grow_system"},
+\t{"id": "station_supply", "room": "grow", "pos": Vector3(-4.55, 1.35, -6.45), "view": "grow_supply_shelf"}
+]
+'''
+    anchor='const ROOM_SWITCH_TARGETS: Array[Dictionary] = ['
+    if station_const.strip() not in text:
+        idx=text.find(anchor)
+        if idx < 0:
+            raise RuntimeError("room switch target constant missing")
+        end=text.find('\n]',idx)
+        if end < 0:
+            raise RuntimeError("room switch target constant end missing")
+        end=end+2
+        text=text[:end]+"\n"+station_const+text[end:]
+
+    helper_funcs='''func _direct_station_at(screen_position: Vector2) -> String:
+\tif camera == null:
+\t\treturn ""
+\tvar visible: Rect2 = get_viewport().get_visible_rect()
+\tvar best_id: String = ""
+\tvar best_distance: float = INF
+\tfor spec: Dictionary in ROOM_DIRECT_STATIONS:
+\t\tif str(spec.get("room", "")) != current_room:
+\t\t\tcontinue
+\t\tif str(spec.get("id", "")) == "station_tent2" and grow_tent_count < 2:
+\t\t\tcontinue
+\t\tif str(spec.get("id", "")) == "station_tent3" and grow_tent_count < 3:
+\t\t\tcontinue
+\t\tvar world_pos: Vector3 = spec.get("pos", Vector3.ZERO)
+\t\tif camera.is_position_behind(world_pos):
+\t\t\tcontinue
+\t\tvar screen_pos: Vector2 = camera.unproject_position(world_pos)
+\t\tif not visible.has_point(screen_pos):
+\t\t\tcontinue
+\t\tvar distance: float = screen_pos.distance_to(screen_position)
+\t\tvar radius: float = 92.0
+\t\tif str(spec.get("id", "")).begins_with("station_tent"):
+\t\t\tradius = 130.0
+\t\tif distance <= radius and distance < best_distance:
+\t\t\tbest_distance = distance
+\t\t\tbest_id = str(spec.get("id", ""))
+\treturn best_id
+
+func _direct_station_view(action_id: String) -> String:
+\tfor spec: Dictionary in ROOM_DIRECT_STATIONS:
+\t\tif str(spec.get("id", "")) == action_id:
+\t\t\treturn str(spec.get("view", ""))
+\treturn ""
+
+func _approach_station_then_open(action_id: String) -> bool:
+\tvar target_view: String = _direct_station_view(action_id)
+\tif target_view.is_empty() or not views.has(target_view):
+\t\treturn false
+\tstatus_label.text = "Approaching..."
+\t_go_to_view(target_view, true)
+\tif camera_view_tween != null:
+\t\tcamera_view_tween.finished.connect(_finish_direct_station_approach.bind(action_id), CONNECT_ONE_SHOT)
+\telse:
+\t\t_finish_direct_station_approach(action_id)
+\treturn true
+
+func _finish_direct_station_approach(action_id: String) -> void:
+\tmatch action_id:
+\t\t"station_workbench":
+\t\t\t_open_bagging_panel()
+\t\t"station_storage", "storage_vault":
+\t\t\t_open_storage_panel()
+\t\t"station_door":
+\t\t\tif customer_waiting:
+\t\t\t\tif peephole_checked:
+\t\t\t\t\t_open_customer_sale()
+\t\t\t\telse:
+\t\t\t\t\t_open_peephole()
+\t\t\telse:
+\t\t\t\t_open_peephole()
+\t\t"station_tent1", "station_tent2", "station_tent3":
+\t\t\ttent_open = true
+\t\t\tstatus_label.text = "Tap a plant or empty pot directly in this tent to tend it."
+\t\t"station_system":
+\t\t\t_open_system_control_panel()
+\t\t"station_supply":
+\t\t\t_open_supply_inventory_panel()
+
+'''
+    marker='func _room_interaction_at(screen_position: Vector2) -> String:\n'
+    if 'func _direct_station_at(screen_position: Vector2) -> String:' not in text:
+        if marker not in text:
+            raise RuntimeError("room interaction function missing")
+        text=text.replace(marker,helper_funcs+marker,1)
+
+    old_return='''\tif nearest_action.is_empty() and current_room == "main" and storage_level >= 4:
+\t\tvar vault_bounds: Rect2 = _room_target_screen_rect(["StorageVault/DoorFace", "StorageVault/RoundDoor"])
+\t\tif vault_bounds.has_area() and vault_bounds.has_point(screen_position):
+\t\t\treturn "storage_vault"
+\treturn nearest_action
+'''
+    new_return='''\tif nearest_action.is_empty():
+\t\tvar station_action: String = _direct_station_at(screen_position)
+\t\tif not station_action.is_empty():
+\t\t\treturn station_action
+\tif nearest_action.is_empty() and current_room == "main" and storage_level >= 4:
+\t\tvar vault_bounds: Rect2 = _room_target_screen_rect(["StorageVault/DoorFace", "StorageVault/RoundDoor"])
+\t\tif vault_bounds.has_area() and vault_bounds.has_point(screen_position):
+\t\t\treturn "storage_vault"
+\treturn nearest_action
+'''
+    if old_return not in text:
+        raise RuntimeError("room interaction return block missing")
+    text=text.replace(old_return,new_return,1)
+
+    old_vault='''\t\t"storage_vault":
+\t\t\tif storage_level < 4:
+\t\t\t\treturn false
+\t\t\t_open_storage_panel()
+\t\t\treturn true
+'''
+    new_vault='''\t\t"storage_vault":
+\t\t\tif storage_level < 4:
+\t\t\t\treturn false
+\t\t\treturn _approach_station_then_open("station_storage")
+\t\t"station_workbench", "station_storage", "station_door", "station_tent1", "station_tent2", "station_tent3", "station_system", "station_supply":
+\t\t\treturn _approach_station_then_open(action_id)
+'''
+    if old_vault not in text:
+        raise RuntimeError("vault activation block missing")
+    text=text.replace(old_vault,new_vault,1)
+
+    must=[
+        'func _approach_station_then_open(action_id: String) -> bool:',
+        'camera_view_tween.finished.connect(_finish_direct_station_approach.bind(action_id), CONNECT_ONE_SHOT)',
+        '"station_door"',
+        '_open_peephole()',
+        '_open_bagging_panel()',
+        '_open_storage_panel()',
+        '_open_system_control_panel()',
+        '_open_supply_inventory_panel()',
+    ]
+    for fragment in must:
+        if fragment not in text:
+            raise RuntimeError("station approach fragment missing: "+fragment)
+    return text
+
 def compact_to_fit(text, max_bytes):
     data=text.encode("utf-8")
     if len(data)<=max_bytes:
@@ -601,6 +752,7 @@ def patch_main(text):
     text=patch_full_genetics(text)
     text=patch_task_markers(text)
     text=patch_tent_pot_switching(text)
+    text=patch_direct_station_approach(text)
 
     # Guard important known-good systems and Friend Tyler.
     required=[
@@ -698,9 +850,9 @@ def patch_web_release():
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-tentswitch1"
+    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-directstations1"
     features=list(manifest.get("web_features",[]))
-    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching"]:
+    for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
