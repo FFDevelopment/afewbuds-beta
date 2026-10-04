@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-backpack2",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-backpack3",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -35,13 +35,15 @@
     "direct-room-transitions",
     "personal-backpack",
     "locker-stash",
-    "player-pocket-sales"
+    "player-pocket-sales",
+    "top-layer-inventory-ui",
+    "safe-resume-view"
   ],
   "files": [
     {
       "path": "index.html",
       "size": 19812,
-      "sha256": "e26f5a9b6dd70a2c20a252618de6f424e8d74a4ceae5cbe33f1212914ffa9812"
+      "sha256": "75d0e99353ee04c235ee04a907f8a1871384218fc50e0d5666e7e57e1bc86d74"
     },
     {
       "path": "index-accountsync10.js",
@@ -50,8 +52,8 @@
     },
     {
       "path": "index-accountsync10.pck",
-      "size": 25520208,
-      "sha256": "6d74779e7df856fd9c198b44632e0e8948760decc6926c2633fa91ea3bb106fc"
+      "size": 25520848,
+      "sha256": "395e66caff5e3c8fe533c01922ae21d613e65402b630972b35791ef651bfcc40"
     },
     {
       "path": "index.wasm",
