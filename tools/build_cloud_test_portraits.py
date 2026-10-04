@@ -210,7 +210,8 @@ def build():
     for fn in PORTRAITS.values():
         rel="assets/characters/peephole/"+fn
         if rel not in names: raise RuntimeError("Packed portrait missing: "+rel)
-    patch_web_release()\n    print(json.dumps({"output":str(OUT),"size":OUT.stat().st_size,"sha256":hashlib.sha256(OUT.read_bytes()).hexdigest(),"portraits":28,"new_clients":9},indent=2))
+    patch_web_release()
+    print(json.dumps({"output":str(OUT),"size":OUT.stat().st_size,"sha256":hashlib.sha256(OUT.read_bytes()).hexdigest(),"portraits":28,"new_clients":9},indent=2))
 
 if __name__=="__main__":
     build()
