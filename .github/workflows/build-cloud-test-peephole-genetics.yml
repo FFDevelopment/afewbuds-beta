@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - "tools/build_cloud_test_peephole_genetics.py"
-      - "tools/peephole_remaining160.zip"
+      - "tools/peephole_remaining160/**"
       - ".github/workflows/build-cloud-test-peephole-genetics.yml"
 
 permissions:
