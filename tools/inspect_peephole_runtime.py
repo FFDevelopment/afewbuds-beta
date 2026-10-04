@@ -165,3 +165,10 @@ print("\n===== AVAILABLE AMOUNT CALLERS =====")
 for i,line in enumerate(lines):
     if "_available_amount(" in line:
         print(i+1, line)
+
+
+print("\n===== SALE AVAILABILITY CONTEXT =====")
+for target in [8847,8894,8947]:
+    a=max(0,target-22); b=min(len(lines),target+36)
+    print("\n--- around", target, "---")
+    print("\n".join(lines[a:b]))
