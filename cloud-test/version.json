@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-portraits1",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-portraits2",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -25,13 +25,13 @@
     "stale-customer-runtime-recovery",
     "transactional-updater",
     "client-portrait-refresh-28",
-    "nine-new-clients"
+    "eleven-new-clients"
   ],
   "files": [
     {
       "path": "index.html",
       "size": 19812,
-      "sha256": "e10988dfc0e2b03effe830133c3d77ea3214726285d04dab18524cc4b1c6e650"
+      "sha256": "1e3c82fd24bcf17e96e3d293734f0ebd4676395834391ced3e7653215e570606"
     },
     {
       "path": "index-accountsync10.js",
@@ -40,8 +40,8 @@
     },
     {
       "path": "index-accountsync10.pck",
-      "size": 25493604,
-      "sha256": "13095b58d8f746a92cfbb93aa740e232a0268cf2bebac08607275cc8df70fcbe"
+      "size": 25503748,
+      "sha256": "d45767e0f6d03d4eeec5ca28506f5dfd25a8e1df68166c056235977847705662"
     },
     {
       "path": "index.wasm",
