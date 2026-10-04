@@ -12,6 +12,7 @@ var backpack_panel: PanelContainer
 var backpack_body: VBoxContainer
 var locker_panel: PanelContainer
 var locker_body: VBoxContainer
+var return_station: String = ""
 
 func setup(game_node: Node) -> void:
 	game = game_node
@@ -146,7 +147,14 @@ func toggle_backpack() -> void:
 	if backpack_panel.visible:
 		close_backpack()
 		return
-	if game._any_modal_open():
+	return_station = ""
+	if game.bagging_panel != null and game.bagging_panel.visible:
+		game.bagging_panel.visible = false
+		return_station = "bagging"
+	elif game.storage_panel != null and game.storage_panel.visible:
+		game.storage_panel.visible = false
+		return_station = "storage"
+	elif game._any_modal_open():
 		return
 	backpack_panel.visible = true
 	game._set_world_controls_visible(false)
@@ -154,7 +162,14 @@ func toggle_backpack() -> void:
 
 func close_backpack() -> void:
 	backpack_panel.visible = false
-	game._set_world_controls_visible(true)
+	var station := return_station
+	return_station = ""
+	if station == "bagging":
+		game._open_bagging_panel()
+	elif station == "storage":
+		game._open_storage_panel()
+	else:
+		game._set_world_controls_visible(true)
 
 func open_locker() -> void:
 	if backpack_panel != null:
@@ -304,6 +319,8 @@ func _move_to_backpack(strain: String, amount: int) -> int:
 
 func take_bagged(strain: String) -> void:
 	var have := maxi(0,int(game.bagged_inventory.get(strain,0)))
+	if have > 0:
+		game._ensure_product_exists(strain)
 	var moved := _move_to_backpack(strain,have)
 	if moved <= 0:
 		game.status_label.text = "Backpack is full."
