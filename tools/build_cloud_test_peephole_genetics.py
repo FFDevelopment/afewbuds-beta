@@ -102,23 +102,19 @@ def patch_genetics(text):
 '''
     text=replace_once(text,reward_vars,reward_vars+'\tvar reward_recipe: String = str(entry.get("reward_recipe", ""))\n','reward text vars')
 
-    reward_tail_bullet='''\tif not reward_seed.is_empty() and reward_seed_count > 0:
-\t\tparts.append("%dx %s seed" % [reward_seed_count, reward_seed])
-\treturn "  •  ".join(parts)
-'''
-    reward_tail_ascii='''\tif not reward_seed.is_empty() and reward_seed_count > 0:
-\t\tparts.append("%dx %s seed" % [reward_seed_count, reward_seed])
-\treturn "  |  ".join(parts)
-'''
-    new_tail='''\tif not reward_seed.is_empty() and reward_seed_count > 0:
-\t\tparts.append("%dx %s seed" % [reward_seed_count, reward_seed])
-\tif not reward_recipe.is_empty():
-\t\tparts.append("GENETICS RECIPE: %s" % reward_recipe)
-\treturn "  |  ".join(parts)
-'''
-    if reward_tail_ascii in text: text=text.replace(reward_tail_ascii,new_tail,1)
-    elif reward_tail_bullet in text: text=text.replace(reward_tail_bullet,new_tail,1)
-    else: raise RuntimeError('reward tail marker missing')
+    reward_func_pat = r'func _advancement_reward_text\(entry: Dictionary\) -> String:\n.*?(?=\nfunc )'
+    reward_match = re.search(reward_func_pat, text, flags=re.S)
+    if not reward_match:
+        raise RuntimeError('advancement reward function missing')
+    reward_block = reward_match.group(0)
+    if 'GENETICS RECIPE:' not in reward_block:
+        return_pat = r'\n\treturn "[^"]*"\.join\(parts\)'
+        return_match = re.search(return_pat, reward_block)
+        if not return_match:
+            raise RuntimeError('advancement reward return missing')
+        recipe_lines = '\n\tif not reward_recipe.is_empty():\n\t\tparts.append("GENETICS RECIPE: %s" % reward_recipe)'
+        reward_block = reward_block[:return_match.start()] + recipe_lines + reward_block[return_match.start():]
+        text = text[:reward_match.start()] + reward_block + text[reward_match.end():]
 
     shop='''\t\tvar info: Dictionary = seed_catalog[seed_name]
 \t\tvar unlock_level: int = int(info.get("unlock", 1))
