@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-backpack1",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-backpack2",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -41,7 +41,7 @@
     {
       "path": "index.html",
       "size": 19812,
-      "sha256": "fd55bd6a6c206a8c49e9787e6525819dbac1b3a05563d385a6c0ec105dc5f6f7"
+      "sha256": "e26f5a9b6dd70a2c20a252618de6f424e8d74a4ceae5cbe33f1212914ffa9812"
     },
     {
       "path": "index-accountsync10.js",
@@ -50,8 +50,8 @@
     },
     {
       "path": "index-accountsync10.pck",
-      "size": 25520240,
-      "sha256": "9a0cf5f8cd4b80b326b94dfc56e952ece45e6a71453a9e4d8ea9d33527b9c9b1"
+      "size": 25520208,
+      "sha256": "6d74779e7df856fd9c198b44632e0e8948760decc6926c2633fa91ea3bb106fc"
     },
     {
       "path": "index.wasm",
