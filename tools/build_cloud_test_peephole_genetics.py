@@ -229,7 +229,7 @@ func _create_genetics_cross(recipe_id: String) -> void:
 
 def patch_main(text):
     # peephole1 omitted Tino; restore the current Reserve/Lv14 record first.
-    if '"name": "Tino"' not in text:
+    if '\t{"name": "Tino"' not in text:
         anchor = '\t{"name": "Bree"'
         anchor_pos = text.find(anchor)
         if anchor_pos < 0:
