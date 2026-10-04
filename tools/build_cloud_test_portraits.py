@@ -3,7 +3,7 @@ import struct, hashlib, re, json
 
 ROOT = Path(".")
 BASE = ROOT / "index-accountsync10.pck"
-OUT = ROOT / "cloud-test/index-accountsync10.pck"
+OUT = ROOT / "cloud-test/index-accountsync11.pck"
 ASSET_DIR = ROOT / "tools/peephole_clients96"
 TARGET = "scripts/main.gd"
 
@@ -1244,19 +1244,22 @@ def build_pck_surgically():
 def patch_web_release():
     size=OUT.stat().st_size
     html=(ROOT/"index.html").read_text(encoding="utf-8")
-    html,n=re.subn(r'"index-accountsync10\.pck":\d+','"index-accountsync10.pck":%d'%size,html,count=1)
+    html=html.replace("index-accountsync10.pck","index-accountsync11.pck")
+    html,n=re.subn(r'"index-accountsync11\.pck":\d+','"index-accountsync11.pck":%d'%size,html,count=1)
     if n!=1:
         raise RuntimeError("Could not patch cloud-test PCK size")
     (ROOT/"cloud-test/index.html").write_text(html,encoding="utf-8")
 
     manifest=json.loads((ROOT/"version.json").read_text(encoding="utf-8"))
-    manifest["release_id"]="0.7.9-beta.19-accountsync10-cloudtest-backpack3"
+    manifest["release_id"]="0.7.9-beta.19-accountsync11-cloudtest-backpack4"
     features=list(manifest.get("web_features",[]))
     for feature in ["client-portrait-refresh-28","eleven-new-clients","frozen-purple-genetics-only","expanded-genetics-recipes","genetics-reward-tasks","completed-task-x-marker","direct-pot-switching","direct-station-approach","direct-room-transitions","personal-backpack","locker-stash","player-pocket-sales","top-layer-inventory-ui","safe-resume-view"]:
         if feature not in features:
             features.append(feature)
     manifest["web_features"]=features
     for item in manifest.get("files",[]):
+        if str(item.get("path","")) == "index-accountsync10.pck":
+            item["path"] = "index-accountsync11.pck"
         rel=str(item.get("path",""))
         target=ROOT/"cloud-test"/rel
         if not target.exists():
