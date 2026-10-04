@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-portraits2",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-portraits2-geneticsonly1",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -25,7 +25,8 @@
     "stale-customer-runtime-recovery",
     "transactional-updater",
     "client-portrait-refresh-28",
-    "eleven-new-clients"
+    "eleven-new-clients",
+    "frozen-purple-genetics-only"
   ],
   "files": [
     {
@@ -41,7 +42,7 @@
     {
       "path": "index-accountsync10.pck",
       "size": 25503748,
-      "sha256": "d45767e0f6d03d4eeec5ca28506f5dfd25a8e1df68166c056235977847705662"
+      "sha256": "be3a6ed74e1d44ec248060658051ee439c5b35fddabf723d99951de183054747"
     },
     {
       "path": "index.wasm",
