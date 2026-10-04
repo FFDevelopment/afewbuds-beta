@@ -7,6 +7,8 @@ const LOCKER_SLOTS := 12
 const LOCKER_WEED_CAPACITY := 120
 
 var game = null
+var inventory_layer: CanvasLayer
+var inventory_root: Control
 var backpack_button: Button
 var backpack_panel: PanelContainer
 var backpack_body: VBoxContainer
@@ -16,6 +18,13 @@ var return_station: String = ""
 
 func setup(game_node) -> void:
 	game = game_node
+	inventory_layer = CanvasLayer.new()
+	inventory_layer.layer = 80
+	game.add_child(inventory_layer)
+	inventory_root = Control.new()
+	inventory_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	inventory_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	inventory_layer.add_child(inventory_root)
 	_build_backpack_button()
 	_build_backpack_panel()
 	_build_locker_panel()
@@ -109,11 +118,13 @@ func _build_backpack_button() -> void:
 	backpack_button.offset_right = -18
 	backpack_button.offset_bottom = -18
 	backpack_button.custom_minimum_size = Vector2(78,78)
+	backpack_button.z_index = 100
+	backpack_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	backpack_button.add_theme_font_size_override("font_size", 16)
 	backpack_button.add_theme_stylebox_override("normal", _style(Color("18251d"),Color("72a96f"),18,2))
 	backpack_button.add_theme_stylebox_override("hover", _style(Color("223426"),Color("93c58d"),18,2))
 	backpack_button.pressed.connect(toggle_backpack)
-	game.hud.add_child(backpack_button)
+	inventory_root.add_child(backpack_button)
 
 func _build_backpack_panel() -> void:
 	backpack_panel = PanelContainer.new()
@@ -123,8 +134,10 @@ func _build_backpack_panel() -> void:
 	backpack_panel.offset_right = -18
 	backpack_panel.offset_bottom = 310
 	backpack_panel.visible = false
+	backpack_panel.z_index = 110
+	backpack_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	backpack_panel.add_theme_stylebox_override("panel",_style(Color("0d1317"),Color("4b6655"),20,2))
-	game.hud.add_child(backpack_panel)
+	inventory_root.add_child(backpack_panel)
 	backpack_body = VBoxContainer.new()
 	backpack_body.add_theme_constant_override("separation",10)
 	backpack_panel.add_child(backpack_body)
@@ -137,8 +150,10 @@ func _build_locker_panel() -> void:
 	locker_panel.offset_right = 500
 	locker_panel.offset_bottom = 330
 	locker_panel.visible = false
+	locker_panel.z_index = 110
+	locker_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	locker_panel.add_theme_stylebox_override("panel",_style(Color("0d1317"),Color("596770"),20,2))
-	game.hud.add_child(locker_panel)
+	inventory_root.add_child(locker_panel)
 	locker_body = VBoxContainer.new()
 	locker_body.add_theme_constant_override("separation",10)
 	locker_panel.add_child(locker_body)
