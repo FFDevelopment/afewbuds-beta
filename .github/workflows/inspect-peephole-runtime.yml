@@ -1,0 +1,14 @@
+name: Inspect peephole rendering runtime
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/inspect_peephole_runtime.py"
+      - ".github/workflows/inspect-peephole-runtime.yml"
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python tools/inspect_peephole_runtime.py
