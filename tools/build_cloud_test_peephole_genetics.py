@@ -68,6 +68,40 @@ def map_portrait(text, name, rel):
         line = body + f', "peephole_art": "res://{rel}"' + ('},' if trailing_comma else '}')
     return text[:m.start()] + line + text[m.end():]
 
+def patch_peephole_loader(text):
+    loader = '''func _load_peephole_texture(path: String) -> Texture2D:
+\tif path.is_empty():
+\t\treturn null
+\tvar lower_path: String = path.to_lower()
+\tif FileAccess.file_exists(path) and (lower_path.ends_with(".webp") or lower_path.ends_with(".jpg") or lower_path.ends_with(".jpeg") or lower_path.ends_with(".png")):
+\t\tvar bytes: PackedByteArray = FileAccess.get_file_as_bytes(path)
+\t\tvar image: Image = Image.new()
+\t\tvar err: Error = ERR_FILE_UNRECOGNIZED
+\t\tif lower_path.ends_with(".webp"):
+\t\t\terr = image.load_webp_from_buffer(bytes)
+\t\telif lower_path.ends_with(".jpg") or lower_path.ends_with(".jpeg"):
+\t\t\terr = image.load_jpg_from_buffer(bytes)
+\t\telse:
+\t\t\terr = image.load_png_from_buffer(bytes)
+\t\tif err == OK:
+\t\t\treturn ImageTexture.create_from_image(image)
+\tif ResourceLoader.exists(path):
+\t\treturn load(path) as Texture2D
+\treturn null
+
+'''
+    pat = r'func _load_peephole_texture\(path: String\) -> Texture2D:\n.*?(?=func _open_peephole\(\) -> void:\n)'
+    if re.search(pat, text, flags=re.S):
+        text, n = re.subn(pat, loader, text, count=1, flags=re.S)
+        if n != 1:
+            raise RuntimeError('peephole loader replacement failed')
+    else:
+        marker = 'func _open_peephole() -> void:\n'
+        if marker not in text:
+            raise RuntimeError('peephole open marker missing')
+        text = text.replace(marker, loader + marker, 1)
+    return text
+
 def patch_genetics(text):
     old_order='const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost"]'
     new_order='const SEED_ORDER: Array[String] = ["Street Green", "Purple Dream", "Citrus Rush", "Blue Frost", "Velvet Haze", "Frozen Purple", "Golden Ember", "Cherry Glow", "Neon Berry", "Moon Cake", "Midnight Crown", "Black Cherry", "Aurora Reserve", "Solar Frost", "Citrus Velvet", "Cherry Frost", "Ember Berry", "Crown Cake"]'
@@ -242,6 +276,7 @@ def patch_main(text):
 
     for name, rel in PORTRAITS.items():
         text = map_portrait(text, name, rel)
+    text = patch_peephole_loader(text)
     text = patch_genetics(text)
 
     must = [
