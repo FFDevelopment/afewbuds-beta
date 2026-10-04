@@ -185,7 +185,27 @@ body {
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png?v=0.7.9-beta.19"/>
 <link rel="manifest" href="index.manifest.json?v=0.7.9-beta.19">
 <meta name="apple-mobile-web-app-title" content="AFewBuds"><meta name="theme-color" content="#0e1812"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	</head>
+	<script>
+(async function(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('afb_clean')==='1') return;
+  try{
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.unregister()));
+    }
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+  }catch(e){ console.warn('AFB cloud-test cleanup',e); }
+  p.set('afb_clean','1');
+  p.set('afb_stage','force');
+  p.set('t',String(Date.now()));
+  location.replace(location.pathname+'?'+p.toString());
+})();
+</script>
+</head>
 	<body>
 		<div id="afb-prelaunch" aria-live="polite">
 			<div class="afb-launch-card">
