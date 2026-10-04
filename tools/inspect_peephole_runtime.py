@@ -135,3 +135,18 @@ for i,line in enumerate(lines):
     ):
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-10):min(len(lines),i+36)]))
+
+
+print("\n===== TARGETED INVENTORY FUNCTIONS =====")
+wanted = [
+    "_open_customer_sale","_accept_customer","_complete_customer","_make_sale","_sell",
+    "_process_dealer","_dealer","_run_dealer","_bag","_finish_bag","_store",
+    "_save_game","_load_game","_save_state","_serialize","_deserialize","_build_ui"
+]
+starts=[i for i,l in enumerate(lines) if l.startswith("func ")]
+for i in starts:
+    name=lines[i].split("(",1)[0].replace("func ","")
+    if any(name.startswith(w) for w in wanted):
+        j=next((x for x in starts if x>i),len(lines))
+        print("\n===== "+lines[i]+" =====")
+        print("\n".join(lines[i:j]))
