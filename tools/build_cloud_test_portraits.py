@@ -174,7 +174,7 @@ def patch_web_release():
 
     html = (ROOT / "index.html").read_text(encoding="utf-8")
     html, n = re.subn(
-        r'"index-accountsync10\\.pck":\\d+',
+        r'"index-accountsync10\.pck":\d+',
         '"index-accountsync10.pck":%d' % size,
         html,
         count=1,
