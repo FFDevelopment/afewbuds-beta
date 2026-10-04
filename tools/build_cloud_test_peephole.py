@@ -4,18 +4,18 @@ import struct, hashlib, re, shutil, zipfile, io
 ROOT = Path(".")
 SRC = ROOT / "index-accountsync10.pck"
 DST = ROOT / "cloud-test/index-peephole1.pck"
-ZIP = ROOT / "tools/peephole_assets192.zip"
+ZIP = ROOT / "tools/peephole_assets96.zip"
 TARGET = "scripts/main.gd"
 
 PORTRAITS = {
-    "CJ": "assets/characters/peephole/cj.jpg",
-    "Dre": "assets/characters/peephole/dre.jpg",
-    "Eli": "assets/characters/peephole/eli.jpg",
-    "Nia": "assets/characters/peephole/nia.jpg",
-    "Rico": "assets/characters/peephole/rico.jpg",
-    "Sage": "assets/characters/peephole/sage.jpg",
-    "Jules": "assets/characters/peephole/jules.jpg",
-    "Ace": "assets/characters/peephole/ace.jpg",
+    "CJ": "assets/characters/peephole/cj.webp",
+    "Dre": "assets/characters/peephole/dre.webp",
+    "Eli": "assets/characters/peephole/eli.webp",
+    "Nia": "assets/characters/peephole/nia.webp",
+    "Rico": "assets/characters/peephole/rico.webp",
+    "Sage": "assets/characters/peephole/sage.webp",
+    "Jules": "assets/characters/peephole/jules.webp",
+    "Ace": "assets/characters/peephole/ace.webp",
 }
 
 def align(n, a):
@@ -70,7 +70,7 @@ def patch_main(text):
             '\t{"name": "Ace", "recognition_visits": 2, "favorite": "Blue Frost", '
             '"fallback_profile": "cool", "flexibility": 0.52, "min_qty": 1, "max_qty": 3, '
             '"tier": "Established", "unlock_level": 6, '
-            '"peephole_art": "res://assets/characters/peephole/ace.jpg"},'
+            '"peephole_art": "res://assets/characters/peephole/ace.webp"},'
         )
         text = text[:dre_line.end()] + "\n" + ace_line + text[dre_line.end():]
 
@@ -101,10 +101,10 @@ def patch_main(text):
 \tif path.is_empty():
 \t\treturn null
 \tvar lower_path: String = path.to_lower()
-\tif FileAccess.file_exists(path) and (lower_path.ends_with(".jpg") or lower_path.ends_with(".jpeg") or lower_path.ends_with(".png")):
+\tif FileAccess.file_exists(path) and (lower_path.ends_with(".webp") or lower_path.ends_with(".jpeg") or lower_path.ends_with(".png")):
 \t\tvar bytes: PackedByteArray = FileAccess.get_file_as_bytes(path)
 \t\tvar image: Image = Image.new()
-\t\tvar err: Error = image.load_jpg_from_buffer(bytes) if (lower_path.ends_with(".jpg") or lower_path.ends_with(".jpeg")) else image.load_png_from_buffer(bytes)
+\t\tvar err: Error = image.load_jpg_from_buffer(bytes) if (lower_path.ends_with(".webp") or lower_path.ends_with(".jpeg")) else image.load_png_from_buffer(bytes)
 \t\tif err == OK:
 \t\t\treturn ImageTexture.create_from_image(image)
 \tif ResourceLoader.exists(path):
@@ -215,14 +215,14 @@ Test: peephole1
 - All accountsync10 fixes retained, including customer scheduler recovery.
 - Force Reeves debug remains removed.
 - New peephole portraits mapped one-to-one:
-  CJ -> cj.jpg
-  Dre -> dre.jpg
-  Eli -> eli.jpg
-  Nia -> nia.jpg
-  Rico -> rico.jpg
-  Sage -> sage.jpg
-  Jules -> jules.jpg
-  Ace -> ace.jpg
+  CJ -> cj.webp
+  Dre -> dre.webp
+  Eli -> eli.webp
+  Nia -> nia.webp
+  Rico -> rico.webp
+  Sage -> sage.webp
+  Jules -> jules.webp
+  Ace -> ace.webp
 - Ace is cloud-test-only for now.
 - Existing friend portraits/worker face wraps/door art/social art are untouched.
 - Main tester build is unchanged.
