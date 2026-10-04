@@ -169,6 +169,42 @@ def patch_main(text):
         if ('res://assets/characters/peephole/'+fn) not in text: raise RuntimeError("Portrait missing: "+name)
     return text
 
+def patch_web_release():
+    size = OUT.stat().st_size
+
+    html = (ROOT / "index.html").read_text(encoding="utf-8")
+    html, n = re.subn(
+        r'"index-accountsync10\\.pck":\\d+',
+        '"index-accountsync10.pck":%d' % size,
+        html,
+        count=1,
+    )
+    if n != 1:
+        raise RuntimeError("Could not patch cloud-test PCK size in index.html")
+    (ROOT / "cloud-test/index.html").write_text(html, encoding="utf-8")
+
+    manifest = json.loads((ROOT / "version.json").read_text(encoding="utf-8"))
+    manifest["release_id"] = str(manifest.get("release_id", "0.7.9-beta.19")) + "-cloudtest-portraits1"
+    features = list(manifest.get("web_features", []))
+    for feature in ["client-portrait-refresh-28", "nine-new-clients"]:
+        if feature not in features:
+            features.append(feature)
+    manifest["web_features"] = features
+
+    for item in manifest.get("files", []):
+        rel = str(item.get("path", ""))
+        target = ROOT / "cloud-test" / rel
+        if not target.exists():
+            raise RuntimeError("cloud-test manifest file missing: " + rel)
+        data = target.read_bytes()
+        item["size"] = len(data)
+        item["sha256"] = hashlib.sha256(data).hexdigest()
+
+    (ROOT / "cloud-test/version.json").write_text(
+        json.dumps(manifest, indent=2) + "\\n",
+        encoding="utf-8",
+    )
+
 def build():
     original,fb,entries=parse_pck(BASE)
     extras={}
