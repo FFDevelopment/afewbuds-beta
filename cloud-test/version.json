@@ -1,6 +1,6 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-portraits2-geneticsonly1",
+  "release_id": "0.7.9-beta.19-accountsync10-cloudtest-genetics3",
   "game_build": "0.7.9-beta.19",
   "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
   "web_features": [
@@ -26,7 +26,9 @@
     "transactional-updater",
     "client-portrait-refresh-28",
     "eleven-new-clients",
-    "frozen-purple-genetics-only"
+    "frozen-purple-genetics-only",
+    "expanded-genetics-recipes",
+    "genetics-reward-tasks"
   ],
   "files": [
     {
@@ -42,7 +44,7 @@
     {
       "path": "index-accountsync10.pck",
       "size": 25503748,
-      "sha256": "be3a6ed74e1d44ec248060658051ee439c5b35fddabf723d99951de183054747"
+      "sha256": "b6922bcee8e43d4c0723182d7c349da4c5b752091d1a497d431528c691d45b29"
     },
     {
       "path": "index.wasm",
