@@ -55,3 +55,16 @@ for i,line in enumerate(lines):
     if '"OK"' in line or '"[ ]"' in line or "'OK'" in line or "'[ ]'" in line:
         print("\n--- line", i+1, "---")
         print("\n".join(lines[max(0,i-6):min(len(lines),i+10)]))
+
+
+print("\n===== TENT / POT NAVIGATION =====")
+for i,line in enumerate(lines):
+    low=line.lower()
+    if ("tent" in low or "pot" in low or "plant_slot" in low) and (
+        line.startswith("func ") or
+        "pressed.connect" in line or
+        "current_view" in line or
+        "slot_index" in line
+    ):
+        print("\n--- line", i+1, "---")
+        print("\n".join(lines[max(0,i-10):min(len(lines),i+28)]))
