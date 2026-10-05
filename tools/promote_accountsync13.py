@@ -37,42 +37,44 @@ shutil.copy2(ROOT / "shared/afb-cloud-accountsync12.js", ROOT / "shared/afb-clou
 
 html_path = ROOT / "index.html"
 html = html_path.read_text()
-required_old = [
-    "shared/afb-cloud-accountsync12.js?v=0.7.9-beta.19-accountsync12",
-    "index-accountsync12.js?v=0.7.9-beta.19-accountsync12",
-    'const AFB_TEST_RELEASE = "0.7.9-beta.19-accountsync12";',
-    '"index-accountsync12.pck":25538384',
-    '"mainPack":"index-accountsync12.pck"',
-]
-for needle in required_old:
-    if needle not in html:
-        raise RuntimeError("accountsync12 production HTML anchor missing: " + needle)
 
-html = html.replace(
-    "shared/afb-cloud-accountsync12.js?v=0.7.9-beta.19-accountsync12",
-    f"shared/afb-cloud-accountsync13.js?v={RELEASE_ID}",
-    1,
+# Normalize either the current production accountsync12 shell or a previously
+# prepared accountsync13 shell into the exact accountsync13 release shell.
+if "shared/afb-cloud-accountsync12.js?v=0.7.9-beta.19-accountsync12" in html:
+    html = html.replace(
+        "shared/afb-cloud-accountsync12.js?v=0.7.9-beta.19-accountsync12",
+        f"shared/afb-cloud-accountsync13.js?v={RELEASE_ID}",
+        1,
+    )
+if "index-accountsync12.js?v=0.7.9-beta.19-accountsync12" in html:
+    html = html.replace(
+        "index-accountsync12.js?v=0.7.9-beta.19-accountsync12",
+        f"index-accountsync13.js?v={RELEASE_ID}",
+        1,
+    )
+if 'const AFB_TEST_RELEASE = "0.7.9-beta.19-accountsync12";' in html:
+    html = html.replace(
+        'const AFB_TEST_RELEASE = "0.7.9-beta.19-accountsync12";',
+        f'const AFB_TEST_RELEASE = "{RELEASE_ID}";',
+        1,
+    )
+
+html, size_count = re.subn(
+    r'"fileSizes":\{"index-accountsync(?:12|13)\.pck":\d+,"index\.wasm":37902138\}',
+    f'"fileSizes":{{"index-accountsync13.pck":{len(pck)},"index.wasm":37902138}}',
+    html,
+    count=1,
 )
-html = html.replace(
-    "index-accountsync12.js?v=0.7.9-beta.19-accountsync12",
-    f"index-accountsync13.js?v={RELEASE_ID}",
-    1,
-)
-html = html.replace(
-    'const AFB_TEST_RELEASE = "0.7.9-beta.19-accountsync12";',
-    f'const AFB_TEST_RELEASE = "{RELEASE_ID}";',
-    1,
-)
-html = html.replace(
-    '"index-accountsync12.pck":25541584',
-    f'"index-accountsync13.pck":{len(pck)}',
-    1,
-)
-html = html.replace(
-    '"mainPack":"index-accountsync12.pck"',
-    '"mainPack":"index-accountsync13.pck"',
-    1,
-)
+if size_count != 1:
+    raise RuntimeError("could not normalize production PCK fileSizes entry")
+
+if '"mainPack":"index-accountsync12.pck"' in html:
+    html = html.replace(
+        '"mainPack":"index-accountsync12.pck"',
+        '"mainPack":"index-accountsync13.pck"',
+        1,
+    )
+
 html_path.write_text(html)
 
 (ROOT / "BUILD_VERSION.txt").write_text(
@@ -83,15 +85,19 @@ html_path.write_text(html)
 
 (ROOT / "RELEASE_NOTES_ACCOUNTSYNC13.txt").write_text(f"""AFewBuds {RELEASE_ID}
 
-Validated mobile input hotfix promoted from cloudtest.56.
+Validated gameplay/content release promoted from cloudtest.56.
 
 - Exact game PCK from {CLOUD_REPO}@{CLOUD_COMMIT}.
-- Fixes iPhone/mobile phone categories requiring a long press.
-- Stationary touch is a normal tap and opens immediately.
-- Touch becomes scrolling only after 12px of actual movement.
-- Swipe/scroll still cancels the underlying button action.
-- Account settings, cloud saves, password recovery, leaderboard and updater behavior are unchanged.
-- accountsync11 remains available as the transactional rollback release.
+- Preserves the validated instant mobile tap / 12px movement-threshold scrolling behavior.
+- Dealer Storage is a dedicated dealer-only stock system with 100g / 200g / 300g / 400g tiers.
+- Dealer Storage III introduces the premium double-door cabinet; IV increases capacity only.
+- Dealers use 10% commission, no daily wage, and cannot serve the same customer twice in one game day across the dealer team.
+- Dealer Storage has compact per-strain +1/+5/MAX and -1/-5/ALL transfers.
+- Expandable upgrade families remain visible and progress one tier at a time.
+- Bagging Bench III adds the industrial workstation plus continuous randomized 1-4g manual bagging.
+- Main-room presentation includes the relocated Dealer Storage, shifted packing bench/storage shelf, modern black kitchen, corrected packing scale, hidden-stash wall fit, and grow-room door-frame clearance.
+- Account settings, cross-device cloud saves, password recovery, global leaderboard, service worker and transactional updater shell are preserved from accountsync12.
+- accountsync12 remains available as the rollback release.
 """)
 
 old_manifest = json.loads((ROOT / "version.json").read_text())
@@ -178,6 +184,7 @@ checks = [
     f'shared/afb-cloud-accountsync13.js?v={RELEASE_ID}',
     f'index-accountsync13.js?v={RELEASE_ID}',
     f'const AFB_TEST_RELEASE = "{RELEASE_ID}";',
+    f'"fileSizes":{{"index-accountsync13.pck":{len(pck)},"index.wasm":37902138}}',
     '"mainPack":"index-accountsync13.pck"',
     '"serviceWorker":"index.service.worker.js"',
     "AFB_UPDATER.notifyGameStarting()",
