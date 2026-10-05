@@ -1,0 +1,34 @@
+name: Prepare AFewBuds accountsync14 cloudtest57 release
+
+on:
+  push:
+    branches:
+      - accountsync14-cloudtest57
+    paths:
+      - "tools/promote_accountsync14.py"
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: accountsync14-cloudtest57
+      - name: Build accountsync14 from validated cloudtest57
+        run: python tools/promote_accountsync14.py
+      - name: Commit release files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html index-accountsync14.js index-accountsync14.pck shared/afb-cloud-accountsync14.js BUILD_VERSION.txt version.json RELEASE_NOTES_ACCOUNTSYNC14.txt ACCOUNTSYNC14_INTEGRITY.json
+          if git diff --cached --quiet; then
+            echo "No release changes"
+            exit 0
+          fi
+          git commit -m "Prepare accountsync14 validated cloudtest57 release"
+          git pull --rebase origin accountsync14-cloudtest57
+          git push origin HEAD:accountsync14-cloudtest57
