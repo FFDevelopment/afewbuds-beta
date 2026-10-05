@@ -1,8 +1,8 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync12",
+  "release_id": "0.7.9-beta.19-accountsync13",
   "game_build": "0.7.9-beta.19",
-  "generated_at_utc": "2026-10-05T07:25:40.082301+00:00",
+  "generated_at_utc": "2026-10-05T10:13:25.496607+00:00",
   "web_features": [
     "single-account-career",
     "cross-device-cloud-sync",
@@ -30,23 +30,37 @@
     "weekly-lifetime-rankings",
     "transactional-updater",
     "instant-mobile-phone-taps",
-    "movement-threshold-phone-scroll"
+    "movement-threshold-phone-scroll",
+    "dealer-storage",
+    "dealer-storage-tier-progression",
+    "dealer-storage-premium-cabinet",
+    "dealer-storage-double-doors",
+    "dealer-storage-pause-safe",
+    "dealer-ten-percent-commission",
+    "dealer-daily-customer-lock",
+    "persistent-upgrade-family-cards",
+    "bagging-bench-iii",
+    "continuous-bagging-1-4g",
+    "main-room-layout-refresh",
+    "modern-black-kitchen",
+    "front-facing-packing-scale",
+    "hidden-stash-wall-fit"
   ],
   "files": [
     {
       "path": "index.html",
       "size": 50140,
-      "sha256": "2c5b90222af148970dd26d26c68c05583e9bc921d89f76a4e721bae20e3b9a6e"
+      "sha256": "b5f5ffba7d20d938d2f8664f14bd278ffec17558ad837bb4122f9b85e992ca4b"
     },
     {
-      "path": "index-accountsync12.js",
+      "path": "index-accountsync13.js",
       "size": 316041,
       "sha256": "2919613e2912ddb5409709b2ebe4efd83b6e20bc169b69c84e45893a0df37508"
     },
     {
-      "path": "index-accountsync12.pck",
-      "size": 25538384,
-      "sha256": "10a415aa2ed5336b864029c9d199398d58307a48e6fad6c6786ab88a59bc5bc3"
+      "path": "index-accountsync13.pck",
+      "size": 25557828,
+      "sha256": "9addcb37165b9a3334d13cb10503cfa5c963beba6e3cad13f7647033b44d8286"
     },
     {
       "path": "index.wasm",
@@ -129,7 +143,7 @@
       "sha256": "27c8d09b6090529cdeaacd412f9d037401e021152a364a0f51ffb494f9726ea6"
     },
     {
-      "path": "shared/afb-cloud-accountsync12.js",
+      "path": "shared/afb-cloud-accountsync13.js",
       "size": 20513,
       "sha256": "f1db66accb4ddab4713400270dfc96e67fa60b7ecfb94cfb80159c30613440bb"
     },
