@@ -1,0 +1,34 @@
+name: Prepare AFewBuds accountsync12 mobile tap release
+
+on:
+  push:
+    branches:
+      - accountsync12-mobile-tap
+    paths:
+      - "tools/promote_accountsync12.py"
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: accountsync12-mobile-tap
+      - name: Build accountsync12 from validated cloudtest41
+        run: python tools/promote_accountsync12.py
+      - name: Commit release files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html index-accountsync12.js index-accountsync12.pck shared/afb-cloud-accountsync12.js BUILD_VERSION.txt version.json RELEASE_NOTES_ACCOUNTSYNC12.txt ACCOUNTSYNC12_INTEGRITY.json
+          if git diff --cached --quiet; then
+            echo "No release changes"
+            exit 0
+          fi
+          git commit -m "Prepare accountsync12 validated mobile tap release"
+          git pull --rebase origin accountsync12-mobile-tap
+          git push origin HEAD:accountsync12-mobile-tap
