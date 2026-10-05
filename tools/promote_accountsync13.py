@@ -41,12 +41,12 @@ required_old = [
     "shared/afb-cloud-accountsync12.js?v=0.7.9-beta.19-accountsync12",
     "index-accountsync12.js?v=0.7.9-beta.19-accountsync12",
     'const AFB_TEST_RELEASE = "0.7.9-beta.19-accountsync12";',
-    '"index-accountsync12.pck":25541584',
+    '"index-accountsync12.pck":25538384',
     '"mainPack":"index-accountsync12.pck"',
 ]
 for needle in required_old:
     if needle not in html:
-        raise RuntimeError("accounts sync 11 HTML anchor missing: " + needle)
+        raise RuntimeError("accountsync12 production HTML anchor missing: " + needle)
 
 html = html.replace(
     "shared/afb-cloud-accountsync12.js?v=0.7.9-beta.19-accountsync12",
