@@ -1,8 +1,8 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.7.9-beta.19-accountsync10",
+  "release_id": "0.7.9-beta.19-accountsync11",
   "game_build": "0.7.9-beta.19",
-  "generated_at_utc": "2026-10-03T23:03:58.366347+00:00",
+  "generated_at_utc": "2026-10-05T06:24:17.447179+00:00",
   "web_features": [
     "single-account-career",
     "cross-device-cloud-sync",
@@ -23,23 +23,28 @@
     "force-reeves-debug-removed",
     "customer-traffic-fallback",
     "stale-customer-runtime-recovery",
+    "hidden-wall-stash",
+    "account-settings",
+    "password-recovery",
+    "global-leaderboard",
+    "weekly-lifetime-rankings",
     "transactional-updater"
   ],
   "files": [
     {
       "path": "index.html",
-      "size": 19812,
-      "sha256": "9a9288124baa703682fc44b59d7c9aace93aabd0e2f86e51b6d4daeedb58f3a4"
+      "size": 50140,
+      "sha256": "e1354dcbd57cb985865a64732821df0b06573452c2a2916cbc43540e859a63c2"
     },
     {
-      "path": "index-accountsync10.js",
+      "path": "index-accountsync11.js",
       "size": 316041,
       "sha256": "2919613e2912ddb5409709b2ebe4efd83b6e20bc169b69c84e45893a0df37508"
     },
     {
-      "path": "index-accountsync10.pck",
-      "size": 25369424,
-      "sha256": "c4ba9fad3e6dacdfbd925072b48e6c7f072d448c312a4f76020429569bb45c62"
+      "path": "index-accountsync11.pck",
+      "size": 25541584,
+      "sha256": "7b4a3d354fafb643d69d866fda2015ea5907f5d9a23b39aaf85593a37e7ced6a"
     },
     {
       "path": "index.wasm",
@@ -122,9 +127,9 @@
       "sha256": "27c8d09b6090529cdeaacd412f9d037401e021152a364a0f51ffb494f9726ea6"
     },
     {
-      "path": "shared/afb-cloud-accountsync10.js",
-      "size": 20052,
-      "sha256": "5caeea0e4c66866b58bf3f0a2f12033a3b3f10b9ba3734bff09b5c8acfc2fd69"
+      "path": "shared/afb-cloud-accountsync11.js",
+      "size": 20513,
+      "sha256": "f1db66accb4ddab4713400270dfc96e67fa60b7ecfb94cfb80159c30613440bb"
     },
     {
       "path": "shared/afb-updater.js",
