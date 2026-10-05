@@ -2,7 +2,7 @@
   "updater_protocol": 1,
   "release_id": "0.7.9-beta.19-accountsync13",
   "game_build": "0.7.9-beta.19",
-  "generated_at_utc": "2026-10-05T10:12:05.740373+00:00",
+  "generated_at_utc": "2026-10-05T10:13:25.496607+00:00",
   "web_features": [
     "single-account-career",
     "cross-device-cloud-sync",
@@ -50,7 +50,7 @@
     {
       "path": "index.html",
       "size": 50140,
-      "sha256": "c4525c84e5b7a347caa8df2e42032c00a37f01a746010930e6b0a99d8266f309"
+      "sha256": "b5f5ffba7d20d938d2f8664f14bd278ffec17558ad837bb4122f9b85e992ca4b"
     },
     {
       "path": "index-accountsync13.js",
