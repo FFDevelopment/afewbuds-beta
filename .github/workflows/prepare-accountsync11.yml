@@ -1,0 +1,154 @@
+name: Prepare accountsync11 tester release
+on:
+  push:
+    branches: [accountsync11-release]
+    paths:
+      - "tools/promote_accountsync11.py"
+      - ".github/workflows/prepare-accountsync11.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build accountsync11 from pinned cloudtest40
+        run: python tools/promote_accountsync11.py
+
+      - name: Validate exact runtime and GDScript
+        shell: python
+        run: |
+          from pathlib import Path
+          import struct,re,collections,hashlib,json
+
+          pck=Path("index-accountsync11.pck")
+          b=pck.read_bytes()
+          if len(b) != 25541584:
+              raise SystemExit(f"Unexpected accountsync11 PCK size: {len(b)}")
+
+          fb=struct.unpack_from("<Q",b,24)[0]
+          do=struct.unpack_from("<Q",b,32)[0]
+          count=struct.unpack_from("<I",b,do)[0]
+          pos=do+4
+          main=""
+          for _ in range(count):
+              plen=struct.unpack_from("<I",b,pos)[0]; pos+=4
+              name=b[pos:pos+plen].rstrip(b"\0").decode(); pos+=plen
+              off=struct.unpack_from("<Q",b,pos)[0]; pos+=8
+              size=struct.unpack_from("<Q",b,pos)[0]; pos+=8
+              md5=b[pos:pos+16]; pos+=16
+              flags=struct.unpack_from("<I",b,pos)[0]; pos+=4
+              data=b[fb+off:fb+off+size]
+              if hashlib.md5(data).digest()!=md5:
+                  raise SystemExit("PCK entry checksum mismatch: "+name)
+              if name=="scripts/main.gd":
+                  main=data.decode("utf-8","replace").rstrip(" \n\0")
+
+          if not main:
+              raise SystemExit("scripts/main.gd missing")
+          names=re.findall(r"^func\s+([A-Za-z0-9_]+)\(",main,re.M)
+          duplicates={k:v for k,v in collections.Counter(names).items() if v>1}
+          if duplicates:
+              raise SystemExit("Duplicate GDScript functions: "+repr(duplicates))
+
+          required=[
+              "_build_account_app",
+              "_open_web_account_settings",
+              "_build_leaderboard_app",
+              "_open_web_leaderboard",
+          ]
+          for name in required:
+              if names.count(name)!=1:
+                  raise SystemExit(f"{name} count={names.count(name)}")
+
+          checks=[
+              '"Leaderboard", "Weekly & lifetime rankings", "leaderboard"',
+              'window.AFB_LEADERBOARD && window.AFB_LEADERBOARD.open();',
+              'IMPORTANT: Add an email to your account so you can recover your password if you forget it.',
+          ]
+          for needle in checks:
+              if needle not in main:
+                  raise SystemExit("Missing runtime feature: "+needle)
+
+          if not Path("index-accountsync10.pck").exists():
+              raise SystemExit("Rollback pack accountsync10 missing")
+
+          info=json.loads(Path("ACCOUNTSYNC11_INTEGRITY.json").read_text())
+          if info["source_cloud_pck_blob"]!="63f51e1ef4cdbed39165bb7b62b2122d4964e31c":
+              raise SystemExit("Pinned cloud runtime mismatch")
+          print("PCK validated with",len(names),"unique functions.")
+
+      - name: Validate production updater wiring
+        shell: python
+        run: |
+          from pathlib import Path
+          import json,re,hashlib
+
+          html=Path("index.html").read_text()
+          required=[
+              '<script src="shared/afb-updater.js"></script>',
+              'index-accountsync11.pck',
+              'index-accountsync11.js',
+              'shared/afb-cloud-accountsync11.js',
+              '"serviceWorker":"index.service.worker.js"',
+              'AFB_UPDATER.notifyGameStarting()',
+              'AFB_UPDATER.markGameReady()',
+              'AFB_UPDATER.markGameFailure(error)',
+              'async function afbPrelaunch()',
+              'return_url:location.origin+location.pathname',
+              'id="afb-leaderboard-modal"',
+              'id="afb-account-settings-modal"',
+              'Forgot password?'
+          ]
+          for needle in required:
+              if needle not in html:
+                  raise SystemExit("Updater/shell check missing: "+needle)
+          if "afbStandaloneBoot" in html or "Cloud Test" in html:
+              raise SystemExit("Cloud-test-only boot behavior leaked into tester shell")
+
+          version=json.loads(Path("version.json").read_text())
+          if version.get("release_id")!="0.7.9-beta.19-accountsync11":
+              raise SystemExit("Wrong release id")
+          if version.get("updater_protocol")!=1:
+              raise SystemExit("Updater protocol changed unexpectedly")
+
+          for item in version["files"]:
+              path=Path(item["path"])
+              if not path.exists():
+                  raise SystemExit("Manifest file missing: "+str(path))
+              data=path.read_bytes()
+              if len(data)!=int(item["size"]):
+                  raise SystemExit("Manifest size mismatch: "+str(path))
+              actual=hashlib.sha256(data).hexdigest()
+              if actual!=item["sha256"]:
+                  raise SystemExit("Manifest hash mismatch: "+str(path))
+
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',html,re.S|re.I)
+          inline=[s for s in scripts if s.strip()]
+          Path("/tmp/afb-inline.js").write_text(inline[-1])
+          print("Verified",len(version["files"]),"transactional updater files.")
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check /tmp/afb-inline.js
+          node --check shared/afb-cloud-accountsync11.js
+          node --check index-accountsync11.js
+          git diff --check
+
+      - name: Commit prepared tester release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             index.html             index-accountsync11.js             index-accountsync11.pck             shared/afb-cloud-accountsync11.js             version.json             BUILD_VERSION.txt             RELEASE_NOTES_ACCOUNTSYNC11.txt             ACCOUNTSYNC11_INTEGRITY.json
+          if git diff --cached --quiet; then
+            echo "Release already prepared."
+          else
+            git commit -m "Prepare beta.19 account sync 11 tester release"
+            git push origin HEAD:accountsync11-release
+          fi
