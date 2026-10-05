@@ -1,0 +1,11 @@
+AFewBuds 0.7.9-beta.19-accountsync13
+
+Validated mobile input hotfix promoted from cloudtest.56.
+
+- Exact game PCK from FFDevelopment/afewbuds-cloud-test@c34b7bffc51eaf048e1a46cb3d36d60ddad8e7ee.
+- Fixes iPhone/mobile phone categories requiring a long press.
+- Stationary touch is a normal tap and opens immediately.
+- Touch becomes scrolling only after 12px of actual movement.
+- Swipe/scroll still cancels the underlying button action.
+- Account settings, cloud saves, password recovery, leaderboard and updater behavior are unchanged.
+- accountsync11 remains available as the transactional rollback release.
