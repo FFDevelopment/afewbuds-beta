@@ -172,3 +172,4 @@ for needle in checks:
         raise RuntimeError("production shell invariant failed: " + needle)
 
 print(json.dumps(integrity, indent=2))
+# workflow trigger: accountsync12 validated mobile tap promotion
