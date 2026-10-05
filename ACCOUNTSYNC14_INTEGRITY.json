@@ -1,0 +1,15 @@
+{
+  "release_id": "0.7.9-beta.19-accountsync14",
+  "game_build": "0.7.9-beta.19",
+  "source_cloud_repo": "FFDevelopment/afewbuds-cloud-test",
+  "source_cloud_commit": "189fe53f4729a1680b2259f838e893a9ccb88853",
+  "source_cloud_path": "index-cloudtest10.pck",
+  "source_cloud_pck_blob": "6773451bf4c655ac15f87ea6df0a0333502d430c",
+  "main_pack": "index-accountsync14.pck",
+  "main_pack_git_blob": "6773451bf4c655ac15f87ea6df0a0333502d430c",
+  "main_pack_size": 25559140,
+  "main_pack_sha256": "017c8e40687a7ad3d1ff069e62bfed17cdcd2a0495b3029f71f691d018068dc4",
+  "previous_release": "0.7.9-beta.19-accountsync13",
+  "rollback_pack": "index-accountsync13.pck",
+  "updater_protocol": 1
+}

@@ -1,0 +1,10 @@
+AFewBuds 0.7.9-beta.19-accountsync14
+
+Validated planting seed-picker fix promoted from cloudtest.57.
+
+- Exact game PCK from FFDevelopment/afewbuds-cloud-test@189fe53f4729a1680b2259f838e893a9ccb88853.
+- Empty pots now list every seed type currently owned instead of stopping after the first 3.
+- The direct planting picker is scrollable on mobile for larger seed collections.
+- Owned genetics not present in SEED_ORDER are appended automatically, so future/reward genetics remain plantable.
+- Preserves all validated accountsync13 gameplay systems, cloud saves, account settings, password recovery, leaderboard, service worker and transactional updater behavior.
+- accountsync13 remains available as the rollback release.
