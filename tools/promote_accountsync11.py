@@ -153,7 +153,8 @@ for needle in required:
     if needle not in html:
         raise RuntimeError("production shell missing "+needle)
 
-html="\n".join(line.rstrip() for line in html.splitlines())+"\n"\n(ROOT/"index.html").write_text(html)
+html="\n".join(line.rstrip() for line in html.splitlines())+"\n"
+(ROOT/"index.html").write_text(html)
 
 (ROOT/"BUILD_VERSION.txt").write_text(
     f"AFewBuds game build: {GAME_BUILD}\n"
