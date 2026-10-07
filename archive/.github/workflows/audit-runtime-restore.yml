@@ -1,0 +1,14 @@
+name: Audit runtime restore
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/audit_runtime_restore.py"
+      - ".github/workflows/audit-runtime-restore.yml"
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python tools/audit_runtime_restore.py

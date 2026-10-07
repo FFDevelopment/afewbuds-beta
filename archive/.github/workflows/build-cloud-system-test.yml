@@ -1,0 +1,38 @@
+name: Build isolated AFewBuds cloud system test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-cloud-system-test.yml"
+      - "tools/build_cloud_test_system.py"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # validates generated game-source fragments before packing
+      - name: Build isolated beta.19 test
+        run: python tools/build_cloud_test_system.py
+
+      - name: Commit isolated test files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cloud-test/index-system-geneticsclean1.pck cloud-test/index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Build beta.19 cloud System phone test"
+          git pull --rebase origin main
+          git push

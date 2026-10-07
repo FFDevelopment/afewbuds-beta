@@ -13,11 +13,15 @@
 
   async function rpc(name, payload, bearer) {
     if (!enabled) throw new Error('Backend is not configured yet.');
-    const res = await fetch(base + '/rest/v1/rpc/' + name, {
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),12000);
+    let res;
+    try { res = await fetch(base + '/rest/v1/rpc/' + name, {
+      signal: controller.signal,
       method: 'POST',
       headers: headers(bearer ? {'Authorization': 'Bearer ' + bearer} : null),
       body: JSON.stringify(payload || {})
-    });
+    }); } finally { clearTimeout(timeout); }
     let data = null;
     const text = await res.text();
     if (text) {

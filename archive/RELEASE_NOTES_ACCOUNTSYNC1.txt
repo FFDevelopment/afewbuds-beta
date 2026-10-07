@@ -1,0 +1,10 @@
+AFewBuds 0.7.9-beta.19-accountsync1
+
+- Keeps the known-good beta.19 game runtime baseline.
+- One signed-in account uses one canonical career across PC browser, phone browser, and Home Screen/PWA.
+- The newer account/device career is reconciled silently before Godot starts.
+- Cloud restore is handed directly into Godot before _load_game(), fixing fresh iPhone Home Screen sessions starting a new career.
+- Normal autosaves continue syncing silently in the background.
+- Phone -> System adds Save Game and Save & Sleep / Quit.
+- Manual save gives the player an explicit in-game save confirmation.
+- Uses versioned JS/PCK asset names to avoid stale mixed-build PCK failures.

@@ -1,0 +1,21 @@
+AFewBuds GitHub Pages — Automatic Updater v1
+
+1. Extract this ZIP.
+2. Copy ALL contents into the root of your existing FFDevelopment/afewbuds-beta repository.
+3. Replace matching files. Do not upload the ZIP itself.
+4. Commit to main and Push origin.
+5. Wait for GitHub Pages deployment to finish successfully.
+6. ONE-TIME MIGRATION: open
+   https://ffdevelopment.github.io/afewbuds-beta/afewbuds-update.html
+   and press "Repair updater and reopen AFewBuds".
+
+After that first migration, future releases can be handled automatically at launch:
+- AFewBuds checks version.json before the account screen/game starts.
+- If unchanged, it launches immediately.
+- If changed, it stages and verifies the new release before switching.
+- If staging fails, the current installed release launches.
+- If a newly activated game build fails to start, the updater rolls back to the previous cached release.
+- Offline players launch the installed release.
+
+SAVE SAFETY:
+The updater does not clear localStorage or IndexedDB. Do not use browser "Clear website data" as an update step.

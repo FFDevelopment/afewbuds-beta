@@ -1,0 +1,29 @@
+{
+  "build": "0.7.9-beta.19",
+  "files": {
+    "account/index.html": {
+      "size": 4510,
+      "sha256": "a95ce45f0bbec88c9d3d46771e9e96d619bfaff16ee5221291e782ad64cf18a9"
+    },
+    "admin/index.html": {
+      "size": 4413,
+      "sha256": "48c0bfc2e7868a0871eda99d8524db5811dcc64f20712861ffd32d24f9718980"
+    },
+    "shared/config.js": {
+      "size": 217,
+      "sha256": "b58eab527e512731d3728880a20d02a4341011d94ee5f2452ed55d656866ebd0"
+    },
+    "shared/afb-api.js": {
+      "size": 2640,
+      "sha256": "6bdb6a3b7672cddf2ad7b54407fb67ddd4766c8e2187512decfb86970b1b5ba3"
+    },
+    "shared/afb-tracker.js": {
+      "size": 1275,
+      "sha256": "f0d2e47e5bace76d76ed3cbc31ab55734cf04933de79460e222746901615d99f"
+    },
+    "shared/style.css": {
+      "size": 4226,
+      "sha256": "0ece615194c5076a49ed3e48a3b7c49d0a676e27d79a8bb390e0cd888be91a90"
+    }
+  }
+}

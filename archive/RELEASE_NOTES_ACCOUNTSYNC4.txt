@@ -1,0 +1,7 @@
+AFewBuds 0.7.9-beta.19-accountsync4
+
+- Keeps the proven account/cross-device sync behavior from accountsync1.
+- Fixes Phone -> System -> Save Game so the button actually calls the green GAME SAVED notification.
+- Save & Sleep / Quit also uses the same green save notification before the safe pause screen.
+- Removes the old regular status-text save path entirely; automatic local saves and background cloud sync remain silent.
+- Uses a new versioned PCK/JS asset set to avoid stale mixed-build cache failures.

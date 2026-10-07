@@ -1,0 +1,12 @@
+AFewBuds beta.16 browser-account hotfix 1
+
+1. FIRST: in Supabase -> SQL Editor, run supabase/PATCH_EXISTING.sql once.
+   This fixes the login/register response shape. It does not delete accounts.
+2. Extract this ZIP.
+3. Copy ALL contents into the root of your existing afewbuds-beta GitHub repository.
+4. Replace matching files. Keep your repository's own .git folder; this ZIP intentionally does not contain one.
+5. Commit to main and Push origin.
+6. Wait for the GitHub Pages deployment to finish.
+7. Open afewbuds-update.html once if your browser was previously stuck on beta.18/18.1.
+
+The game runtime inside this package is the exact known-good beta.16 index.pck/index.wasm pair from the user's working repository. The account screen is browser-native HTML outside Godot.

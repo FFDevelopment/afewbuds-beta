@@ -28,7 +28,7 @@
     }
   ],
   "name": "AFewBuds",
-  "orientation": "portrait",
+  "orientation": "any",
   "start_url": "./index.html",
   "short_name": "AFewBuds"
 }

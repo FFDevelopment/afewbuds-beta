@@ -1,6 +1,0 @@
-AFewBuds 0.7.9-beta.19
-Updater manifest files: 23
-index.pck rebuilt from the beta.16 web PCK with beta.19 main.gd/project.godot.
-PCK entry count: 160.
-All PCK entry MD5 hashes verified after rebuild.
-Release manifest SHA-256 hashes generated from final package bytes.

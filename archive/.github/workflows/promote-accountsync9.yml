@@ -1,0 +1,30 @@
+name: Promote beta.19 account sync 9 tester build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/promote_accountsync9.py"
+      - ".github/workflows/promote-accountsync9.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build tester release
+        run: python tools/promote_accountsync9.py
+      - name: Commit tester release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html index-accountsync9.js index-accountsync9.pck shared/afb-cloud-accountsync9.js version.json BUILD_VERSION.txt RELEASE_NOTES_ACCOUNTSYNC9.txt ACCOUNTSYNC9_INTEGRITY.json
+          git commit -m "Promote beta.19 account sync 9 tester build"
+          git pull --rebase origin main
+          git push

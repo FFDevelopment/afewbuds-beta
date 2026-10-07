@@ -1,0 +1,8 @@
+AFewBuds Web Release 0.7.9-beta.19
+
+- Removes the separate grow-room ROOM / GROW / VENT wall switch board.
+- Moves ROOM LIGHT, GROW LIGHTS, and VENTILATION controls into the approached Grow Room System panel.
+- Adds a live status card above the system controls.
+- Uses large phone-friendly buttons inside a scrollable panel so controls remain on-screen.
+- Keeps Phone → Lights as an alternate control path.
+- Preserves the transactional pre-launch updater, rollback safeguards, account/admin pages, and player save storage.

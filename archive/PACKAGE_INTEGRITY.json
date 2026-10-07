@@ -1,0 +1,29 @@
+{
+  "build": "0.7.9-beta.19",
+  "files": {
+    "index.html": {
+      "size": 19145,
+      "sha256": "8856b1ebe4f9e375915c371ca6f3f8583d61bfbb956a333802a15434e79c8c43"
+    },
+    "index.js": {
+      "size": 315645,
+      "sha256": "ffc3898b59fba6f5af0c02f76e5ee526cc061e65c7d2d6f4f98186876cea15c4"
+    },
+    "index.pck": {
+      "size": 25356016,
+      "sha256": "ba0607d40a7a0308fce5911b71050d2ca8b0dedf42886e80a7e60bbd4e9bcdc6"
+    },
+    "index.wasm": {
+      "size": 37902138,
+      "sha256": "11ea19645368f8e73cf337b59cfd7ceeb4ebb51f7a3bbf77d1a5c3ddfedbc522"
+    },
+    "index.audio.worklet.js": {
+      "size": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
+    },
+    "index.audio.position.worklet.js": {
+      "size": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
+    }
+  }
+}

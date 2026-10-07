@@ -3,7 +3,7 @@
 
   const RELEASE_PREFIX = 'AFB-Release-v1-';
   const STATE_TIMEOUT_MS = 5000;
-  const GAME_BOOT_TIMEOUT_MS = 30000;
+  const GAME_BOOT_TIMEOUT_MS = 120000;
   const VERSION_URL = 'version.json';
   const RELEASE_ID_FALLBACK = '0.7.9-beta.19';
 
@@ -130,7 +130,7 @@
         if (!path) throw new Error('manifest_file_path_missing');
         const expectedSize = Number(file.size || 0);
         const expectedHash = String(file.sha256 || '').toLowerCase();
-        setStatus('Updating AFewBuds…', 'Downloading ' + path, completedBytes / totalBytes);
+        setStatus('Updating AFewBuds…', 'Downloading game files', completedBytes / totalBytes);
         const joiner = path.includes('?') ? '&' : '?';
         const stagedUrl = path + joiner + 'afb_stage=' + encodeURIComponent(releaseId) + '&t=' + Date.now();
         const response = await fetch(stagedUrl, { cache:'no-store', credentials:'same-origin' });
@@ -287,7 +287,28 @@
     if (state.meta && state.meta.pending) rollback('game_start_failed:' + String(error && error.message || error || 'unknown'));
   }
 
+  let resumeCheck=false;
+  async function checkOnResume(){
+    if(document.hidden || !state.started || resumeCheck)return;
+    resumeCheck=true;
+    try{
+      const latest=await fetchManifest();
+      if(latest.release_id===window.AFB_INSTALLED_RELEASE)return;
+      if(window.AFB_GAME_RUNNING && window.AFB_CLOUD?.requestUpdate){
+        setVisible(true);setStatus('Update available','Saving your career before updating…',null);
+        window.AFB_CLOUD.requestUpdate();
+      }else location.replace('./index.html?afb_update='+Date.now());
+    }catch(_){ /* Keep the installed release when the network is unavailable. */ }
+    finally{resumeCheck=false;}
+  }
+  function updateSaveFailed(){
+    setVisible(true);setStatus('Your update is waiting','Your cloud save could not be confirmed. Reconnect, then retry. Your local progress is preserved.',1);
+    const retry=byId('afb-prelaunch-recover');if(retry){retry.hidden=false;retry.textContent='Retry update';retry.onclick=()=>{retry.hidden=true;checkOnResume();};}
+  }
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkOnResume();});
+  window.addEventListener('pageshow',event=>{if(event.persisted)checkOnResume();});
   window.AFB_UPDATER = {
+    checkOnResume,updateSaveFailed,
     boot,
     rollback,
     notifyGameStarting,

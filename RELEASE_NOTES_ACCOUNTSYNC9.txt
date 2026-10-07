@@ -1,7 +1,0 @@
-AFewBuds 0.7.9-beta.19-accountsync9
-
-- Keeps all validated accountsync8 cloud/save/UI/Heat/Reeves behavior.
-- Force Reeves debug remains removed from the main tester build.
-- Fixes an edge case where an open storefront with valid listed stock could repeatedly produce no viable customer when preference/flexibility rolls all missed.
-- When normal matching produces no visitor, one unlocked non-staff customer is now selected as fallback; normal substitute rules still apply.
-- LAY LOW / storefront AWAY and raid lockdown still intentionally stop customer traffic.
