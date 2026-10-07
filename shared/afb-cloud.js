@@ -32,7 +32,7 @@
     if(r.state==='active'){
      revision=Number(r.revision);save=r.save_json||{};
      if(Number(save.save_schema||0)>2)throw Error('This career needs a newer game version.');
-     if(legacy && !cached){
+     if(legacy && !legacy.done && !cached?.dirty){
       const recovered=await window.AFB_LEGACY.choose(legacy,save);
       if(!sameAccount())throw Error('Account changed. Sign in again.');
       const verified=await rpc('afb_play_heartbeat',args());

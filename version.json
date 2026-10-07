@@ -1,7 +1,7 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.14.9-mobile-beta.1",
-  "game_build": "0.14.9-mobile-beta.1",
+  "release_id": "0.14.9-mobile-beta.2",
+  "game_build": "0.14.9-mobile-beta.2",
   "files": [
     {
       "path": "account/index.html",
@@ -66,7 +66,7 @@
     {
       "path": "index.html",
       "size": 51717,
-      "sha256": "683deed8f0c4aa4bcdf2d6742b589472abafb1d9d4887c9108b9d683fb6c15a9"
+      "sha256": "46fc3f1001250ba30bcf2dc95b8a077a4ca32a4bc1be79318f9d73b90b7af0b7"
     },
     {
       "path": "index.icon.png",
@@ -105,13 +105,13 @@
     },
     {
       "path": "shared/afb-cloud.js",
-      "size": 7444,
-      "sha256": "91c5c3de40e337cd97d085b0bc193b58e55366f75b6df73b164d35f7726ef836"
+      "size": 7467,
+      "sha256": "bd09d2a08e5a5ce886d387c5d5e6400f7961b1b3953cfd054023fc5f8f786429"
     },
     {
       "path": "shared/afb-legacy-save.js",
-      "size": 4051,
-      "sha256": "71593af530e111ccaf167242106579a3b36f388d839e1de98c20047777a0685f"
+      "size": 4007,
+      "sha256": "e33c98eca600cee60317aa9bb588a95f1a8a1176dd5cd6fa38246e01fdb7c748"
     },
     {
       "path": "shared/afb-tracker.js",
@@ -126,7 +126,7 @@
     {
       "path": "shared/config.js",
       "size": 224,
-      "sha256": "47dfa8558b7b2a79b9b707bc5b7188967f934b386a04a27c234f4130250946cc"
+      "sha256": "59bd1cb941734888620339e7d9663f6d9accf087243f281a8d15952d813518a9"
     },
     {
       "path": "shared/style.css",

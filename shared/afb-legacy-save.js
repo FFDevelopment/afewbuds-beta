@@ -26,12 +26,12 @@
   const previous=JSON.parse(localStorage.getItem(backupKey)||'null');
   if(!previous || unix(save)>unix(previous.save))localStorage.setItem(backupKey,JSON.stringify(snapshot));
   snapshot.matches=!!account && !!owner && [normalize(account.account_id),normalize(account.username)].includes(owner);
-  snapshot.doneKey='afb_public_migration_v1:'+(account?.account_id||'guest');
+  snapshot.doneKey='afb_public_migration_v2:'+(account?.account_id||'guest');
   snapshot.done=!!localStorage.getItem(snapshot.doneKey);
   return snapshot;
  }
  function choose(snapshot,cloud){
-  if(!snapshot?.matches || snapshot.done || unix(snapshot.save)<=snapshot.lastSynced || (cloud && Object.keys(cloud).length && unix(snapshot.save)<=unix(cloud)))return Promise.resolve(null);
+  if(!snapshot?.matches || snapshot.done || (cloud && Object.keys(cloud).length && unix(snapshot.save)<=unix(cloud)))return Promise.resolve(null);
   return new Promise(resolve=>{
    const overlay=document.createElement('div');overlay.id='afb-career-choice';overlay.style.cssText='position:fixed;inset:0;z-index:13000;background:#08120ff5;display:grid;place-items:center;padding:20px;color:#f4f0df;font-family:system-ui;overflow:auto';
    const card=document.createElement('div');card.style.cssText='max-width:480px;background:#17251f;padding:24px;border:1px solid #689c50;border-radius:18px';overlay.appendChild(card);

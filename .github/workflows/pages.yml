@@ -23,6 +23,7 @@ jobs:
         run: |
           node --check shared/afb-legacy-save.js
           node --check shared/afb-updater.js
+          node tools/legacy_test.cjs
           node tools/shared_save_test.cjs
           node tools/updater_test.cjs
       - name: Stage only supported app files

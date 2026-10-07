@@ -12,7 +12,7 @@ The original public-beta device save is preserved. If it contains newer unsynced
 
 ## Release workflow
 
-Current release: **0.14.9-mobile-beta.1**. The full game pack is byte-identical to the mobile candidate validated in [test run 37679838242](https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/37679838242). `RELEASE_INTEGRITY.json` records its source and checksum.
+Current release: **0.14.9-mobile-beta.2**. The full game pack is byte-identical to the mobile candidate validated in [test run 37679838242](https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/37679838242). `RELEASE_INTEGRITY.json` records its source and checksum.
 
 Run `python tools/manifest.py --check` and `node tools/shared_save_test.cjs` before publication. The Pages workflow verifies the release manifest and launcher tests before deploying.
 
