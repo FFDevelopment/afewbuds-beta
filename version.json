@@ -1,7 +1,7 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.14.9-mobile-beta.2",
-  "game_build": "0.14.9-mobile-beta.2",
+  "release_id": "0.14.9-mobile-beta.3",
+  "game_build": "0.14.9-mobile-beta.3",
   "files": [
     {
       "path": "account/index.html",
@@ -25,8 +25,8 @@
     },
     {
       "path": "index-mobile.pck",
-      "size": 48663896,
-      "sha256": "fb563607e57f1c19c018eddc8e128b9d0d684abc81816d4fd7900d27445fb305"
+      "size": 48663864,
+      "sha256": "2652ae1839432061955cda084ab76502f55c8691cbf623b3a0af72b9abe9ffef"
     },
     {
       "path": "index.144x144.png",
@@ -66,7 +66,7 @@
     {
       "path": "index.html",
       "size": 51717,
-      "sha256": "46fc3f1001250ba30bcf2dc95b8a077a4ca32a4bc1be79318f9d73b90b7af0b7"
+      "sha256": "4999dcb4e9b54c6bec0638190f8ad4f1cbec058a6597e48298aee37be4b147b3"
     },
     {
       "path": "index.icon.png",
@@ -126,7 +126,7 @@
     {
       "path": "shared/config.js",
       "size": 224,
-      "sha256": "59bd1cb941734888620339e7d9663f6d9accf087243f281a8d15952d813518a9"
+      "sha256": "5ccd45d0c30190544333e8c791293bb13bb053002599067231303591a468e694"
     },
     {
       "path": "shared/style.css",

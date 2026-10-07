@@ -1,5 +1,7 @@
 # Mobile Beta 0.14.9
 
+- Mobile Backpack button uses a touch-only label without a keyboard shortcut.
+
 - Mobile 3D movement, stamina, and Bongchester district HUD.
 - Backpack weight, categorized shop, collect-all within capacity, and swipeable storage menus.
 - Direct backpack item use, updated packing upgrades, and a version-specific first-day tutorial.

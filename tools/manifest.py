@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,hashlib,argparse,shutil
 ROOT=Path(__file__).resolve().parents[1]
-RELEASE='0.14.9-mobile-beta.2'
+RELEASE='0.14.9-mobile-beta.3'
 def paths():
  names=['index.html','index-mobile.js','index-mobile.pck','index.wasm','index.audio.worklet.js','index.audio.position.worklet.js','index.offline.html','index.icon.png','index.png','index.144x144.png','index.180x180.png','index.192x192.png','index.512x512.png','index.apple-touch-icon.png','index.manifest.json','index.service.worker.js','afewbuds-update.html','shared/config.js','shared/afb-api.js','shared/afb-cloud.js','shared/afb-legacy-save.js','shared/afb-updater.js','shared/afb-tracker.js','shared/style.css']
  for folder in ['account','admin']:

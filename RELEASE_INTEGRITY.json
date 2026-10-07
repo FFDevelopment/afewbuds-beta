@@ -1,12 +1,12 @@
 {
-  "release_id": "0.14.9-mobile-beta.2",
+  "release_id": "0.14.9-mobile-beta.3",
   "source_repository": "FFDevelopment/afewbuds-cloud-test",
-  "source_commit": "4e063e5f3d68d7b72a5cbcb94500c5e71078922d",
+  "source_commit": "d29684986eca9bc56c0e2371c10bfd43f029e519",
   "source_branch": "experiment/container-inventory",
-  "source_ci_run": 37679838242,
+  "source_ci_run": 37686564687,
   "main_pack": "index-mobile.pck",
-  "main_pack_sha256": "fb563607e57f1c19c018eddc8e128b9d0d684abc81816d4fd7900d27445fb305",
-  "main_pack_bytes": 48663896,
+  "main_pack_sha256": "2652ae1839432061955cda084ab76502f55c8691cbf623b3a0af72b9abe9ffef",
+  "main_pack_bytes": 48663864,
   "previous_public_commit": "7846dc9c32f4a2828ccf0a0a362b53a1d6622f29",
   "previous_public_release": "0.7.9-beta.19-accountsync14",
   "removed_obsolete_files": [
