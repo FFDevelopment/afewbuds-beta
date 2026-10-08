@@ -1,5 +1,0 @@
-{
-  "release_id": "0.16.0-mobile-beta.3",
-  "source_commit": "d5c264b3e0fcc5b93bd8cad25a6952232a58541a",
-  "notes": "# AFewBuds 0.16.0 beta.3\n\n- New houses start empty; apartment belongings, stock and workers stay at the apartment.\n- Order equipment to a property curb or buy to Backpack and place it in either owned property.\n- Real Estate lists both properties with activity status and property-specific furniture controls.\n- Pickup, movement and placement require being inside the selected property.\n- Computers use the inventory of the property where they are placed.\n- Existing saved furniture and upgrades are preserved; stocked equipment still cannot be picked up.\n"
-}
