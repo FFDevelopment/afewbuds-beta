@@ -1,0 +1,5 @@
+{
+  "release_id": "0.16.0-mobile-beta.4",
+  "source_commit": "e30a545f21069c53192f27a334bc26aed020f9df",
+  "notes": "Complete textured computer desks; actual-model placement previews; backpack placement in current property; walk-around furniture editing; wall-mounted hidden stashes; corrected house grow-room bounds and invisible shelf collisions."
+}
