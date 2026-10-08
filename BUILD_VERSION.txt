@@ -1,2 +1,2 @@
 AFewBuds Mobile Beta
-Release: 0.16.0-mobile-beta.1
+Release: 0.16.0-mobile-beta.2

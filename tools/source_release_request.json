@@ -1,5 +1,0 @@
-{
-  "release_id": "0.16.0-mobile-beta.2",
-  "source_commit": "379a1e34b54077eb8a998c9e9366f20a84f6d5bb",
-  "notes": "AFewBuds Mobile Beta 0.16.0-mobile-beta.2\n\n- Opening the house offers make-house-primary, keep-apartment-primary and decide-later options without moving stock, furniture or crew.\n- Apartment workers trim, bag and store apartment stock. House stations and supplies remain independent, including after save/reload.\n- Worker plant care and dealer inventory checks respect property ownership.\n- Keeps the equipment system, Chapter 5, cloud-session fixes, account saves and updater.\n- Existing recorded contents are preserved; previously misrouted stock is not moved automatically. The production-worker hiring limit is unchanged.\n"
-}
