@@ -1,13 +1,9 @@
-# Mobile Beta 0.14.9
+AFewBuds Mobile Beta 0.16.0-mobile-beta.1
 
-- Mobile Backpack button uses a touch-only label without a keyboard shortcut.
+- Move, pack, place, upgrade and sell owned furniture and equipment. Existing paid items and their contents are retained.
+- Grow tents support 1, 2, 3 or 4 plants; equipment deliveries can go to a property curb. Empty equipment before moving it.
+- Chapter 5 milestones and physical trimming/bagging interactions.
+- Original grow shelves, wall stash and dealer locker models are retained. Migrated utility equipment no longer blocks grow shelves.
+- Keeps public account careers, single-session protection and the installed-app updater. Save conflicts preserve local progress and no longer claim another device is active.
 
-- Mobile 3D movement, stamina, and Bongchester district HUD.
-- Backpack weight, categorized shop, collect-all within capacity, and swipeable storage menus.
-- Direct backpack item use, updated packing upgrades, and a version-specific first-day tutorial.
-- Real Estate property agreements, separate bills, and protected apartment release.
-- Shared desktop/mobile careers with single-session handoff.
-- Existing public mobile updater preserved, with save-before-update when resuming the app.
-- Existing local careers backed up; newer unsynced account progress prompts before replacing the cloud career.
-
-Chapter 4 can be completed through the house move. Chapter 5 currently has its opening.
+Your live account career continues here. Separate test-branch careers remain separate.

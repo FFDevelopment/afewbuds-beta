@@ -5,6 +5,7 @@ function client(accountId='a',storage=new Map(),legacy=null){
  let session={account_id:accountId,session_token:'fixture-'+accountId};
  const rpc=async(name,p)=>{
   if(backend.fail)throw Error('offline');
+  if(name==='afb_play_heartbeat' && backend.emptyHeartbeat)return {};
   if(name==='afb_begin_play'){
    if(backend.active && backend.active!==p.p_play_id){backend.pending=p.p_play_id;return {state:'waiting'};}
    backend.active=p.p_play_id;backend.pending=null;return {state:'active',revision:backend.revision,save_json:clone(backend.save)};
@@ -27,6 +28,7 @@ function client(accountId='a',storage=new Map(),legacy=null){
 (async()=>{
  const storage=new Map([['afb_inventory_preview_v1:a',JSON.stringify({cash:9999})]]);
  const phone=client('a',storage);await phone.cloud.prepareBeforeLaunch();assert.equal(JSON.parse(phone.window.AFB_CLOUD_BOOT_SAVE).cash,500);assert.equal(JSON.parse(storage.get('afb_inventory_preview_v1:a')).cash,9999);
+ backend.emptyHeartbeat=true;await phone.cloud.heartbeat();assert.equal(phone.window.AFB_CLOUD_EVENT,'active');backend.emptyHeartbeat=false;
  const save=clone(backend.save);save.cash=475;save.location_state.container_inventory.backpack['seed|Purple Dream']=4;
  await phone.cloud.pushFromGame(save);assert.deepEqual(backend.save,save);
  const next=client();const launch=next.cloud.prepareBeforeLaunch();await new Promise(r=>setTimeout(r,10));await phone.cloud.heartbeat();assert.equal(phone.window.AFB_CLOUD_EVENT,'handoff');
@@ -36,7 +38,7 @@ function client(accountId='a',storage=new Map(),legacy=null){
  backend.fail=true;await assert.rejects(()=>next.cloud.pushFromGame({...save,cash:425}),/offline/);assert.equal(backend.save.cash,450);
  assert.equal(JSON.parse(next.storage.get('afb_public_career_v1:a')).save.cash,425);
  backend.fail=false;await next.cloud.syncLatest();assert.equal(backend.save.cash,425);
- backend.reject=true;await assert.rejects(()=>next.cloud.pushFromGame({...save,cash:1}),/save_conflict/);assert.equal(backend.save.cash,425);assert.equal(next.window.AFB_CLOUD_EVENT,'replaced');backend.reject=false;
+ backend.reject=true;await assert.rejects(()=>next.cloud.pushFromGame({...save,cash:1}),/save_conflict/);assert.equal(backend.save.cash,425);assert.equal(next.window.AFB_CLOUD_EVENT,'save_conflict');assert.equal(JSON.parse(next.storage.get('afb_public_career_v1:a')).dirty,true);backend.reject=false;
  backend.active=null;const guest=client();guest.setSession(null);await guest.cloud.prepareBeforeLaunch();await guest.cloud.pushFromGame({cash:12});assert.equal(backend.save.cash,425);
  const switched=client();await switched.cloud.prepareBeforeLaunch();switched.setSession({account_id:'b',session_token:'fixture-b'});await assert.rejects(()=>switched.cloud.pushFromGame({cash:1}),/replaced/);
  backend.active=null;

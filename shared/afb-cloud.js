@@ -72,7 +72,8 @@
    if(stopped || !sameAccount() || expectedKey!==activeKey || expectedPlay!==playId)throw Error('session_replaced');
    const r=await rpc('afb_save_career',{...args(),p_revision:revision,p_save_json:save});
    if(!r?.ok){
-    if(['session_replaced','session_invalid','save_conflict'].includes(r?.reason))replaced();
+    if(r?.reason==='save_conflict'){stopped=true;event('save_conflict');}
+    else if(['session_replaced','session_invalid'].includes(r?.reason))replaced();
     throw Error(r?.reason||'Cloud save was rejected.');
    }
    revision=Number(r.revision);lastContact=Date.now();
@@ -89,7 +90,9 @@
   heartbeatBusy=true;
   try{
    if(!sameAccount()){replaced();return;}
-   const r=await rpc('afb_play_heartbeat',args());lastContact=Date.now();
+   const r=await rpc('afb_play_heartbeat',args());
+   if(!['active','handoff','replaced'].includes(r?.state))return;
+   lastContact=Date.now();
    if(r.state==='handoff'){handingOff=true;event('handoff');}
    else if(r.state==='active'){if(window.AFB_CLOUD_EVENT==='offline'){event('active');if(pending)syncLatest().catch(()=>{});}}
    else replaced();

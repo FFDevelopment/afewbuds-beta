@@ -1,7 +1,7 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.14.9-mobile-beta.3",
-  "game_build": "0.14.9-mobile-beta.3",
+  "release_id": "0.16.0-mobile-beta.1",
+  "game_build": "0.16.0-mobile-beta.1",
   "files": [
     {
       "path": "account/index.html",
@@ -25,8 +25,8 @@
     },
     {
       "path": "index-mobile.pck",
-      "size": 48663864,
-      "sha256": "2652ae1839432061955cda084ab76502f55c8691cbf623b3a0af72b9abe9ffef"
+      "size": 48753996,
+      "sha256": "5ab3f5ced0fb8314a5abcb9592b04133b5d96d4e8f8e193ec3ce3a6d0d6b3259"
     },
     {
       "path": "index.144x144.png",
@@ -66,7 +66,7 @@
     {
       "path": "index.html",
       "size": 51717,
-      "sha256": "4999dcb4e9b54c6bec0638190f8ad4f1cbec058a6597e48298aee37be4b147b3"
+      "sha256": "8e560fe7d0c76a477158d6c4211553d3eed56b3f2af3b964edce5f372b3a12f7"
     },
     {
       "path": "index.icon.png",
@@ -105,8 +105,8 @@
     },
     {
       "path": "shared/afb-cloud.js",
-      "size": 7467,
-      "sha256": "bd09d2a08e5a5ce886d387c5d5e6400f7961b1b3953cfd054023fc5f8f786429"
+      "size": 7600,
+      "sha256": "171612e6c87847b5f7cec9127872ad0a4ebf0988850c021a4cdbeaf55076f226"
     },
     {
       "path": "shared/afb-legacy-save.js",
