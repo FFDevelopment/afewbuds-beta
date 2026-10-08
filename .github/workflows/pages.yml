@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
@@ -15,6 +15,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Read optional source release request
+        id: source_request
+        run: |
+          python - <<'PYREQUEST' >> "$GITHUB_OUTPUT"
+          import json,re
+          from pathlib import Path
+          p=Path('tools/source_release_request.json')
+          print('pending='+str(p.exists()).lower())
+          if p.exists():
+              c=json.loads(p.read_text());assert re.fullmatch(r'[0-9a-f]{40}',c['source_commit'])
+              print('sha='+c['source_commit'])
+          PYREQUEST
+      - uses: actions/checkout@v4
+        if: steps.source_request.outputs.pending == 'true'
+        with:
+          repository: FFDevelopment/afewbuds-cloud-test
+          ref: ${{ steps.source_request.outputs.sha }}
+          path: candidate-source
+          persist-credentials: false
+      - name: Build and test requested mobile release
+        if: steps.source_request.outputs.pending == 'true'
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          python tools/build_source_release.py candidate-source /tmp/godot/Godot_v4.7.2-stable_linux.x86_64
       - name: Verify updater manifest and source provenance
         run: |
           python tools/manifest.py --check
@@ -26,6 +52,15 @@ jobs:
           node tools/legacy_test.cjs
           node tools/shared_save_test.cjs
           node tools/updater_test.cjs
+      - name: Retain verified release artifacts in the public repository
+        if: steps.source_request.outputs.pending == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index-mobile.pck index.html tools/manifest.py BUILD_VERSION.txt README.md RELEASE_INTEGRITY.json RELEASE_NOTES.md version.json tools/source_release_request.json
+          git commit -m "Retain verified mobile release artifacts"
+          git push origin HEAD:main
       - name: Stage only supported app files
         run: python tools/manifest.py --check --output "${{ runner.temp }}/afb-public-mobile"
       - uses: actions/configure-pages@v5
