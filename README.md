@@ -12,7 +12,7 @@ The original public-beta device save is preserved. If it contains newer unsynced
 
 ## Release workflow
 
-Current release: **0.16.0-mobile-beta.3**. The game pack is rebuilt from its pinned source and passes the mobile gameplay and property-isolation checks before publication. `RELEASE_INTEGRITY.json` records its source and checksum.
+Current release: **0.16.0-mobile-beta.4**. The game pack is rebuilt from its pinned source and passes the mobile gameplay and property-isolation checks before publication. `RELEASE_INTEGRITY.json` records its source and checksum.
 
 Run `python tools/manifest.py --check` and `node tools/shared_save_test.cjs` before publication. The Pages workflow verifies the release manifest and launcher tests before deploying.
 
