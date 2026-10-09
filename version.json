@@ -1,7 +1,7 @@
 {
   "updater_protocol": 1,
-  "release_id": "0.16.0-mobile-beta.4",
-  "game_build": "0.16.0-mobile-beta.4",
+  "release_id": "0.16.0-mobile-beta.5",
+  "game_build": "0.16.0-mobile-beta.5",
   "files": [
     {
       "path": "account/index.html",
@@ -25,8 +25,8 @@
     },
     {
       "path": "index-mobile.pck",
-      "size": 48764556,
-      "sha256": "494f9f05e81eb2fa1353f92fd4b2f959c4acd31609513bdf0f1ddf4bcf63095f"
+      "size": 48791820,
+      "sha256": "69c7ae1366f5353992001d9af24c47b9f83f910428c94a617321f078ac189420"
     },
     {
       "path": "index.144x144.png",
@@ -66,7 +66,7 @@
     {
       "path": "index.html",
       "size": 51717,
-      "sha256": "1732effd7c0eb52cb3084f700b4a331712a440301adca0bdad79e3ff31997312"
+      "sha256": "3d5e7ada21586e7b75784d1c8026cd3a1c9f96e6bee3868887df19373b92607f"
     },
     {
       "path": "index.icon.png",
