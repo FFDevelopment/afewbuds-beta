@@ -1,12 +1,11 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.6
+AFewBuds Mobile Beta 0.16.0-mobile-beta.7
 
-This release builds directly on the complete 0.16.0-mobile-beta.5 public gameplay, account/login, persistent careers, cloud-save and auto-update behavior. It promotes additional fixes tested in afewbuds-cloud-test.
+This targeted update builds directly on the verified 0.16.0-mobile-beta.6 source. It preserves accounts, current careers, furniture, property isolation, growing, workers, and automatic updates.
 
-- Add Agent Reeves to Contacts and Messages, including context-sensitive replies, heat status, paid favors, payoff, and quiet-exit interactions. Keep Heat for monitoring pressure rather than duplicating Reeves actions.
-- Preserve rewards that were earned earlier in a career even when stock or inventory later changes. Rewards and milestones use permanent progression history.
-- Count the highest simultaneous seed-variety milestone across both the apartment and house supply shelves, rather than only the currently active operation.
-- Credit stored-product career milestones when product is deposited into either owned property's storage. Separate stock and storage remain property-scoped.
-- Retain public beta.5's independently managed house/apartment computers, workers, grow-room tent and ventilation settings, light usage, property utilities, furniture placement, upgraded benches, scale displays, and corrected character animation states.
-- No intentional reset of existing accounts, saved careers, purchases, properties, items, staff assignments, or player progression.
+- Agent Reeves remains available in Contacts after the protection balance was fully paid. A positive paid-off relationship unlocks optional one-off heat-reduction favors without new recurring debt.
+- At 0 Heat, the Reeves paid-favor option remains visible but disabled; Contact Details explains that there is no attention to reduce. Text status and optional private visits remain available.
+- Once any Heat exists, a friendly paid-off Reeves relationship can pay for a real reduction. Successful contact calls increment the existing Make the Call advancement so previously paid-off careers can complete it.
+- Texting Agent Reeves 'Can We Talk?' after payoff schedules a friendly doorstep check-in with options to talk or pay for heat assistance. Declining a friendly visit never creates a new protection obligation.
+- Existing protection payments remain settled; no changes to saved balances, property ownership, account sign-in, or backend schema.
 
-Before promotion the recovery source must pass the complete mobile gameplay, inventory, property, Rewards/Reeves, and session tests.
+The candidate has passed mobile Reeves, property isolation, and progression checks before release request; the public release workflow must also rebuild and pass its full mobile regression suite.
