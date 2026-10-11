@@ -1,17 +1,17 @@
 {
-  "release_id": "0.16.0-mobile-beta.11",
+  "release_id": "0.16.0-mobile-beta.12",
   "source_repository": "FFDevelopment/afewbuds-cloud-test",
-  "source_commit": "3b060670f270dddc3d5a4b25ba4da0ce856a9cb8",
-  "source_branch": "hotfix/testers-shop-bench-delivery-backpack-20261011",
+  "source_commit": "6adce8c81b440b19940488db5137f27af1c891f0",
+  "source_branch": "main",
   "main_pack": "index-mobile.pck",
-  "main_pack_sha256": "57d4aa3756bf0969a4ea093db8c10e54ab96678f0871ba6aaeb7dc15fe3fad79",
-  "main_pack_bytes": 61828568,
-  "previous_public_commit": "a4c34271792f012e1a7404981edbb5b879e5892b",
-  "previous_public_release": "0.16.0-mobile-beta.10",
+  "main_pack_sha256": "25a70bcde223c4188c42bc49472c8fee964d60b384e1fd9b36faf3f059d1e6d0",
+  "main_pack_bytes": 61908276,
+  "previous_public_commit": "1987f6752ea56d53b1485770436f912535c64f6f",
+  "previous_public_release": "0.16.0-mobile-beta.11",
   "public_adaptations": [
     "Preserved existing public updater, session and career keys",
     "Shared session UI distinguishes save conflicts; unknown heartbeat responses do not sign out",
     "Test save adapter is excluded from public build"
   ],
-  "source_ci_run": "38160228860"
+  "source_ci_run": "38172914622"
 }

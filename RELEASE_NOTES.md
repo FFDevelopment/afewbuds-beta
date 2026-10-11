@@ -1,19 +1,25 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.11 — Packing Bench, Delivery & Backpack Hotfix
+AFewBuds Mobile Beta 0.16.0-mobile-beta.12 — Property Production Workers & Equipment Upgrades
 
-Exact isolated source: FFDevelopment/afewbuds-cloud-test @ 3b060670f270dddc3d5a4b25ba4da0ce856a9cb8
-Source branch: hotfix/testers-shop-bench-delivery-backpack-20261011. Experimental character creator/art and Mission & Story changes excluded.
+VERIFIED SOURCE
+FFDevelopment/afewbuds-cloud-test main @ 6adce8c81b440b19940488db5137f27af1c891f0
+Source feature tests: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38172463589
+Validated main build and deploy: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38172678760
 
-FIXED
-- Purchased packing benches now reuse the approved detailed apartment bench art (work surface, electronic scale, trim tray, bag box, jars and supplies) instead of the market's simplified placeholder. Placement preview uses the same detailed assembly.
-- Packing stations continue to use the original hands-on scissors trimming and drag-to-bag/scale/sealing minigames, with the purchased bench and active property's stock.
-- Market Cart checkout now offers Market Pickup or owned Apartment/House curbside delivery for furniture and equipment. Paid crates remain at the destination until collected; seeds and fertilizer still follow Central Market pickup. Property ownership is checked BEFORE payment.
-- Central Market > Upgrades again shows the saved backpack level and lets players purchase the next permanent capacity tier (35 / 55 / 80 / 110 lb; upgrade prices $250 / $750 / $1,750).
-- Phone > Shop > Shop Upgrades now shows backpack capacities/prices and equipment families without remote purchasing. Backpack purchases remain at Central Market checkout.
+PROPERTY WORKERS
+- One production worker may be hired for the apartment and one for the acquired house, each with independent duty status, tasks, auto-plant setting, stock use, wages, and saved assignment.
+- Offer a qualified loyal friend apartment or house production work through Contacts. Moving a worker frees their original position and cannot duplicate workers or replace an occupied production slot.
+- Workers retain the existing house station navigation and customer-facing character identity. Offline work is limited to care of already planted crops with finite property supplies; there are no offline planting, harvesting, processing, sales, or extra workdays.
+- Heat, bail, layoffs and property management operate without silently removing the other property's worker.
 
-UNCHANGED
-- House furniture arrangement was already fixed in beta.10 and is not replaced.
-- Production worker planting cadence and stock consumption have not been modified.
-- Existing purchases, furniture placements, store inventories, worker assignments, genetics, story, account/login, save schema and cloud sync are preserved.
-- Existing home-screen PWA URL, SHA-256-verified updater, installation identity and safe rollback are unchanged.
+EQUIPMENT & PLACEMENT
+- Shop purchases for stations start at Level I. Upgrade installed packing benches, shelves, vaults and lockers from Furniture Arrangement for the level-to-level price difference, subject to Grower unlock requirements.
+- Each 1-, 2-, 3- or 4-plant grow tent includes a basic light. Upgrade that specific tent to LED light II for $320 once unlocked, preserving existing crops.
+- Packing Bench III and other furniture fit closer to room walls and neighboring pieces, with centimeter-scale placement and checks against actual structural overlap. The approved apartment bench models and packing actions remain in purchased stations.
 
-Release gates: full mobile Godot movement, ownership, packaging, delivery, backpack and save regression suite; mobile package import, cloud migration and updater checks; verified artifact SHA-256 and successful Pages deployment. No beta is live until these gates pass.
+ALREADY RESTORED AND PRESERVED
+- Market and property curbside furniture/equipment delivery, bagging/trim animations, permanent backpack capacity tiers and Phone > Shop > Shop Upgrades browsing remain functional.
+- Existing player accounts, money, properties, employees, placed equipment, crop/strain stock, saved backpack level, cloud sync, and iPhone home-screen update identity are preserved.
+
+TEST GATES
+- The full mobile Godot movement, progression, house operations, shop, production staff, equipment and property-isolation suites passed, including 29 worker/bench, 37 shop, 88 property-isolation and 85 equipment checks.
+- Public promotion must separately rebuild the exact pinned runtime, rerun all required tests, verify the update manifest, migration and SHA-256 pack hash, and complete Pages deployment.
