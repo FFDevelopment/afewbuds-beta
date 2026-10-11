@@ -13,15 +13,14 @@ with tempfile.TemporaryDirectory(prefix='afb-public-candidate-') as temp:
  subprocess.run([sys.executable,str(source/'tools/mobile_3d_movement/build.py'),'--output-dir',str(out)],check=True,cwd=source)
  subprocess.run([str(godot),'--headless','--path',str(out/'candidate'),'--editor','--import','--quit'],check=True)
  workflow=(source/'.github/workflows/mobile-3d-preview.yml').read_text()
-# Test both explicit --script calls and the loop of named gameplay regressions.
-# Never treat the shell variable ${script} as a file path.
-explicit=re.findall(r'--script "\\$\\{GITHUB_WORKSPACE\\}/(tools/[A-Za-z0-9_./-]+\\.gd)"',workflow)
-listed=re.findall(r'"(tools/[A-Za-z0-9_./-]+\\.gd)\\|[A-Z0-9_]+: PASS"',workflow)
-scripts=list(dict.fromkeys(explicit+listed))
-required={'tools/mobile_3d_movement/check.gd','tools/progression_v1/check.gd',
-          'tools/property_isolation_v1/check.gd','tools/graphics_presets_v1/check.gd',
-          'tools/house_npc_nav_v1/check.gd','tools/door_staff_v1/check.gd'}
-assert required <= set(scripts) and len(scripts) >= 17, 'Tester release is missing mandatory game regressions'
+ # Run explicit and loop-listed tests; never interpret ${script} as a literal path.
+ explicit=re.findall(r'--script "\$\{GITHUB_WORKSPACE\}/(tools/[A-Za-z0-9_./-]+\.gd)"',workflow)
+ listed=re.findall(r'"(tools/[A-Za-z0-9_./-]+\.gd)\|[A-Z0-9_]+: PASS"',workflow)
+ scripts=list(dict.fromkeys(explicit+listed))
+ required={'tools/mobile_3d_movement/check.gd','tools/progression_v1/check.gd',
+           'tools/property_isolation_v1/check.gd','tools/graphics_presets_v1/check.gd',
+           'tools/house_npc_nav_v1/check.gd','tools/door_staff_v1/check.gd'}
+ assert required <= set(scripts) and len(scripts) >= 17, 'Tester release is missing mandatory regressions'
  for script in dict.fromkeys(scripts):
   with tempfile.TemporaryDirectory(prefix='afb-release-test-') as data:
    result=subprocess.run([str(godot),'--headless','--path',str(out/'candidate'),'--script',str(source/script)],env=dict(os.environ,XDG_DATA_HOME=data),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=180)
