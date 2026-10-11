@@ -9,7 +9,10 @@ assert re.fullmatch(r'[0-9a-f]{40}',config['source_commit'])
 is_valid_hotfix = (config.get('source_branch') == 'hotfix/house-furniture-beta-20261011'
                    and config.get('source_commit') == '9f30f9159afd7db9ab9921681884217927f58b67'
                    and config.get('release_id') == '0.16.0-mobile-beta.10')
-assert config.get('source_branch') == 'main' or is_valid_hotfix, 'Only main or this single validated emergency hotfix can be promoted'
+is_valid_shop_hotfix = (config.get('source_branch') == 'hotfix/testers-shop-bench-delivery-backpack-20261011'
+                         and config.get('source_commit') == '3b060670f270dddc3d5a4b25ba4da0ce856a9cb8'
+                         and config.get('release_id') == '0.16.0-mobile-beta.11')
+assert config.get('source_branch') == 'main' or is_valid_hotfix or is_valid_shop_hotfix, 'Only main or a pinned, validated public hotfix can be promoted'
 assert subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()==config['source_commit']
 with tempfile.TemporaryDirectory(prefix='afb-public-candidate-') as temp:
  out=Path(temp)/'build'
