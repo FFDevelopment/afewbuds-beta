@@ -1,15 +1,13 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.8
+AFewBuds Mobile Beta 0.16.0-mobile-beta.9 — Landing Collision / Unstuck Hotfix
 
-Source: FFDevelopment/afewbuds-cloud-test @ f3e6e89d744649ea055d45ba36e7611d7a92eb79, validated on the development main branch.
+Source: FFDevelopment/afewbuds-cloud-test @ c7549547a82702c6aedb200a8726c45872990ab4, validated in the mobile branch and full main development workflow.
 
-- Add furniture-aware house NPC navigation between doorways, rooms, grow stations and the staircase.
-- Distinguish Door Dealers from street dealers; keep per-property on-duty controls, individual sales and commission.
-- Improve Door Dealer pacing at the couch and entrance; natural stand-up, walk, service, return and seating after furniture movement.
-- Include the shared PropertyRegistry / ItemRegistry foundations, property-specific employee and inventory handling, and prior Chapter 4/5 story.
-- Add Low / Medium / High graphics quality options under Pause > Settings, stored on each device only.
-- Preserve beta.7 Reeves post-payoff contacts, protection settlement and advancement changes.
-- Exclude the unfinished Mission & Story Engine draft and the unbuilt player-character creator.
+- Fixed missing player collision on the two closed starter-apartment side fire-escape doors (apartments 201 and 301) at the upper landings. The existing stairs, rails, doors and artwork remain in place.
+- Added UNSTUCK · RETURN TO SAFE SPOT to Pause on touchscreen/mobile and controller/keyboard desktop menus.
+- Recovery checks the nearest previously valid grounded position or a nearby supported public/landing anchor against the player's physical capsule. It will not teleport if no safe position is verified.
+- Unstuck is cooldown-limited, resets unsafe movement velocity, and preserves the game's paused state until Resume.
+- Preserves careers, money, workers, inventories, property ownership, furniture, growth, customer history, and save schema. The corrected position is written through the existing save pipeline.
+- No changes to tester URL, PWA service worker, update manifest protocol, user identity, cloud login, or the public updater's rollback behavior.
+- No unmerged Mission & Story Engine or future customizable-player prototypes.
 
-Existing tester URL, home-screen PWA origin, account and session configuration, save protocol, legacy-career migration, updater manifest, service worker and cache rollback are retained. Old mobile PWAs should detect the bumped manifest on reopen and verify new assets before switching. Cloud and local careers must not be erased.
-
-Must pass the full Godot mobile gameplay/property/employee regression suite, updater/legacy-save tests, SHA-256 manifest validation and deploy checks before any release is considered published.
+The feature branch passed Godot import, movement, landing collider/raycast checks, Unstuck/cooldown/career checks, property/inventory/graphics and other mobile suites. The main development baseline was rebuilt successfully, then released through the official beta validator and SHA-256 updater manifest.
