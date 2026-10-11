@@ -1,25 +1,21 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.12 — Property Production Workers & Equipment Upgrades
+AFewBuds Mobile Beta 0.16.0-mobile-beta.13 — House Rooms & Grow-Floor Fit
 
-VERIFIED SOURCE
-FFDevelopment/afewbuds-cloud-test main @ 6adce8c81b440b19940488db5137f27af1c891f0
-Source feature tests: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38172463589
-Validated main build and deploy: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38172678760
+Verified source: FFDevelopment/afewbuds-cloud-test main @ c59a80a29205b1078394048a8ff92f847077dbe0
+Source validation: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38180132122
 
-PROPERTY WORKERS
-- One production worker may be hired for the apartment and one for the acquired house, each with independent duty status, tasks, auto-plant setting, stock use, wages, and saved assignment.
-- Offer a qualified loyal friend apartment or house production work through Contacts. Moving a worker frees their original position and cannot duplicate workers or replace an occupied production slot.
-- Workers retain the existing house station navigation and customer-facing character identity. Offline work is limited to care of already planted crops with finite property supplies; there are no offline planting, harvesting, processing, sales, or extra workdays.
-- Heat, bail, layoffs and property management operate without silently removing the other property's worker.
+HOUSE FURNITURE FIX
+- Use actual structural inside wall faces for all six upper house rooms (living, packing, kitchen, bathroom, bedroom, and grow). Old stored ownership and property IDs are not rewritten.
+- Packing Bench III can sit flush against solid packing-room walls with only a narrow physical clearance; the finished apartment-style bench, tray, scale, jars, and trim/pack actions remain unchanged.
+- Expand the basement grow floor to the real usable side and front boundaries, preserving the actual stairs, railings, circulation area, and all upstairs floor separation.
+- Keep wall/door collisions, visible window blind coverage, other furniture and stair obstructions authoritative. Furniture cannot be pushed through them.
+- Carry the same physical-room bounds into walk-around arrangement, saved property room registration and placement validation.
 
-EQUIPMENT & PLACEMENT
-- Shop purchases for stations start at Level I. Upgrade installed packing benches, shelves, vaults and lockers from Furniture Arrangement for the level-to-level price difference, subject to Grower unlock requirements.
-- Each 1-, 2-, 3- or 4-plant grow tent includes a basic light. Upgrade that specific tent to LED light II for $320 once unlocked, preserving existing crops.
-- Packing Bench III and other furniture fit closer to room walls and neighboring pieces, with centimeter-scale placement and checks against actual structural overlap. The approved apartment bench models and packing actions remain in purchased stations.
+PREVIOUS VERIFIED FIXES RETAINED
+- One independently hired/assigned production worker per owned property; per-property payroll, auto-plant, status and transfer handling.
+- Level I equipment purchases; item-specific upgrade prices and Grower unlock requirements; tent LED lighting upgrades without losing plants.
+- Apartment-style packing benches, property curbside deliveries, permanent backpack capacity upgrades and Phone Shop browsing.
+- Existing saves, user accounts, career stock, property ownership, placed furniture, cloud synchronization, session fencing and update rollback remain intact.
 
-ALREADY RESTORED AND PRESERVED
-- Market and property curbside furniture/equipment delivery, bagging/trim animations, permanent backpack capacity tiers and Phone > Shop > Shop Upgrades browsing remain functional.
-- Existing player accounts, money, properties, employees, placed equipment, crop/strain stock, saved backpack level, cloud sync, and iPhone home-screen update identity are preserved.
-
-TEST GATES
-- The full mobile Godot movement, progression, house operations, shop, production staff, equipment and property-isolation suites passed, including 29 worker/bench, 37 shop, 88 property-isolation and 85 equipment checks.
-- Public promotion must separately rebuild the exact pinned runtime, rerun all required tests, verify the update manifest, migration and SHA-256 pack hash, and complete Pages deployment.
+VALIDATION
+- Mobile Godot suite passed, including 44 physical-room/basement checks, 36 production staff checks, 37 shop checks, 88 property isolation checks, 85 equipment checks.
+- Public source rebuild, manifest hashes, save migration, session and updater checks, and Pages deployment are additional release gates.
