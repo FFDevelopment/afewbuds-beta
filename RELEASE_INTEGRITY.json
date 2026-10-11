@@ -1,17 +1,17 @@
 {
-  "release_id": "0.16.0-mobile-beta.7",
+  "release_id": "0.16.0-mobile-beta.8",
   "source_repository": "FFDevelopment/afewbuds-cloud-test",
-  "source_commit": "866fc272a3a672210556dc85d6257ed98e5e1c0c",
-  "source_branch": "fix/property-operations",
+  "source_commit": "f3e6e89d744649ea055d45ba36e7611d7a92eb79",
+  "source_branch": "main",
   "main_pack": "index-mobile.pck",
-  "main_pack_sha256": "57a63d21b6b773fca367234c45505187bf8bee53f21420a5a19511b7681be57c",
-  "main_pack_bytes": 48796908,
-  "previous_public_commit": "c48e45a17b160125ea34631ab570229c890020a6",
-  "previous_public_release": "0.16.0-mobile-beta.6",
+  "main_pack_sha256": "653dd8e084a2ca5bca2ee41012d1f017c9968212164df0a360fa8a9b6adc8049",
+  "main_pack_bytes": 61815884,
+  "previous_public_commit": "e7b714393b79a48db3a084e12ca329d4e5d8cc32",
+  "previous_public_release": "0.16.0-mobile-beta.7",
   "public_adaptations": [
     "Preserved existing public updater, session and career keys",
     "Shared session UI distinguishes save conflicts; unknown heartbeat responses do not sign out",
     "Test save adapter is excluded from public build"
   ],
-  "source_ci_run": "37983859616"
+  "source_ci_run": "38109073208"
 }
