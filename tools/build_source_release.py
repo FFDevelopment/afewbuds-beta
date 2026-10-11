@@ -6,12 +6,22 @@ request=root/'tools/source_release_request.json'
 config=json.loads(request.read_text())
 source=Path(sys.argv[1]).resolve();godot=Path(sys.argv[2]).resolve()
 assert re.fullmatch(r'[0-9a-f]{40}',config['source_commit'])
+assert config.get('source_branch') == 'main', 'Only pinned validated development main can be promoted'
 assert subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip()==config['source_commit']
 with tempfile.TemporaryDirectory(prefix='afb-public-candidate-') as temp:
  out=Path(temp)/'build'
  subprocess.run([sys.executable,str(source/'tools/mobile_3d_movement/build.py'),'--output-dir',str(out)],check=True,cwd=source)
  subprocess.run([str(godot),'--headless','--path',str(out/'candidate'),'--editor','--import','--quit'],check=True)
- scripts=re.findall(r'--script "\$\{GITHUB_WORKSPACE\}/([^\"]+)"',(source/'.github/workflows/mobile-3d-preview.yml').read_text())
+ workflow=(source/'.github/workflows/mobile-3d-preview.yml').read_text()
+# Test both explicit --script calls and the loop of named gameplay regressions.
+# Never treat the shell variable ${script} as a file path.
+explicit=re.findall(r'--script "\\$\\{GITHUB_WORKSPACE\\}/(tools/[A-Za-z0-9_./-]+\\.gd)"',workflow)
+listed=re.findall(r'"(tools/[A-Za-z0-9_./-]+\\.gd)\\|[A-Z0-9_]+: PASS"',workflow)
+scripts=list(dict.fromkeys(explicit+listed))
+required={'tools/mobile_3d_movement/check.gd','tools/progression_v1/check.gd',
+          'tools/property_isolation_v1/check.gd','tools/graphics_presets_v1/check.gd',
+          'tools/house_npc_nav_v1/check.gd','tools/door_staff_v1/check.gd'}
+assert required <= set(scripts) and len(scripts) >= 17, 'Tester release is missing mandatory game regressions'
  for script in dict.fromkeys(scripts):
   with tempfile.TemporaryDirectory(prefix='afb-release-test-') as data:
    result=subprocess.run([str(godot),'--headless','--path',str(out/'candidate'),'--script',str(source/script)],env=dict(os.environ,XDG_DATA_HOME=data),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,timeout=180)
@@ -22,7 +32,7 @@ previous=json.loads((root/'RELEASE_INTEGRITY.json').read_text());old=previous['r
 for name in ['index.html','tools/manifest.py','BUILD_VERSION.txt','README.md']:
  path=root/name;path.write_text(path.read_text().replace(old,release))
 pack=(root/'index-mobile.pck').read_bytes()
-previous.update(release_id=release,source_commit=config['source_commit'],source_branch='fix/property-operations',main_pack_sha256=hashlib.sha256(pack).hexdigest(),main_pack_bytes=len(pack),previous_public_commit=os.environ.get('GITHUB_SHA','local-validation'),previous_public_release=old,source_ci_run=os.environ.get('GITHUB_RUN_ID','local-validation'))
+previous.update(release_id=release,source_commit=config['source_commit'],source_branch=config.get('source_branch','main'),main_pack_sha256=hashlib.sha256(pack).hexdigest(),main_pack_bytes=len(pack),previous_public_commit=os.environ.get('GITHUB_SHA','local-validation'),previous_public_release=old,source_ci_run=os.environ.get('GITHUB_RUN_ID','local-validation'))
 (root/'RELEASE_INTEGRITY.json').write_text(json.dumps(previous,indent=2)+'\n')
 (root/'RELEASE_NOTES.md').write_text(config['notes'])
 readme=root/'README.md'
