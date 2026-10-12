@@ -1,22 +1,20 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.17 — Production Duty & Wall-Mounted Equipment Hotfix
+AFewBuds Mobile Beta 0.16.0-mobile-beta.18 — Multi-Storage Listing & Sale Accounting
 
 VERIFIED MOBILE SOURCE
-- FFDevelopment/afewbuds-cloud-test main @ 71cf1f0c1dad422415661d6efe14c94b902e80a8
-- Full mobile gameplay, interaction and map regression suite: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38201336519
-- Both production duty and mounted equipment regressions passed in the same verified export.
+- FFDevelopment/afewbuds-cloud-test main @ bb6277a3bd4e5411a1ce0f26a95e86849582005c
+- Full mobile tests: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38294851284
+- Multi-storage regression: 28/28 passed, plus inventory, property isolation, equipment and gameplay checks.
 
-PRODUCTION WORKERS & DAY CLOSEOUT
-- Workers temporarily suspended because nightly wages could not be paid now retain their prior on-duty preference and resume automatically when sufficient cash arrives, including after settling the dealer drop-off, and only after the actual overdue wages are paid.
-- Preserves manual time-off choices. Workers never work for free. Arrest, bail, heat or raid restrictions still apply.
-- Both independent house and apartment production workers, shifts, automation settings and payroll remain separate.
+MULTIPLE STORAGE UNITS PER PROPERTY
+- Phone stock/listing quantities now combine the packaged weed from every installed storage shelf, vault or stash at the selected property.
+- Reserving product subtracts reserved grams from that property's aggregated stock exactly once.
+- New strain labels from secondary storage are selectable even if the legacy primary stock is empty.
+- Selling product draws the requested grams across physical storage units in order, without duplicates, negative balances or consuming reserved stock.
+- Door dealer sales, friend purchases, and transfers to/from Dealer Locker use the same safe stock debit.
+- Production worker and manual packing deposits fill available shelves individually without overfilling one unit.
+- Apartment and house quantities, listings, and reserves remain separate.
+- Property overview and Storage menu now reflect all actual installed units. Packed/uninstalled furniture does not contribute ghost stock.
 
-WALL-MOUNTED EQUIPMENT — MOBILE WALK-AROUND FURNITURE ARRANGEMENT
-- Look directly at an installed auto-waterer or ventilation unit to select it, move it or pick it up.
-- Removes obsolete 0.8 metre height filter and stops treating installed devices as being at ground level.
-- The mobile controller now targets real world-space equipment bounds at the correct apartment, house and basement floor heights.
-- Keeps other-floor objects from being selected through the ceiling; wall-placement rules and existing installed equipment remain unchanged.
-
-SAFETY & TESTING
-- All 55 production staff / equipment targeting checks and the full mobile runtime/gameplay suite passed.
-- The public update builds pinned source, checks legacy saves, release identity, updater state and SHA-256 manifest before publishing.
-- Preserves account login, cloud saves, existing crops, inventory, furniture, money and property ownership.
+SAVES AND UPDATER
+- No player migration or wipe: existing container IDs, inventory data, property ownership, customer relationships, cloud identity and updater settings are preserved.
+- Public release pipeline independently builds pinned source and verifies previous saved-account compatibility, deployment files, and SHA-256 manifests.
