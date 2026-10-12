@@ -1,20 +1,27 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.18 — Multi-Storage Listing & Sale Accounting
+AFewBuds Mobile Beta 0.16.0-mobile-beta.19 — Physical Customer Visits, Emergency Heat Controls & Readable Stock Buttons
 
 VERIFIED MOBILE SOURCE
-- FFDevelopment/afewbuds-cloud-test main @ bb6277a3bd4e5411a1ce0f26a95e86849582005c
-- Full mobile tests: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38294851284
-- Multi-storage regression: 28/28 passed, plus inventory, property isolation, equipment and gameplay checks.
+- FFDevelopment/afewbuds-cloud-test main @ 0cb4c6a98d071bfc9a209e0269d7d33189a80032
+- Godot mobile movement, imported runtime, property inventory, phone, staff, heat, story/visitors, and safe save regression:
+  https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38299681502
 
-MULTIPLE STORAGE UNITS PER PROPERTY
-- Phone stock/listing quantities now combine the packaged weed from every installed storage shelf, vault or stash at the selected property.
-- Reserving product subtracts reserved grams from that property's aggregated stock exactly once.
-- New strain labels from secondary storage are selectable even if the legacy primary stock is empty.
-- Selling product draws the requested grams across physical storage units in order, without duplicates, negative balances or consuming reserved stock.
-- Door dealer sales, friend purchases, and transfers to/from Dealer Locker use the same safe stock debit.
-- Production worker and manual packing deposits fill available shelves individually without overfilling one unit.
-- Apartment and house quantities, listings, and reserves remain separate.
-- Property overview and Storage menu now reflect all actual installed units. Packed/uninstalled furniture does not contribute ghost stock.
+MOBILE PHONE INVENTORY
+- LIST / UNLIST buttons display at full readable/tappable width on a compact phone screen. They no longer collapse into a blank vertical green strip.
+- Product listing, available sellable grams, and reserved amounts aggregate all placed storage units at each property while keeping apartment and house stock independent.
+- Player, dealer-door, worker, and staff sales/deposits deduct from the correct physical storage bins. Reserve stock is never sold twice.
 
-SAVES AND UPDATER
-- No player migration or wipe: existing container IDs, inventory data, property ownership, customer relationships, cloud identity and updater settings are preserved.
-- Public release pipeline independently builds pinned source and verifies previous saved-account compatibility, deployment files, and SHA-256 manifests.
+HEAT & SHOP SAFETY
+- Phone > Heat and the individual property overview offer direct owner CLOSE SHOP and SHUT DOWN & LAY LOW actions even at critical Heat or with no employees currently on duty.
+- An off-duty worker can still relay CLOSE or SHUT DOWN to protect the property, but cannot reopen or return to duty during Heat/raid restrictions.
+- Lay Low closes customer traffic and lowers equipment power; reopening is locked until Heat is below 75 and raid restrictions have expired. The player's existing worker assignment preferences are preserved.
+
+FIRST PHYSICAL CUSTOMER ENCOUNTERS (APARTMENT)
+- Opening the apartment front door brings the actual 3D customer into view instead of requiring the standard buyer peephole to sell.
+- Use existing SELL / SUBSTITUTE / DECLINE stock and payment controls; the visiting character walks down the street and disappears away from the doorway after leaving.
+- Some regulars can invite the player to a short smoke session after a sale. Accepting or declining has a real interaction; a completed visit gives a once-per-client/day loyalty reward.
+- Agent Reeves keeps his separate story encounter. The legacy peephole remains as a fallback for unsupported/special scenes.
+- Roaming town clients and off-site timed meetups are still future features, not part of beta.19.
+
+SAVE SAFETY / RELEASE GATE
+- Existing account, player saves, crops, production-worker assignments, storage containers, property inventory, money and equipment placements are retained.
+- Never replace the existing public game pack without rebuilt and independently validated mobile artifacts, SHA-256 updater manifest, session and old-save migration checks, and successful Pages deploy.
