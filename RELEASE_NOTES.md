@@ -1,25 +1,23 @@
-AFewBuds Mobile Beta 0.16.0-mobile-beta.14 — Full House Packing & Basement Production Fix
+AFewBuds Mobile Beta 0.16.0-mobile-beta.15 — Basement Stairwell Visual Fix
 
 VERIFIED MOBILE SOURCE
-FFDevelopment/afewbuds-cloud-test main @ 2203f328229921ddbf4838b6ebbd464119f79bbc
-Mobile build and Godot game tests: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38184046312
+FFDevelopment/afewbuds-cloud-test main @ 27aa04f724cec2971fa092ce8bd89b8c77dae654
+Mobile build and gameplay regression suite: https://github.com/FFDevelopment/afewbuds-cloud-test/actions/runs/38195626809
 
-HOUSE PACKING WORKFLOW
-- Purchased Packing Bench III now matches the full-size finished apartment model, complete with scale, tabletop, jar layout and trim tray.
-- Fix actual hand trimming and bagging at the house bench. Stock is taken from and returned to the house's own packing station, with real scoop, fill and seal steps.
-- Production workers animate trim/bag operations at the real packing bench rather than an unrelated apartment work station.
-- Full-size benches can be placed close to the usable packing-room wall, with structural walls, stairs, doorways and other furniture still preventing clipping.
+HOUSE BASEMENT — MOBILE VISUAL CORRECTION
+- Cut the unwanted dark terrain/floor sheet covering the visible stairwell opening in the house.
+- Handle ground-level decoration nested inside map containers, not just direct neighborhood mesh children.
+- Remove visual-only zero-thickness ground planes from the opening as well as shallow box surfaces.
+- Keep the walkable staircase, handrails, basement grow floor, existing player movement and collision layout intact.
 
-HOUSE BOUNDARIES & BASEMENT
-- All upstairs house rooms use their physical interior wall faces for safe placement rather than narrower legacy rectangles.
-- Basement grow-room floor now includes the usable eastern wing, so growers can place tents where there is actual floor without entering the stair or railing areas.
-- Basement furniture, packing stations and inventory interaction areas remain on the lower floor. House and apartment stock cannot mix.
+PRESERVED FROM MOBILE BETA.14
+- Full-sized Packing Bench III with functional house trimming/bagging and production worker animations.
+- Larger physical house room boundaries and usable basement grow-room wing.
+- Property-specific production staff, supplies, house deliveries, backpack upgrades, Grower level locks and Phone Shop equipment upgrades.
+- Existing account identity, saves, property ownership, cash/bank, grow crops, tent upgrades, genetics and updater rollback.
 
-WORKERS, PROGRESSION AND EXISTING CAREER
-- Retains one independently hired, managed and paid production worker at each owned property, with specific roles, per-property schedules, finite supplies and transfer rules.
-- Retains Level I shop purchases followed by item-specific upgrades, Grower-level unlock requirements, per-tent LED upgrades, property deliveries, backpack space upgrades and Phone Shop browsing.
-- Preserves existing characters, property and equipment ownership, purchases, bank/cash balances, genetics, growing crops, account cloud saves, mobile PWA identity and update rollback.
-
-RELEASE VALIDATION
-- Candidate source passed 36 production staff, 37 shop, 44 structural bounds/basement, 33 packing parity, 88 property-isolation and 85 equipment Godot checks.
-- Public beta publication additionally builds the pinned source, reruns mandatory tests, checks saved career/session/update behavior, validates hashes and deploys Pages only after all gates pass.
+VALIDATION
+- Mobile pack generation, Godot import, mobile CharacterBody3D movement and progression passed.
+- Map integration confirms the house stairwell is no longer covered by a visible terrain sheet; a nested visual-only plane regression is included.
+- House room boundaries, packing parity, property isolation, equipment, staff, inventory and other mobile gameplay suites passed.
+- Public release workflow independently rebuilds and tests pinned source, verifies updater/SHA-256 manifest, and deploys only after all gates pass.
