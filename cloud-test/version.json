@@ -43,8 +43,8 @@
   "files": [
     {
       "path": "index.html",
-      "size": 20445,
-      "sha256": "2f1e8a4328697d2f09b8a9697010af535215582e016719b805cff5715ba5471d"
+      "size": 19811,
+      "sha256": "7cc2f03fbbc66e4b22d880be33b83e78195dbc6503df2c74d4ef262c3f814406"
     },
     {
       "path": "index-accountsync10.js",
