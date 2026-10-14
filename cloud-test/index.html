@@ -251,7 +251,7 @@ body {
 		<script src="shared/afb-cloud-accountsync10.js?v=0.7.9-beta.19-accountsync10"></script>
 		<script src="index-accountsync10.js?v=0.7.9-beta.19-accountsync10"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":true,"fileSizes":{"index-accountsync11.pck":25520848,"index.wasm":37902138},"focusCanvas":true,"mainPack":"index-accountsync11.pck","gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":1,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index-accountsync11.pck":25520848,"index.wasm":37902138},"focusCanvas":true,"mainPack":"index-accountsync11.pck","gdextensionLibs":[],"godotPoolSize":1,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 let AFB_GAME_STARTED = false;
 let AFB_GAME_STARTING = false;
@@ -325,6 +325,17 @@ async function afbLaunchGame() {
 	launchGodotEngine();
 }
 function launchGodotEngine() {
+	const canvas = document.getElementById('canvas');
+	if (canvas) canvas.addEventListener('webglcontextlost', function(event) {
+		event.preventDefault();
+		const notice = document.getElementById('status-notice');
+		const overlay = document.getElementById('status');
+		if (notice && overlay) {
+			notice.textContent = 'Graphics restarted. Reload this page once; if it repeats, open in Chrome with hardware acceleration/WebGL enabled.';
+			overlay.style.visibility = 'visible';
+			notice.style.display = 'block';
+		}
+	}, false); /* AFB_WEBGL_CONTEXT_HANDLER */
 	const engine = new Engine(GODOT_CONFIG);
 	const statusOverlay = document.getElementById('status');
 	const statusProgress = document.getElementById('status-progress');
